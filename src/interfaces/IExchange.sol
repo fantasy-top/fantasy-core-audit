@@ -23,6 +23,7 @@ interface IExchange {
     event NewProtocolFeeRecipient(address protocolFeeRecipient);
     event NewProtocolFeeBps(uint256 protocolFeeBps);
     event NewExecutionDelegate(address executionDelegate);
+    event NewMinimumPricePerPaymentToken(address paymentToken, uint256 minimuPrice);
 
     /* Functions */
     function buy(

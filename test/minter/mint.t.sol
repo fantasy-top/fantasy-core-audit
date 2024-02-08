@@ -6,7 +6,7 @@ contract Mint is BaseTest {
     struct MintConfig {
         address collection; // The collection address of the NFT
         uint256 cardsPerPack; // Number of cards per pack
-        uint256 totalPacks; // Total number of packs available for minting
+        uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
         bool onePerAddress; // Restrict to one mint per address
@@ -23,7 +23,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 80;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -34,7 +34,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -61,7 +61,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 50;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -72,7 +72,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -105,7 +105,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 20;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -116,7 +116,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -143,7 +143,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 50;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -154,7 +154,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -189,7 +189,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 3;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -200,7 +200,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -222,7 +222,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 3;
-        mintConfig.totalPacks = 100;
+        mintConfig.maxPacks = 100;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -233,7 +233,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -256,7 +256,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 3;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = false;
@@ -267,7 +267,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -293,7 +293,7 @@ contract Mint is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 3;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = false;
@@ -304,7 +304,7 @@ contract Mint is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,

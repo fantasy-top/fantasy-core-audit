@@ -6,7 +6,7 @@ contract CancelMintConfig is BaseTest {
     struct MintConfig {
         address collection; // The collection address of the NFT
         uint256 cardsPerPack; // Number of cards per pack
-        uint256 totalPacks; // Total number of packs available for minting
+        uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
         bool onePerAddress; // Restrict to one mint per address
@@ -21,7 +21,7 @@ contract CancelMintConfig is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 80;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -32,7 +32,7 @@ contract CancelMintConfig is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,

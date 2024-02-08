@@ -598,4 +598,43 @@ contract Sell is BaseTest {
         traderContract.sellOnExchange(buyOrder, buyerSignature, 0, merkleProof);
         cheats.stopPrank();
     }
+
+        function test_unsuccessful_sell_price_bellow_minimumPrice() public {
+        // Create order
+        OrderLib.Order memory buyOrder = OrderLib.Order(
+            user2,
+            OrderLib.Side.Buy,
+            address(fantasyCards),
+            0,
+            address(weth),
+            1 ether,
+            999999999999999999999,
+            merkleRoot,
+            0
+        );
+
+        // Sign order
+        bytes32 orderHash = HashLib.getTypedDataHash(
+            buyOrder,
+            exchange.domainSeparator()
+        );
+        (uint8 vBuyer, bytes32 rBuyer, bytes32 sBuyer) = vm.sign(
+            user2PrivateKey,
+            orderHash
+        );
+        bytes memory buyerSignature = abi.encodePacked(rBuyer, sBuyer, vBuyer);
+
+        exchange.setMinimumPricePerPaymentToken(address(weth), buyOrder.price + 1);
+
+        // Give WETH allowance
+        cheats.startPrank(user2);
+        weth.getFaucet(1 ether);
+        weth.approve(address(executionDelegate), 1 ether);
+        cheats.stopPrank();
+
+        cheats.startPrank(user1, user1);
+        cheats.expectRevert("price bellow minimumPrice");
+        exchange.sell(buyOrder, buyerSignature, 0, merkleProof);
+        cheats.stopPrank();
+    }
 }

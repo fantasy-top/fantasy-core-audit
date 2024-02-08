@@ -7,7 +7,7 @@ interface IMinter {
         uint256 mintConfigId,
         address collection,
         uint256 cardsPerPack,
-        uint256 totalPacks,
+        uint256 maxPacks,
         address paymentToken,
         uint256 price,
         bool onePerAddress,
@@ -25,9 +25,9 @@ interface IMinter {
         uint256 mintConfigId,
         uint256 newCardsPerPack
     );
-    event TotalPacksUpdatedForMintConfig(
+    event MaxPacksUpdatedForMintConfig(
         uint256 mintConfigId,
-        uint256 newTotalPacks
+        uint256 newMaxPacks
     );
     event PaymentTokenUpdatedForMintConfig(
         uint256 mintConfigId,
@@ -64,7 +64,7 @@ interface IMinter {
     function newMintConfig(
         address collection,
         uint256 cardsPerPack,
-        uint256 totalPacks,
+        uint256 maxPacks,
         address paymentToken,
         uint256 price,
         bool onePerAddress,
@@ -83,9 +83,9 @@ interface IMinter {
         uint256 cardsPerPack
     ) external;
 
-    function setTotalPacksForMintConfig(
+    function setMaxPacksForMintConfig(
         uint256 mintConfigId,
-        uint256 totalPacks
+        uint256 maxPacks
     ) external;
 
     function setPaymentTokenForMintConfig(
@@ -128,7 +128,7 @@ interface IMinter {
         returns (
             address collection,
             uint256 cardsPerPack,
-            uint256 totalPacks,
+            uint256 maxPacks,
             address paymentToken,
             uint256 price,
             bool onePerAddress,

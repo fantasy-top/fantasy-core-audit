@@ -38,7 +38,7 @@ contract End2endForIndexer is Script {
     function newMintConfig() internal {
         address collection = address(fantasyCards);
         uint256 cardsPerPack = 1;
-        uint256 totalPacks = 100;
+        uint256 maxPacks = 100;
         address paymentToken = address(weth);
         uint256 price = 1 ether;
         bool onePerAddress = false;
@@ -46,7 +46,7 @@ contract End2endForIndexer is Script {
         bytes32 _merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
         uint256 expirationTimestamp = 9999999999999999999999;
 
-        minter.newMintConfig(collection, cardsPerPack, totalPacks, paymentToken, price, onePerAddress, requiresWhitelist, _merkleRoot, expirationTimestamp);
+        minter.newMintConfig(collection, cardsPerPack, maxPacks, paymentToken, price, onePerAddress, requiresWhitelist, _merkleRoot, expirationTimestamp);
     }
 
     function run() external {

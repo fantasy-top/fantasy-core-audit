@@ -6,7 +6,7 @@ contract Mint_fuzz is BaseTest {
     struct MintConfig {
         address collection; // The collection address of the NFT
         uint256 cardsPerPack; // Number of cards per pack
-        uint256 totalPacks; // Total number of packs available for minting
+        uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
         bool onePerAddress; // Restrict to one mint per address
@@ -22,16 +22,16 @@ contract Mint_fuzz is BaseTest {
     function test_mint_ERC20_fuzz(
         uint256 _cardPerPack,
         uint256 _price,
-        uint256 _totalPacks
+        uint256 _maxPacks
     ) public {
         if (_cardPerPack > 200 || _cardPerPack < 1) return;
         if (_price > 120000000 ether) return;
-        if (_totalPacks < 1) return;
+        if (_maxPacks < 1) return;
 
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = _cardPerPack;
-        mintConfig.totalPacks = _totalPacks;
+        mintConfig.maxPacks = _maxPacks;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = _price;
         mintConfig.onePerAddress = true;
@@ -42,7 +42,7 @@ contract Mint_fuzz is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -68,16 +68,16 @@ contract Mint_fuzz is BaseTest {
     function test_mint_ETH_fuzz(
         uint256 _cardPerPack,
         uint256 _price,
-        uint256 _totalPacks
+        uint256 _maxPacks
     ) public {
         if (_cardPerPack > 200 || _cardPerPack < 1) return;
         if (_price > 120000000 ether) return;
-        if (_totalPacks < 1) return;
+        if (_maxPacks < 1) return;
 
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = _cardPerPack;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = _price;
         mintConfig.onePerAddress = true;
@@ -88,7 +88,7 @@ contract Mint_fuzz is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,

@@ -30,6 +30,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
     mapping(bytes32 orderHash => bool) public cancelledOrFilled;
     mapping(address collection => bool) public whitelistedCollections;
     mapping(address paymentToken => bool) public whitelistedPaymentTokens;
+    mapping(address paymentToken => uint256 minimumPrice) public minimumPricePerPaymentToken;
     uint256 public protocolFeeBps;
     address public protocolFeeRecipient;
     IExecutionDelegate public executionDelegate;
@@ -74,6 +75,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         require(sellOrder.side == OrderLib.Side.Sell, "order must be a sell");
         require(sellOrder.expirationTime >= block.timestamp, "order expired");
         require(sellOrder.trader != address(0), "order trader is 0");
+        require(sellOrder.price >= minimumPricePerPaymentToken[sellOrder.paymentToken], "price bellow minimumPrice");
 
         bytes32 sellOrderHash = OrderLib._hashOrder(sellOrder);
         require(
@@ -128,6 +130,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         require(buyOrder.side == OrderLib.Side.Buy, "order must be a buy");
         require(buyOrder.expirationTime >= block.timestamp, "order expired");
         require(buyOrder.trader != address(0), "order trader is 0");
+        require(buyOrder.price >= minimumPricePerPaymentToken[buyOrder.paymentToken], "price bellow minimumPrice");
 
         bytes32 buyOrderHash = OrderLib._hashOrder(buyOrder);
         require(
@@ -258,6 +261,17 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         executionDelegate = IExecutionDelegate(_executionDelegate);
 
         emit NewExecutionDelegate(_executionDelegate);
+    }
+
+    /**
+     * @notice Sets a new minimum price for a certain payment token
+     * @param paymentToken The address of the payment token 
+     * @param minimuPrice The new minimum price
+     */
+    function setMinimumPricePerPaymentToken(address paymentToken, uint256 minimuPrice) public onlyOwner {
+        minimumPricePerPaymentToken[paymentToken] = minimuPrice;
+
+        emit NewMinimumPricePerPaymentToken(paymentToken, minimuPrice);
     }
 
     /**

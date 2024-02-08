@@ -2,11 +2,11 @@ pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
 
-contract SetTotalPacksForMintConfig is BaseTest {
+contract SetMaxPacksForMintConfig is BaseTest {
     struct MintConfig {
         address collection; // The collection address of the NFT
         uint256 cardsPerPack; // Number of cards per pack
-        uint256 totalPacks; // Total number of packs available for minting
+        uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
         bool onePerAddress; // Restrict to one mint per address
@@ -21,7 +21,7 @@ contract SetTotalPacksForMintConfig is BaseTest {
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
         mintConfig.cardsPerPack = 80;
-        mintConfig.totalPacks = 1;
+        mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
         mintConfig.onePerAddress = true;
@@ -32,7 +32,7 @@ contract SetTotalPacksForMintConfig is BaseTest {
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
-            mintConfig.totalPacks,
+            mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
             mintConfig.onePerAddress,
@@ -42,23 +42,23 @@ contract SetTotalPacksForMintConfig is BaseTest {
         );
     }
 
-    function test_successful_setTotalPacksForMintConfig() public {
-        minter.setTotalPacksForMintConfig(0, 2);
-        (, , uint256 actualTotalPacks, , , , , , , , ) = minter.getMintConfig(0);
-        assertEq(actualTotalPacks, 2);
+    function test_successful_setMaxPacksForMintConfig() public {
+        minter.setMaxPacksForMintConfig(0, 2);
+        (, , uint256 actualMaxPacks, , , , , , , , ) = minter.getMintConfig(0);
+        assertEq(actualMaxPacks, 2);
     }
 
-    function test_unsuccessful_setTotalPacksForMintConfig_notOwner() public {
+    function test_unsuccessful_setMaxPacksForMintConfig_notOwner() public {
         cheats.startPrank(user1);
         cheats.expectRevert(); // REVIEW: real error message
-        minter.setTotalPacksForMintConfig(0, 2);
+        minter.setMaxPacksForMintConfig(0, 2);
         cheats.stopPrank();
     }
 
-    function test_unsuccessful_setTotalPacksForMintConfig_invalid_mintConfigId()
+    function test_unsuccessful_setMaxPacksForMintConfig_invalid_mintConfigId()
         public
     {
         cheats.expectRevert("Invalid mintConfigId");
-        minter.setTotalPacksForMintConfig(1, 2);
+        minter.setMaxPacksForMintConfig(1, 2);
     }
 }

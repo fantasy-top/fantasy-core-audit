@@ -461,4 +461,43 @@ contract Buy is BaseTest {
         traderContract.buyOnExchange{value: 1 ether}(sellOrder, sellerSignature);
         cheats.stopPrank();
     }
+
+    function test_unsuccessful_buy_price_bellow_minimumPrice() public {
+        // Create order
+        OrderLib.Order memory sellOrder = OrderLib.Order(
+            user1,
+            OrderLib.Side.Sell,
+            address(fantasyCards),
+            0,
+            address(0),
+            1 ether,
+            999999999999999999999,
+            bytes32(0),
+            0
+        );
+
+        // Sign order
+        bytes32 orderHash = HashLib.getTypedDataHash(
+            sellOrder,
+            exchange.domainSeparator()
+        );
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
+            user1PrivateKey,
+            orderHash
+        );
+        bytes memory sellerSignature = abi.encodePacked(
+            rSeller,
+            sSeller,
+            vSeller
+        );
+
+        exchange.setMinimumPricePerPaymentToken(address(0), sellOrder.price + 1);
+
+        cheats.deal(user2, 1 ether);
+
+        cheats.startPrank(user2, user2);
+        cheats.expectRevert("price bellow minimumPrice");
+        exchange.buy{value: 1 ether}(sellOrder, sellerSignature);
+        cheats.stopPrank();
+    }
 }

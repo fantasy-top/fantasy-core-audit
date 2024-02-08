@@ -25,7 +25,7 @@ contract NewMintConfig is BaseTest {
         (
             address actualCollection,
             uint256 actualCardsPerPack,
-            uint256 actualTotalPacks,
+            uint256 actualMaxPacks,
             address actualPaymentToken,
             uint256 actualPrice,
             bool actualOnePerAddress,
@@ -38,7 +38,7 @@ contract NewMintConfig is BaseTest {
 
         assertEq(actualCollection, address(0x1));
         assertEq(actualCardsPerPack, 10);
-        assertEq(actualTotalPacks, 100);
+        assertEq(actualMaxPacks, 100);
         assertEq(actualPaymentToken, address(0x2));
         assertEq(actualPrice, 100);
         assertEq(actualOnePerAddress, true);
@@ -56,7 +56,7 @@ contract NewMintConfig is BaseTest {
         // Arrange
         address collection = address(0x1);
         uint256 cardsPerPack = 10;
-        uint256 totalPacks = 100;
+        uint256 maxPacks = 100;
         address paymentToken = address(0x2);
         uint256 price = 100;
         bool onePerAddress = true;
@@ -68,7 +68,7 @@ contract NewMintConfig is BaseTest {
         minter.newMintConfig(
             collection,
             cardsPerPack,
-            totalPacks,
+            maxPacks,
             paymentToken,
             price,
             onePerAddress,
@@ -85,7 +85,7 @@ contract NewMintConfig is BaseTest {
         // Arrange
         address collection = address(0x1);
         uint256 cardsPerPack = 10;
-        uint256 totalPacks = 100;
+        uint256 maxPacks = 100;
         address paymentToken = address(0x2);
         uint256 price = 100;
         bool onePerAddress = true;
@@ -98,7 +98,7 @@ contract NewMintConfig is BaseTest {
         minter.newMintConfig(
             collection,
             cardsPerPack,
-            totalPacks,
+            maxPacks,
             paymentToken,
             price,
             onePerAddress,

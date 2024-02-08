@@ -26,7 +26,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
     struct MintConfig {
         address collection; // The collection address of the NFT
         uint256 cardsPerPack; // Number of cards per pack
-        uint256 totalPacks; // Total number of packs available for minting
+        uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
         bool onePerAddress; // Restrict to one mint per address
@@ -94,7 +94,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
             "User already minted"
         );
         require(
-            mintConfig.totalPacks > mintConfig.totalMintedPacks,
+            mintConfig.maxPacks > mintConfig.totalMintedPacks,
             "No packs left"
         );
 
@@ -103,14 +103,14 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
             mintConfig.hasMinted[msg.sender] = true;
         }
 
-        if (mintConfig.price > 0) {
-            _executeFundsTransfer(
-                mintConfig.paymentToken,
-                msg.sender,
-                treasury,
-                mintConfig.price
-            );
-        }
+
+        _executeFundsTransfer(
+            mintConfig.paymentToken,
+            msg.sender,
+            treasury,
+            mintConfig.price
+        );
+
         _executeBatchMint(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -125,7 +125,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
      * @dev Only callable by the contract owner. Emits a NewMintConfig event upon success.
      * @param collection Address of the NFT collection for the packs
      * @param cardsPerPack Number of cards in each pack
-     * @param totalPacks Total number of packs available for this configuration
+     * @param maxPacks Maximum number of packs available for this configuration
      * @param paymentToken Token used for payments (address(0) for ETH)
      * @param price Price per pack in the specified payment token
      * @param onePerAddress Restrict to one mint per address if true
@@ -136,7 +136,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
     function newMintConfig(
         address collection,
         uint256 cardsPerPack,
-        uint256 totalPacks,
+        uint256 maxPacks,
         address paymentToken,
         uint256 price,
         bool onePerAddress,
@@ -146,12 +146,12 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(collection != address(0), "Collection address cannot be 0x0");
         require(cardsPerPack > 0, "Cards per pack must be greater than 0");
-        require(totalPacks > 0, "Total packs must be greater than 0");
+        require(maxPacks > 0, "Max packs must be greater than 0");
 
         MintConfig storage config = mintConfigs[mintConfigIdCounter];
         config.collection = collection;
         config.cardsPerPack = cardsPerPack;
-        config.totalPacks = totalPacks;
+        config.maxPacks = maxPacks;
         config.paymentToken = paymentToken;
         config.price = price;
         config.onePerAddress = onePerAddress;
@@ -163,7 +163,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
             mintConfigIdCounter,
             collection,
             cardsPerPack,
-            totalPacks,
+            maxPacks,
             paymentToken,
             price,
             onePerAddress,
@@ -219,18 +219,18 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
      * @notice Updates the total number of packs for a specific mint configuration
      * @dev Only callable by the contract owner.
      * @param mintConfigId The ID of the mint configuration to update
-     * @param totalPacks The new total number of packs
+     * @param maxPacks The maximum number of packs available
      */
-    function setTotalPacksForMintConfig(
+    function setMaxPacksForMintConfig(
         uint256 mintConfigId,
-        uint256 totalPacks
+        uint256 maxPacks
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
-        require(totalPacks > 0, "Total packs must be greater than 0");
+        require(maxPacks > 0, "Maximum packs must be greater than 0");
         MintConfig storage config = mintConfigs[mintConfigId];
-        config.totalPacks = totalPacks;
+        config.maxPacks = maxPacks;
 
-        emit TotalPacksUpdatedForMintConfig(mintConfigId, totalPacks);
+        emit MaxPacksUpdatedForMintConfig(mintConfigId, maxPacks);
     }
 
     /**
@@ -362,11 +362,19 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
     }
 
     /**
+     * @notice Updates the execution delegate address.
+     * @param _executionDelegate New delegate address.
+     */
+    function setExecutionDelegate(address _executionDelegate) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        executionDelegate = IExecutionDelegate(_executionDelegate);
+    }
+
+    /**
      * @notice Retrieves details of a specific mint configuration
      * @param mintConfigId The ID of the mint configuration to retrieve
      * @return collection The NFT collection address
      * @return cardsPerPack The number of cards per pack
-     * @return totalPacks The total number of packs available
+     * @return maxPacks The maximum number of packs available
      * @return paymentToken The token used for payments
      * @return price The price per pack
      * @return onePerAddress The one per address restriction state
@@ -398,7 +406,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
         return (
             config.collection,
             config.cardsPerPack,
-            config.totalPacks,
+            config.maxPacks,
             config.paymentToken,
             config.price,
             config.onePerAddress,
@@ -422,14 +430,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
     ) public view returns (bool) {
         MintConfig storage config = mintConfigs[mintConfigId];
         return config.hasMinted[user];
-    }
-
-    /**
-     * @notice Updates the execution delegate address.
-     * @param _executionDelegate New delegate address.
-     */
-    function setExecutionDelegate(address _executionDelegate) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        executionDelegate = IExecutionDelegate(_executionDelegate);
     }
 
     /**
@@ -506,5 +506,15 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
         for (uint256 i = 0; i < cardsPerPack; i++) {
             executionDelegate.mintFantasyCard(collection, buyer);
         }
+    }
+    
+    /**
+     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @param paymentToken ERC20 token address, or zero for Ether.
+     * @param to Recipient's address.
+     * @param amount Transfer amount.
+     */
+    function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _transferTo(paymentToken, address(this), to, amount);
     }
 }

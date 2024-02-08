@@ -1,10 +1,10 @@
 # Fantasy Contracts
 
-**ExecutionDelegate** contract is responsible for executing token transfers on behalf of the user. It is therefore the only contract the user needs to approve for token transfers. It is also the only contract allowed to transfer and mint fantasy cards.
+**ExecutionDelegate** contract is responsible for executing token transfers on behalf of the user. It is therefore the only contract the user needs to approve for token transfers. It is also the only contract allowed to transfer and mint fantasy cards. The ExecutionDelegate functions are opened to whitelisted contracts (aka Exchange and Minter)
 
 **FantasyCards** contract is an ERC721; it can only be transferred and minted by the ExecutionDelegate contract. This is to ensure only contracts approved by the protocol have access to these functions.
 
-**Exchange** contract is responsible for trading fantasy cards. When buying or selling a card, a fee is taken and sent to the protocol's treasury address.
+**Exchange** contract is responsible for trading fantasy cards. When buying or selling a card, a fee is taken and sent to the protocol's treasury address. The buy and sell functions of this contract can only be called by EOAs
 
 **Minter** contract is responsible for minting new fantasy cards. The owner of the Minter contract can configure the minting dynamics.
 
