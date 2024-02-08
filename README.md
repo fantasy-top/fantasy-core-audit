@@ -1,3 +1,11 @@
+# Some audit guidelines
+
+- We want to ensure our contracts are safe for our users. We don't want malicious actors to be able to take our users' tokens.
+- We want to ensure our users can trade our NFTs only through our exchange contract.
+- We want to ensure our exchange fees cannot be bypassed.
+- We want to ensure nobody can mint new NFTs without following our minter configurations (rules).
+- We don't really care about gas optimization, please don’t waste your precious audit time on them.
+
 # Fantasy Contracts
 
 **ExecutionDelegate** contract is responsible for executing token transfers on behalf of the user. It is therefore the only contract the user needs to approve for token transfers. It is also the only contract allowed to transfer and mint fantasy cards. The ExecutionDelegate functions are opened to whitelisted contracts (aka Exchange and Minter)
