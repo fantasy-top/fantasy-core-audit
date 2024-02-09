@@ -57,9 +57,9 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         // IBlast(0x4300000000000000000000000000000000000002).configureGovernor(
         //     msg.sender
         // );
-        protocolFeeRecipient = _protocolFeeRecipient;
-        protocolFeeBps = _protocolFeeBps;
-        executionDelegate = IExecutionDelegate(_executionDelegate);
+        _setProtocolFeeRecipient(_protocolFeeRecipient);
+        _setProtocolFeeBps(_protocolFeeBps);
+        _setExecutionDelegate(_executionDelegate);
     }
 
     /**
@@ -236,9 +236,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param _protocolFeeBps The new protocol fee in basis points
      */
     function setProtocolFeeBps(uint256 _protocolFeeBps) public onlyOwner {
-        protocolFeeBps = _protocolFeeBps;
-
-        emit NewProtocolFeeBps(_protocolFeeBps);
+        _setProtocolFeeBps(_protocolFeeBps);
     }
 
     /**
@@ -248,9 +246,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
     function setProtocolFeeRecipient(
         address _protocolFeeRecipient
     ) public onlyOwner {
-        protocolFeeRecipient = _protocolFeeRecipient;
-
-        emit NewProtocolFeeRecipient(_protocolFeeRecipient);
+        _setProtocolFeeRecipient(_protocolFeeRecipient);
     }
 
     /**
@@ -258,9 +254,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param _executionDelegate The address of the new execution delegate
      */
     function setExecutionDelegate(address _executionDelegate) public onlyOwner {
-        executionDelegate = IExecutionDelegate(_executionDelegate);
-
-        emit NewExecutionDelegate(_executionDelegate);
+        _setExecutionDelegate(_executionDelegate);
     }
 
     /**
@@ -280,6 +274,41 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      */
     function domainSeparator() external view returns (bytes32) {
         return _domainSeparatorV4();
+    }
+
+    /**
+     * @notice Internal function to set a new protocol fee in basis points
+     * @param _protocolFeeBps The new protocol fee in basis points
+     */
+    function _setProtocolFeeBps(uint256 _protocolFeeBps) internal {
+        require(_protocolFeeBps <= INVERSE_BASIS_POINT, "protocol fee above 100%");
+        protocolFeeBps = _protocolFeeBps;
+
+        emit NewProtocolFeeBps(_protocolFeeBps);
+    }
+
+    /**
+     * @notice Internal function to set a new protocol fee recipient address
+     * @param _protocolFeeRecipient The address of the new protocol fee recipient
+     */
+    function _setProtocolFeeRecipient(
+        address _protocolFeeRecipient
+    ) internal {
+        require(_protocolFeeRecipient != address(0), "protocol fee recipient can't be address 0");
+        protocolFeeRecipient = _protocolFeeRecipient;
+
+        emit NewProtocolFeeRecipient(_protocolFeeRecipient);
+    }
+
+    /**
+     * @notice Internal function to set a new execution delegate address
+     * @param _executionDelegate The address of the new execution delegate
+     */
+    function _setExecutionDelegate(address _executionDelegate) internal {
+        require(_executionDelegate != address(0), "excution delegate can't be address 0");
+        executionDelegate = IExecutionDelegate(_executionDelegate);
+
+        emit NewExecutionDelegate(_executionDelegate);
     }
 
     /**

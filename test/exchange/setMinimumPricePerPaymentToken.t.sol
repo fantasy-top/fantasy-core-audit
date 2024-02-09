@@ -14,7 +14,7 @@ contract SetMinimumPricePerPaymentToken is BaseTest {
         assertEq(exchange.minimumPricePerPaymentToken(address(weth)), minimumPrice);
     }
 
-        function test_unsuccessful_setMininmumPricePerPaymentToken_not_owner() public {
+    function test_unsuccessful_setMininmumPricePerPaymentToken_not_owner() public {
         uint256 minimumPrice = 12;
         cheats.startPrank(user1);
         cheats.expectRevert();

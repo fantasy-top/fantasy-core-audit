@@ -18,11 +18,11 @@ contract SetTreasury is BaseTest {
     }
 
     function test_unsuccessful_setTreasury_address_zero() public {
-        cheats.expectRevert("Treasury address cannot be 0x0"); // REVIEW: proper error message?
+        cheats.expectRevert("Treasury address cannot be 0x0");
         minter.setTreasury(address(0));
     }
 
-    function test_unauthorized_setTreasury() public {
+    function test_unauthorized_setTreasury_not_owner() public {
         cheats.startPrank(user1);
         cheats.expectRevert(); // REVIEW: proper error message?
         minter.setTreasury(user1);

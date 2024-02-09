@@ -63,8 +63,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
         // IBlast(0x4300000000000000000000000000000000000002).configureGovernor(
         //     msg.sender
         // );
-        treasury = _treasury;
-        executionDelegate = IExecutionDelegate(_executionDelegate);
+        _setTreasury(_treasury);
+        _setExecutionDelegate(_executionDelegate);
     }
 
     /**
@@ -337,7 +337,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
 
     /**
      * @notice Cancels a specific mint configuration, preventing further minting
-     * @dev Only callable by the contract owner.
      * @param mintConfigId The ID of the mint configuration to cancel
      */
     function cancelMintConfig(uint256 mintConfigId) public onlyRole(CANCELER_ROLE) {
@@ -351,14 +350,10 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
 
     /**
      * @notice Sets a new treasury address for collecting payments from minting operations.
-     * @dev This function can only be called by the contract owner. It updates the treasury address to a new one and emits the NewTreasury event. The function reverts if the new treasury address is the zero address.
      * @param _treasury The address of the new treasury. Must be a non-zero address.
      */
     function setTreasury(address _treasury) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(_treasury != address(0), "Treasury address cannot be 0x0");
-        treasury = _treasury;
-
-        emit NewTreasury(_treasury);
+        _setTreasury(_treasury);
     }
 
     /**
@@ -366,7 +361,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
      * @param _executionDelegate New delegate address.
      */
     function setExecutionDelegate(address _executionDelegate) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        executionDelegate = IExecutionDelegate(_executionDelegate);
+        _setExecutionDelegate(_executionDelegate);
     }
 
     /**
@@ -430,6 +425,26 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
     ) public view returns (bool) {
         MintConfig storage config = mintConfigs[mintConfigId];
         return config.hasMinted[user];
+    }
+
+    /**
+     * @notice Internal function that sets a new treasury address for collecting payments from minting operations.
+     * @param _treasury The address of the new treasury. Must be a non-zero address.
+     */
+    function _setTreasury(address _treasury) internal {
+        require(_treasury != address(0), "Treasury address cannot be 0x0");
+        treasury = _treasury;
+
+        emit NewTreasury(_treasury);
+    }
+
+    /**
+     * @notice Internal function that updates the execution delegate address.
+     * @param _executionDelegate New delegate address.
+     */
+    function _setExecutionDelegate(address _executionDelegate) internal {
+        require(_executionDelegate != address(0), "Execution delegate address cannot be 0x0");
+        executionDelegate = IExecutionDelegate(_executionDelegate);
     }
 
     /**
