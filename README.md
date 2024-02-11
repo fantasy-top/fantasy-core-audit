@@ -6,6 +6,13 @@
 - We want to ensure nobody can mint new NFTs without following our minter configurations (rules).
 - We don't really care about gas optimization, please don’t waste your precious audit time on them.
 
+# Fantasy Gameplay 
+- Fantasy is a Trading Card Game in which players collect cards featuring crypto influencers to compete and earn ETH, BLAST, more cards, and FAN Points.
+- Players acquire cards on the Fantasy marketplace, using them to assemble a deck and compete in the weekly Fantasy competition.
+- Players are ranked based on their influencers' performance on Twitter. At the end of a competition, rewards are distributed according to the players' rankings.
+- Newly distributed cards are minted, completing the initial distribution of cards, which was initiated through an airdrop and a sale.
+
+
 # Fantasy Contracts
 
 **ExecutionDelegate** contract is responsible for executing token transfers on behalf of the user. It is therefore the only contract the user needs to approve for token transfers. It is also the only contract allowed to transfer and mint fantasy cards. The ExecutionDelegate functions are opened to whitelisted contracts (aka Exchange and Minter)
