@@ -41,12 +41,12 @@ contract End2endForIndexer is Script {
         uint256 maxPacks = 100;
         address paymentToken = address(weth);
         uint256 price = 1 ether;
-        bool onePerAddress = false;
+        uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = false;
         bytes32 _merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
         uint256 expirationTimestamp = 9999999999999999999999;
 
-        minter.newMintConfig(collection, cardsPerPack, maxPacks, paymentToken, price, onePerAddress, requiresWhitelist, _merkleRoot, expirationTimestamp);
+        minter.newMintConfig(collection, cardsPerPack, maxPacks, paymentToken, price, maxPacksPerAddress, requiresWhitelist, _merkleRoot, expirationTimestamp);
     }
 
     function run() external {

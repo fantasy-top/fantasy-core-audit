@@ -15,7 +15,7 @@ contract NewMintConfig is BaseTest {
             100,
             address(0x2),
             100,
-            true,
+            12,
             true,
             0x3000000000000000000000000000000000000000000000000000000000000000,
             300
@@ -28,7 +28,7 @@ contract NewMintConfig is BaseTest {
             uint256 actualMaxPacks,
             address actualPaymentToken,
             uint256 actualPrice,
-            bool actualOnePerAddress,
+            uint256 actualMaxPacksPerAddress,
             bool actualRequiresWhitelist,
             bytes32 actualMerkleRoot,
             uint256 actualExpirationTimestamp,
@@ -41,7 +41,7 @@ contract NewMintConfig is BaseTest {
         assertEq(actualMaxPacks, 100);
         assertEq(actualPaymentToken, address(0x2));
         assertEq(actualPrice, 100);
-        assertEq(actualOnePerAddress, true);
+        assertEq(actualMaxPacksPerAddress, 12);
         assertEq(actualRequiresWhitelist, true);
         assertEq(
             actualMerkleRoot,
@@ -59,7 +59,7 @@ contract NewMintConfig is BaseTest {
         uint256 maxPacks = 100;
         address paymentToken = address(0x2);
         uint256 price = 100;
-        bool onePerAddress = true;
+        uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
         uint256 expirationTimestamp = 300;
@@ -71,7 +71,7 @@ contract NewMintConfig is BaseTest {
             maxPacks,
             paymentToken,
             price,
-            onePerAddress,
+            maxPacksPerAddress,
             requiresWhitelist,
             merkleRoot,
             expirationTimestamp
@@ -88,7 +88,7 @@ contract NewMintConfig is BaseTest {
         uint256 maxPacks = 100;
         address paymentToken = address(0x2);
         uint256 price = 100;
-        bool onePerAddress = true;
+        uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
         uint256 expirationTimestamp = 300;
@@ -101,7 +101,7 @@ contract NewMintConfig is BaseTest {
             maxPacks,
             paymentToken,
             price,
-            onePerAddress,
+            maxPacksPerAddress,
             requiresWhitelist,
             merkleRoot,
             expirationTimestamp

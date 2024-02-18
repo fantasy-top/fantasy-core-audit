@@ -10,7 +10,7 @@ interface IMinter {
         uint256 maxPacks,
         address paymentToken,
         uint256 price,
-        bool onePerAddress,
+        uint256 maxPacksPerAddress,
         bool requiresWhitelist,
         bytes32 merkleRoot,
         uint256 expirationTimestamp
@@ -37,9 +37,9 @@ interface IMinter {
         uint256 mintConfigId,
         uint256 newPrice
     );
-    event OnePerAddressUpdatedForMintConfig(
+    event MaxPacksPerAddressUpdatedForMintConfig(
         uint256 mintConfigId,
-        bool newOnePerAddress
+        uint256 maxPacksPerAddress
     );
     event WhitelistRequirementUpdatedForMintConfig(
         uint256 mintConfigId,
@@ -67,7 +67,7 @@ interface IMinter {
         uint256 maxPacks,
         address paymentToken,
         uint256 price,
-        bool onePerAddress,
+        uint256 maxPacksPerAddress,
         bool requiresWhitelist,
         bytes32 merkleRoot,
         uint256 expirationTimestamp
@@ -98,9 +98,9 @@ interface IMinter {
         uint256 price
     ) external;
 
-    function setOnePerAddressForMintConfig(
+    function setMaxPacksPerAddressForMintConfig(
         uint256 mintConfigId,
-        bool onePerAddress
+        uint256 maxPacksPerAddress
     ) external;
 
     function setRequiresWhitelistForMintConfig(
@@ -131,7 +131,7 @@ interface IMinter {
             uint256 maxPacks,
             address paymentToken,
             uint256 price,
-            bool onePerAddress,
+            uint256 maxPacksPerAddress,
             bool requiresWhitelist,
             bytes32 merkleRoot,
             uint256 expirationTimestamp,
@@ -139,8 +139,8 @@ interface IMinter {
             bool cancelled
         );
 
-    function getMintConfigHasMinted(
+    function getAmountMintedPerAddressForMintConfig(
         uint256 mintConfigId,
         address user
-    ) external view returns (bool);
+    ) external view returns (uint256);
 }

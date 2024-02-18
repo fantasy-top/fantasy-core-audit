@@ -29,11 +29,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
         uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
-        bool onePerAddress; // Restrict to one mint per address
+        uint256 maxPacksPerAddress; // Maximum number of packs that can be minted by a single address
         bool requiresWhitelist; // If true, requires user to be whitelisted
         bytes32 merkleRoot; // Root of Merkle tree for whitelist verification
         uint256 expirationTimestamp; // Expiration timestamp for the mint config
-        mapping(address => bool) hasMinted; // Tracks addresses that have minted
+        mapping(address => uint256) amountMintedPerAddress; // Tracks how many packs have been minted by each address
         uint256 totalMintedPacks; // Total number of packs minted
         bool cancelled; // If true, mint config has been cancelled
     }
@@ -90,8 +90,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
             "User not whitelisted"
         );
         require(
-            !mintConfig.onePerAddress || !mintConfig.hasMinted[msg.sender],
-            "User already minted"
+            mintConfig.maxPacksPerAddress == 0 || mintConfig.amountMintedPerAddress[msg.sender] < mintConfig.maxPacksPerAddress,
+            "User reached max mint limit"
         );
         require(
             mintConfig.maxPacks > mintConfig.totalMintedPacks,
@@ -99,8 +99,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
         );
 
         mintConfig.totalMintedPacks += 1;
-        if (mintConfig.onePerAddress) {
-            mintConfig.hasMinted[msg.sender] = true;
+        if (mintConfig.maxPacksPerAddress != 0) {
+            mintConfig.amountMintedPerAddress[msg.sender] += 1;
         }
 
 
@@ -128,7 +128,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
      * @param maxPacks Maximum number of packs available for this configuration
      * @param paymentToken Token used for payments (address(0) for ETH)
      * @param price Price per pack in the specified payment token
-     * @param onePerAddress Restrict to one mint per address if true
+     * @param maxPacksPerAddress Maximum number of packs that can be minted by a single address
      * @param requiresWhitelist Require users to be whitelisted if true
      * @param merkleRoot Root of Merkle tree for whitelist verification
      * @param expirationTimestamp Expiration timestamp for the mint config
@@ -139,7 +139,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
         uint256 maxPacks,
         address paymentToken,
         uint256 price,
-        bool onePerAddress,
+        uint256 maxPacksPerAddress,
         bool requiresWhitelist,
         bytes32 merkleRoot,
         uint256 expirationTimestamp
@@ -154,7 +154,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
         config.maxPacks = maxPacks;
         config.paymentToken = paymentToken;
         config.price = price;
-        config.onePerAddress = onePerAddress;
+        config.maxPacksPerAddress = maxPacksPerAddress;
         config.requiresWhitelist = requiresWhitelist;
         config.merkleRoot = merkleRoot;
         config.expirationTimestamp = expirationTimestamp;
@@ -166,7 +166,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
             maxPacks,
             paymentToken,
             price,
-            onePerAddress,
+            maxPacksPerAddress,
             requiresWhitelist,
             merkleRoot,
             expirationTimestamp
@@ -271,17 +271,17 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
      * @notice Updates the one per address restriction for a specific mint configuration
      * @dev Only callable by the contract owner.
      * @param mintConfigId The ID of the mint configuration to update
-     * @param onePerAddress The new one per address restriction state
+     * @param maxPacksPerAddress The new maximum number of packs that can be minted by a single address
      */
-    function setOnePerAddressForMintConfig(
+    function setMaxPacksPerAddressForMintConfig(
         uint256 mintConfigId,
-        bool onePerAddress
+        uint256 maxPacksPerAddress
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         MintConfig storage config = mintConfigs[mintConfigId];
-        config.onePerAddress = onePerAddress;
+        config.maxPacksPerAddress = maxPacksPerAddress;
 
-        emit OnePerAddressUpdatedForMintConfig(mintConfigId, onePerAddress);
+        emit MaxPacksPerAddressUpdatedForMintConfig(mintConfigId, maxPacksPerAddress);
     }
 
     /**
@@ -372,7 +372,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
      * @return maxPacks The maximum number of packs available
      * @return paymentToken The token used for payments
      * @return price The price per pack
-     * @return onePerAddress The one per address restriction state
+     * @return maxPacksPerAddress The maximum number of packs that can be minted by a single address
      * @return requiresWhitelist The whitelist requirement state
      * @return merkleRoot The merkle root for whitelist verification
      * @return totalMintedPacks The total number of packs minted
@@ -389,7 +389,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
             uint256,
             address,
             uint256,
-            bool,
+            uint256,
             bool,
             bytes32,
             uint256,
@@ -404,7 +404,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
             config.maxPacks,
             config.paymentToken,
             config.price,
-            config.onePerAddress,
+            config.maxPacksPerAddress,
             config.requiresWhitelist,
             config.merkleRoot,
             config.expirationTimestamp,
@@ -419,12 +419,12 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard {
      * @param user The address of the user to check
      * @return hasMinted Whether the user has already minted
      */
-    function getMintConfigHasMinted(
+    function getAmountMintedPerAddressForMintConfig(
         uint256 mintConfigId,
         address user
-    ) public view returns (bool) {
+    ) public view returns (uint256) {
         MintConfig storage config = mintConfigs[mintConfigId];
-        return config.hasMinted[user];
+        return config.amountMintedPerAddress[user];
     }
 
     /**

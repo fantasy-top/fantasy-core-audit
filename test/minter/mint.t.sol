@@ -9,7 +9,7 @@ contract Mint is BaseTest {
         uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
-        bool onePerAddress; // Restrict to one mint per address
+        uint256 maxPacksPerAddress; // max number of packs that can be minted by the same address
         bool requiresWhitelist; // If true, requires user to be whitelisted
         bytes32 merkleRoot; // Root of Merkle tree for whitelist verification
         uint256 expirationTimestamp; // Expiration timestamp for minting
@@ -26,7 +26,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = true;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
         mintConfig.expirationTimestamp = 0;
@@ -37,7 +37,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp
@@ -64,7 +64,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = true;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
         mintConfig.expirationTimestamp = 0;
@@ -75,7 +75,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp
@@ -108,7 +108,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = true;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
         mintConfig.expirationTimestamp = 0;
@@ -119,7 +119,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp
@@ -146,7 +146,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = true;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
         mintConfig.expirationTimestamp = 0;
@@ -157,7 +157,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp
@@ -192,7 +192,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = true;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
         mintConfig.expirationTimestamp = 0;
@@ -203,7 +203,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp
@@ -217,7 +217,7 @@ contract Mint is BaseTest {
         cheats.stopPrank();
     }
 
-    function test_onePerAddress_restriction() public {
+    function test_maxPacksPerAddress_restriction() public {
         // Test that the onePerAddress restriction works
         MintConfig memory mintConfig;
         mintConfig.collection = address(fantasyCards);
@@ -225,7 +225,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 100;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = true;
+        mintConfig.maxPacksPerAddress = 1;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
         mintConfig.expirationTimestamp = 0;
@@ -236,7 +236,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp
@@ -246,7 +246,7 @@ contract Mint is BaseTest {
 
         cheats.startPrank(user1);
         minter.mint{value: mintConfig.price}(0, new bytes32[](0));
-        cheats.expectRevert("User already minted");
+        cheats.expectRevert("User reached max mint limit");
         minter.mint{value: mintConfig.price}(0, new bytes32[](0));
         cheats.stopPrank();
     }
@@ -259,7 +259,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = false;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
         mintConfig.expirationTimestamp = 0;
@@ -270,7 +270,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp
@@ -296,7 +296,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(0);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = false;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
         mintConfig.expirationTimestamp = block.timestamp;
@@ -307,7 +307,7 @@ contract Mint is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp

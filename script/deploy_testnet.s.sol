@@ -7,7 +7,7 @@ import "../src/FantasyCards.sol";
 import "../src/Exchange.sol";
 import "../src/ExecutionDelegate.sol";
 import "../src/Minter.sol";
-import "../test/tokens/WrappedETH.sol";
+import "../test/tokens/WrappedETH_ownable.sol";
 
 contract Deploy is Script {
     FantasyCards fantasyCards;

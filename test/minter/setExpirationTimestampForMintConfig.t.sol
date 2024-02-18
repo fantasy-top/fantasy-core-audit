@@ -9,7 +9,7 @@ contract SetExpirationTimestampForMintConfig is BaseTest {
         uint256 maxPacks; // Total number of packs available for minting
         address paymentToken; // Token used for payments (address(0) for ETH)
         uint256 price; // Price per pack
-        bool onePerAddress; // Restrict to one mint per address
+        uint256 maxPacksPerAddress; // max number of packs that can be minted by the same address
         bool requiresWhitelist; // If true, requires user to be whitelisted
         bytes32 merkleRoot; // Root of Merkle tree for whitelist verification
         uint256 expirationTimestamp; // Expiration timestamp for minting
@@ -24,7 +24,7 @@ contract SetExpirationTimestampForMintConfig is BaseTest {
         mintConfig.maxPacks = 1;
         mintConfig.paymentToken = address(weth);
         mintConfig.price = 1 ether;
-        mintConfig.onePerAddress = true;
+        mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
         mintConfig.expirationTimestamp = 0;
@@ -35,7 +35,7 @@ contract SetExpirationTimestampForMintConfig is BaseTest {
             mintConfig.maxPacks,
             mintConfig.paymentToken,
             mintConfig.price,
-            mintConfig.onePerAddress,
+            mintConfig.maxPacksPerAddress,
             mintConfig.requiresWhitelist,
             mintConfig.merkleRoot,
             mintConfig.expirationTimestamp

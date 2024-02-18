@@ -29,7 +29,7 @@ contract FantasyCards is
         keccak256("EXECUTION_DELEGATE_ROLE");
 
     /// @notice Base URI for token metadata
-    string public baseURI = "https://fantasy.com/";
+    string public baseURI = "https://fantasy-cards-storage.s3.amazonaws.com/fantasy_cards_s1/";
 
     /// @notice Counter for tracking token IDs
     uint256 public tokenCounter;
