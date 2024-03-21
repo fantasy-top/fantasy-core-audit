@@ -21,7 +21,7 @@
 
 **Exchange** contract is responsible for trading fantasy cards. When buying or selling a card, a fee is taken and sent to the protocol's treasury address. The buy and sell functions of this contract can only be called by EOAs
 
-**Minter** contract is responsible for minting new fantasy cards. The owner of the Minter contract can configure the minting dynamics.
+**Minter** contract is responsible for minting new fantasy cards. The owner of the Minter contract can configure the minting dynamics. The minter can be configured to use a fixed price or a linear gradual dutch auction.
 
 ## Usage
 
