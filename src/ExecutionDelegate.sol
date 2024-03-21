@@ -28,17 +28,13 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
     using Address for address;
 
     /// @notice Role hash for the address allowed to pause the contract
-    bytes32 public constant PAUSER_ROLE =
-        keccak256("PAUSER_ROLE");
+    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
 
     mapping(address => bool) public contracts;
     mapping(address => bool) public revokedApproval;
 
     modifier approvedContract() {
-        require(
-            contracts[msg.sender],
-            "Contract is not approved to make transfers"
-        );
+        require(contracts[msg.sender], "Contract is not approved to make transfers");
         _;
     }
 
@@ -90,11 +86,12 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
      * @param collection address of the collection
      * @param to address of the recipient
      */
-    function mintFantasyCard(
-        address collection,
-        address to
-    ) external whenNotPaused approvedContract  {
+    function mintFantasyCard(address collection, address to) external whenNotPaused approvedContract {
         IFantasyCards(collection).safeMint(to);
+    }
+
+    function burnFantasyCard(address collection, uint256 tokenId) external whenNotPaused approvedContract {
+        IFantasyCards(collection).burn(tokenId);
     }
 
     /**
@@ -109,7 +106,7 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
         address from,
         address to,
         uint256 tokenId
-    ) external whenNotPaused approvedContract  {
+    ) external whenNotPaused approvedContract {
         require(revokedApproval[from] == false, "User has revoked approval");
         IERC721(collection).transferFrom(from, to, tokenId);
     }
@@ -126,7 +123,7 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
         address from,
         address to,
         uint256 tokenId
-    ) external whenNotPaused approvedContract  {
+    ) external whenNotPaused approvedContract {
         require(revokedApproval[from] == false, "User has revoked approval");
         IERC721(collection).safeTransferFrom(from, to, tokenId);
     }
@@ -145,7 +142,7 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
         address to,
         uint256 tokenId,
         uint256 amount
-    ) external whenNotPaused approvedContract  {
+    ) external whenNotPaused approvedContract {
         require(revokedApproval[from] == false, "User has revoked approval");
         IERC1155(collection).safeTransferFrom(from, to, tokenId, amount, "");
     }
@@ -162,14 +159,9 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
         address from,
         address to,
         uint256 amount
-    ) external whenNotPaused approvedContract  {
+    ) external whenNotPaused approvedContract {
         require(revokedApproval[from] == false, "User has revoked approval");
-        bytes memory data = abi.encodeWithSelector(
-            IERC20.transferFrom.selector,
-            from,
-            to,
-            amount
-        );
+        bytes memory data = abi.encodeWithSelector(IERC20.transferFrom.selector, from, to, amount);
         bytes memory returndata = token.functionCall(data);
         if (returndata.length > 0) {
             require(abi.decode(returndata, (bool)), "ERC20 transfer failed");

@@ -17,19 +17,14 @@ import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
 import {AccessControlDefaultAdminRules} from "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
 import "./interfaces/IBlast.sol";
 
-contract FantasyCards is
-    Context,
-    IFantasyCards,
-    AccessControlDefaultAdminRules
-{
+contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules {
     using Strings for uint256;
 
     /// @notice Role hash for the address allowed to exchange tokens
-    bytes32 public constant EXECUTION_DELEGATE_ROLE =
-        keccak256("EXECUTION_DELEGATE_ROLE");
+    bytes32 public constant EXECUTION_DELEGATE_ROLE = keccak256("EXECUTION_DELEGATE_ROLE");
 
     /// @notice Base URI for token metadata
-    string public baseURI = "https://fantasy-cards-storage.s3.amazonaws.com/fantasy_cards_s1/";
+    string public baseURI = "https://fantasy-top-cards.s3.eu-north-1.amazonaws.com/"; //need to change the baseURI after deploy to 'url/contractaddress'
 
     /// @notice Counter for tracking token IDs
     uint256 public tokenCounter;
@@ -46,8 +41,7 @@ contract FantasyCards is
 
     mapping(uint256 tokenId => address) private _tokenApprovals;
 
-    mapping(address owner => mapping(address operator => bool))
-        private _operatorApprovals;
+    mapping(address owner => mapping(address operator => bool)) private _operatorApprovals;
 
     /**
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
@@ -100,10 +94,7 @@ contract FantasyCards is
     function tokenURI(uint256 tokenId) public view returns (string memory) {
         _requireOwned(tokenId);
 
-        return
-            bytes(baseURI).length > 0
-                ? string.concat(baseURI, tokenId.toString())
-                : "";
+        return bytes(baseURI).length > 0 ? string.concat(baseURI, tokenId.toString()) : "";
     }
 
     /**
@@ -132,10 +123,7 @@ contract FantasyCards is
     /**
      * @dev See {IERC721-isApprovedForAll}.
      */
-    function isApprovedForAll(
-        address owner,
-        address operator
-    ) public view returns (bool) {
+    function isApprovedForAll(address owner, address operator) public view returns (bool) {
         return _operatorApprovals[owner][operator];
     }
 
@@ -147,11 +135,7 @@ contract FantasyCards is
      * @param to address to receive the ownership of the given token ID
      * @param tokenId uint256 ID of the token to be transferred
      */
-    function transferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public onlyRole(EXECUTION_DELEGATE_ROLE) {
+    function transferFrom(address from, address to, uint256 tokenId) public onlyRole(EXECUTION_DELEGATE_ROLE) {
         if (to == address(0)) {
             revert ERC721InvalidReceiver(address(0));
         }
@@ -172,11 +156,7 @@ contract FantasyCards is
      * @param to address to receive the ownership of the given token ID
      * @param tokenId uint256 ID of the token to be transferred
      */
-    function safeTransferFrom(
-        address from,
-        address to,
-        uint256 tokenId
-    ) public onlyRole(EXECUTION_DELEGATE_ROLE) {
+    function safeTransferFrom(address from, address to, uint256 tokenId) public onlyRole(EXECUTION_DELEGATE_ROLE) {
         safeTransferFrom(from, to, tokenId, "");
     }
 
@@ -215,18 +195,16 @@ contract FantasyCards is
      * Usage of this method is restricted to accounts with the DEFAULT_ADMIN_ROLE.
      * @param _baseURI string representing the base URI to be set
      */
-    function setBaseURI(
-        string memory _baseURI
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setBaseURI(string memory _baseURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
         baseURI = _baseURI;
     }
 
     /**
      * @notice Burns a token, removing it from circulation.
-     * @dev Only callable by an admin role.
+     * @dev Only callable by the execution delegate.
      * @param tokenId The tokenId of the token to burn.
      */
-    function burn(uint256 tokenId) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function burn(uint256 tokenId) public onlyRole(EXECUTION_DELEGATE_ROLE) {
         _burn(tokenId);
     }
 
@@ -256,16 +234,10 @@ contract FantasyCards is
      * WARNING: This function assumes that `owner` is the actual owner of `tokenId` and does not verify this
      * assumption.
      */
-    function _isAuthorized(
-        address owner,
-        address spender,
-        uint256 tokenId
-    ) internal view returns (bool) {
+    function _isAuthorized(address owner, address spender, uint256 tokenId) internal view returns (bool) {
         return
             spender != address(0) &&
-            (owner == spender ||
-                isApprovedForAll(owner, spender) ||
-                _getApproved(tokenId) == spender);
+            (owner == spender || isApprovedForAll(owner, spender) || _getApproved(tokenId) == spender);
     }
 
     /**
@@ -276,11 +248,7 @@ contract FantasyCards is
      * WARNING: This function assumes that `owner` is the actual owner of `tokenId` and does not verify this
      * assumption.
      */
-    function _checkAuthorized(
-        address owner,
-        address spender,
-        uint256 tokenId
-    ) internal view {
+    function _checkAuthorized(address owner, address spender, uint256 tokenId) internal view {
         if (!_isAuthorized(owner, spender, tokenId)) {
             if (owner == address(0)) {
                 revert ERC721NonexistentToken(tokenId);
@@ -317,11 +285,7 @@ contract FantasyCards is
      *
      * NOTE: If overriding this function in a way that tracks balances, see also {_increaseBalance}.
      */
-    function _update(
-        address to,
-        uint256 tokenId,
-        address auth
-    ) internal returns (address) {
+    function _update(address to, uint256 tokenId, address auth) internal returns (address) {
         address from = _ownerOf(tokenId);
 
         // Perform (optional) operator check
@@ -392,11 +356,7 @@ contract FantasyCards is
      * @dev Same as {xref-ERC721-_safeMint-address-uint256-}[`_safeMint`], with an additional `data` parameter which is
      * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
      */
-    function _safeMint(
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) internal {
+    function _safeMint(address to, uint256 tokenId, bytes memory data) internal {
         _mint(to, tokenId);
         _checkOnERC721Received(address(0), to, tokenId, data);
     }
@@ -469,12 +429,7 @@ contract FantasyCards is
      * @dev Same as {xref-ERC721-_safeTransfer-address-address-uint256-}[`_safeTransfer`], with an additional `data` parameter which is
      * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
      */
-    function _safeTransfer(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) internal {
+    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal {
         _transfer(from, to, tokenId);
         _checkOnERC721Received(from, to, tokenId, data);
     }
@@ -497,22 +452,13 @@ contract FantasyCards is
      * @dev Variant of `_approve` with an optional flag to enable or disable the {Approval} event. The event is not
      * emitted in the context of transfers.
      */
-    function _approve(
-        address to,
-        uint256 tokenId,
-        address auth,
-        bool emitEvent
-    ) internal {
+    function _approve(address to, uint256 tokenId, address auth, bool emitEvent) internal {
         // Avoid reading the owner unless necessary
         if (emitEvent || auth != address(0)) {
             address owner = _requireOwned(tokenId);
 
             // We do not use _isAuthorized because single-token approvals should not be able to call approve
-            if (
-                auth != address(0) &&
-                owner != auth &&
-                !isApprovedForAll(owner, auth)
-            ) {
+            if (auth != address(0) && owner != auth && !isApprovedForAll(owner, auth)) {
                 revert ERC721InvalidApprover(auth);
             }
 
@@ -532,11 +478,7 @@ contract FantasyCards is
      *
      * Emits an {ApprovalForAll} event.
      */
-    function _setApprovalForAll(
-        address owner,
-        address operator,
-        bool approved
-    ) internal {
+    function _setApprovalForAll(address owner, address operator, bool approved) internal {
         if (operator == address(0)) {
             revert ERC721InvalidOperator(operator);
         }
@@ -567,21 +509,9 @@ contract FantasyCards is
      * @param tokenId uint256 ID of the token to be transferred
      * @param data bytes optional data to send along with the call
      */
-    function _checkOnERC721Received(
-        address from,
-        address to,
-        uint256 tokenId,
-        bytes memory data
-    ) private {
+    function _checkOnERC721Received(address from, address to, uint256 tokenId, bytes memory data) private {
         if (to.code.length > 0) {
-            try
-                IERC721Receiver(to).onERC721Received(
-                    _msgSender(),
-                    from,
-                    tokenId,
-                    data
-                )
-            returns (bytes4 retval) {
+            try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, data) returns (bytes4 retval) {
                 if (retval != IERC721Receiver.onERC721Received.selector) {
                     revert ERC721InvalidReceiver(to);
                 }

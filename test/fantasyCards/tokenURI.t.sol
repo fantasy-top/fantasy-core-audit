@@ -12,6 +12,6 @@ contract TokenUri is BaseTest {
     }
 
     function test_tokenUri() public {
-        assertEq(fantasyCards.tokenURI(0), "https://fantasy-cards-storage.s3.amazonaws.com/fantasy_cards_s1/0");
+        assertEq(fantasyCards.tokenURI(0), "https://fantasy-top-cards.s3.eu-north-1.amazonaws.com/0");
     }
 }

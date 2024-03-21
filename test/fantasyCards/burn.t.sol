@@ -12,7 +12,9 @@ contract Burn is BaseTest {
     }
 
     function test_successful_burn() public {
+        cheats.startPrank(address(executionDelegate));
         fantasyCards.burn(0);
+        cheats.stopPrank();
 
         assertEq(fantasyCards.balanceOf(user1), 0);
         assertEq(fantasyCards.tokenCounter(), 1);

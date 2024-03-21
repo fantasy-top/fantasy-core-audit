@@ -15,17 +15,25 @@ contract TraderContract {
     Exchange public exchange;
 
     constructor(address _exchangeAddress) {
-        require(_exchangeAddress != address(0), "Exchange address cannot be zero.");
+        require(
+            _exchangeAddress != address(0),
+            "Exchange address cannot be zero."
+        );
         exchange = Exchange(_exchangeAddress);
     }
 
     // Function to initiate a buy on the Exchange contract
-    function buyOnExchange(
-        OrderLib.Order calldata sellOrder,
-        bytes calldata sellerSignature
-    ) external payable {
+    function buyOnExchange(OrderLib.Order calldata sellOrder, bytes calldata sellerSignature) external payable {
         // Directly call the buy function of the Exchange contract
         exchange.buy{value: msg.value}(sellOrder, sellerSignature);
+    }
+
+    function batchBuyOnExchange(
+        OrderLib.Order[] calldata sellOrders,
+        bytes[] calldata sellerSignatures
+    ) external payable {
+        // Directly call the batchBuy function of the Exchange contract
+        exchange.batchBuy{value: msg.value}(sellOrders, sellerSignatures);
     }
 
     // Function to initiate a sell on the Exchange contract

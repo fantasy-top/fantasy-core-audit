@@ -11,4 +11,6 @@ interface IFantasyCards is IERC721, IERC721Metadata, IERC721Errors {
     function setBaseURI(string calldata _baseURI) external;
 
     function burn(uint256 tokenId) external;
+
+    function tokenCounter() external view returns (uint256);
 }

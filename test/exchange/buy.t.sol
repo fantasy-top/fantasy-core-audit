@@ -33,19 +33,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         // Give WETH allowance
         cheats.startPrank(user2);
@@ -61,8 +51,7 @@ contract Buy is BaseTest {
         // Check balances
         assertEq(
             weth.balanceOf(treasury),
-            (sellOrder.price * exchange.protocolFeeBps()) /
-                exchange.INVERSE_BASIS_POINT()
+            (sellOrder.price * exchange.protocolFeeBps()) / exchange.INVERSE_BASIS_POINT()
         );
         assertEq(weth.balanceOf(user1), 1 ether - weth.balanceOf(treasury));
         assertEq(weth.balanceOf(user2), 0);
@@ -85,19 +74,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -107,11 +86,7 @@ contract Buy is BaseTest {
         cheats.stopPrank();
 
         // Check balances
-        assertEq(
-            treasury.balance,
-            (sellOrder.price * exchange.protocolFeeBps()) /
-                exchange.INVERSE_BASIS_POINT()
-        );
+        assertEq(treasury.balance, (sellOrder.price * exchange.protocolFeeBps()) / exchange.INVERSE_BASIS_POINT());
         assertEq(user1.balance, 1 ether - treasury.balance);
         assertEq(user2.balance, 0);
         assertEq(fantasyCards.balanceOf(user1), 0);
@@ -133,19 +108,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -170,19 +135,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -207,19 +162,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -244,19 +189,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -281,19 +216,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -319,19 +244,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -360,19 +275,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 2 ether);
 
@@ -398,19 +303,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user2PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user2PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, 1 ether);
 
@@ -435,24 +330,12 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         // DEPLOY TRADER CONTRACT
-        TraderContract traderContract = new TraderContract(
-            address(exchange)
-        );
+        TraderContract traderContract = new TraderContract(address(exchange));
 
         cheats.deal(user2, 1 ether);
 
@@ -477,19 +360,9 @@ contract Buy is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         exchange.setMinimumPricePerPaymentToken(address(0), sellOrder.price + 1);
 

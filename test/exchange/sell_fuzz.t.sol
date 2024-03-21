@@ -12,12 +12,8 @@ contract Sell is BaseTest {
         super.setUp();
 
         merkleRoot = 0x2c24f92f65cdd0fde0264c1f41fadf17cb35cdffeaca769e5673e72b072be707; // Merkle root for ids 0 , 1, 2 and 3
-        merkleProof[
-            0
-        ] = 0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6;
-        merkleProof[
-            1
-        ] = 0xc5fd106a8e5214837c622e5fdef112b1d83ad6de66beafb53451c77843c9d04e;
+        merkleProof[0] = 0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6;
+        merkleProof[1] = 0xc5fd106a8e5214837c622e5fdef112b1d83ad6de66beafb53451c77843c9d04e;
 
         cheats.startPrank(address(executionDelegate));
         fantasyCards.safeMint(user1);
@@ -45,14 +41,8 @@ contract Sell is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            buyOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vBuyer, bytes32 rBuyer, bytes32 sBuyer) = vm.sign(
-            user2PrivateKey,
-            orderHash
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(buyOrder, exchange.domainSeparator());
+        (uint8 vBuyer, bytes32 rBuyer, bytes32 sBuyer) = vm.sign(user2PrivateKey, orderHash);
         bytes memory buyerSignature = abi.encodePacked(rBuyer, sBuyer, vBuyer);
 
         // Give WETH allowance
@@ -69,13 +59,9 @@ contract Sell is BaseTest {
         // Check balances
         assertEq(
             weth.balanceOf(treasury),
-            (buyOrder.price * exchange.protocolFeeBps()) /
-                exchange.INVERSE_BASIS_POINT()
+            (buyOrder.price * exchange.protocolFeeBps()) / exchange.INVERSE_BASIS_POINT()
         );
-        assertEq(
-            weth.balanceOf(user1),
-            buyOrder.price - weth.balanceOf(treasury)
-        );
+        assertEq(weth.balanceOf(user1), buyOrder.price - weth.balanceOf(treasury));
         assertEq(fantasyCards.ownerOf(0), user2);
         assertEq(fantasyCards.balanceOf(user1), 0);
     }

@@ -10,8 +10,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "../lib/forge-std/src/console.sol";
-
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -72,41 +70,31 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         OrderLib.Order calldata sellOrder,
         bytes calldata sellerSignature
     ) public payable nonReentrant onlyEOA {
-        require(sellOrder.side == OrderLib.Side.Sell, "order must be a sell");
-        require(sellOrder.expirationTime >= block.timestamp, "order expired");
-        require(sellOrder.trader != address(0), "order trader is 0");
-        require(sellOrder.price >= minimumPricePerPaymentToken[sellOrder.paymentToken], "price bellow minimumPrice");
+        _buy(sellOrder, sellerSignature);
+    }
 
-        bytes32 sellOrderHash = OrderLib._hashOrder(sellOrder);
-        require(
-            cancelledOrFilled[sellOrderHash] == false,
-            "sell order cancelled or filled"
-        );
+    /**
+     * @notice Executes multiple buy transactions in one call.
+     * @dev Iterates over `sellOrders` and `sellerSignatures`, executing each through `_buy`.
+     * @param sellOrders Array of sell orders, each following `OrderLib.Order` structure.
+     * @param sellerSignatures Array of signatures, each corresponding to a sell order in `sellOrders`.
+     */
+    function batchBuy(
+        OrderLib.Order[] calldata sellOrders,
+        bytes[] calldata sellerSignatures
+    ) public payable nonReentrant onlyEOA {
+        require(sellOrders.length == sellerSignatures.length, "Array length mismatch");
 
-        bytes32 sellOrderDigest = _hashTypedDataV4(sellOrderHash);
-        address sellOrderSigner = ECDSA.recover(
-            sellOrderDigest,
-            sellerSignature
-        );
-        require(sellOrderSigner == sellOrder.trader, "invalid signature");
-
-        cancelledOrFilled[sellOrderHash] = true;
-
-        _executeFundsTransfer(
-            msg.sender,
-            sellOrder.trader,
-            sellOrder.paymentToken,
-            sellOrder.price
-        );
-
-        _executeTokenTransfer(
-            sellOrder.collection,
-            sellOrder.trader,
-            msg.sender,
-            sellOrder.tokenId
-        );
-
-        emit Buy(msg.sender, sellOrder, sellOrderHash);
+        uint256 totalEthSpending;
+        for (uint256 i = 0; i < sellOrders.length; i++) {
+            // REVIEW: not a huge fan of this, let see if we can find a better way.
+            // This also involves changing _executeFundsTransfer require from == to >=
+            if (sellOrders[i].paymentToken == address(0)) {
+                totalEthSpending += sellOrders[i].price;
+                require(totalEthSpending <= msg.value, "Insufficient ETH sent");
+            }
+            _buy(sellOrders[i], sellerSignatures[i]);
+        }
     }
 
     /**
@@ -123,45 +111,26 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         uint256 tokenId,
         bytes32[] calldata merkleProof
     ) public payable nonReentrant onlyEOA {
-        require(
-            buyOrder.paymentToken != address(0),
-            "payment token can not be ETH for buy order"
-        );
+        require(buyOrder.paymentToken != address(0), "payment token can not be ETH for buy order");
         require(buyOrder.side == OrderLib.Side.Buy, "order must be a buy");
         require(buyOrder.expirationTime >= block.timestamp, "order expired");
         require(buyOrder.trader != address(0), "order trader is 0");
         require(buyOrder.price >= minimumPricePerPaymentToken[buyOrder.paymentToken], "price bellow minimumPrice");
 
         bytes32 buyOrderHash = OrderLib._hashOrder(buyOrder);
-        require(
-            cancelledOrFilled[buyOrderHash] == false,
-            "buy order cancelled or filled"
-        );
+        require(cancelledOrFilled[buyOrderHash] == false, "buy order cancelled or filled");
 
         bytes32 buyOrderDigest = _hashTypedDataV4(buyOrderHash);
         address buyOrderSigner = ECDSA.recover(buyOrderDigest, buyerSignature);
         require(buyOrderSigner == buyOrder.trader, "invalid signature");
 
-        require(
-            _verifyTokenId(buyOrder.merkleRoot, merkleProof, tokenId),
-            "invalid tokenId"
-        );
+        require(_verifyTokenId(buyOrder.merkleRoot, merkleProof, tokenId), "invalid tokenId");
 
         cancelledOrFilled[buyOrderHash] = true;
 
-        _executeFundsTransfer(
-            buyOrder.trader,
-            msg.sender,
-            buyOrder.paymentToken,
-            buyOrder.price
-        );
+        _executeFundsTransfer(buyOrder.trader, msg.sender, buyOrder.paymentToken, buyOrder.price);
 
-        _executeTokenTransfer(
-            buyOrder.collection,
-            msg.sender,
-            buyOrder.trader,
-            tokenId
-        );
+        _executeTokenTransfer(buyOrder.collection, msg.sender, buyOrder.trader, tokenId);
 
         emit Sell(
             msg.sender, // Seller's address
@@ -243,9 +212,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @notice Sets a new protocol fee recipient address
      * @param _protocolFeeRecipient The address of the new protocol fee recipient
      */
-    function setProtocolFeeRecipient(
-        address _protocolFeeRecipient
-    ) public onlyOwner {
+    function setProtocolFeeRecipient(address _protocolFeeRecipient) public onlyOwner {
         _setProtocolFeeRecipient(_protocolFeeRecipient);
     }
 
@@ -259,7 +226,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
 
     /**
      * @notice Sets a new minimum price for a certain payment token
-     * @param paymentToken The address of the payment token 
+     * @param paymentToken The address of the payment token
      * @param minimuPrice The new minimum price
      */
     function setMinimumPricePerPaymentToken(address paymentToken, uint256 minimuPrice) public onlyOwner {
@@ -277,6 +244,34 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
     }
 
     /**
+     * @notice Internal function that executes a buy operation for a sell order
+     * @dev Verifies the validity of the sell order and executes funds and token transfer
+     * @param sellOrder The sell order to match with
+     * @param sellerSignature Signature of the seller to validate the order
+     */
+    function _buy(OrderLib.Order calldata sellOrder, bytes calldata sellerSignature) internal {
+        require(sellOrder.side == OrderLib.Side.Sell, "order must be a sell");
+        require(sellOrder.expirationTime >= block.timestamp, "order expired");
+        require(sellOrder.trader != address(0), "order trader is 0");
+        require(sellOrder.price >= minimumPricePerPaymentToken[sellOrder.paymentToken], "price bellow minimumPrice");
+
+        bytes32 sellOrderHash = OrderLib._hashOrder(sellOrder);
+        require(cancelledOrFilled[sellOrderHash] == false, "sell order cancelled or filled");
+
+        bytes32 sellOrderDigest = _hashTypedDataV4(sellOrderHash);
+        address sellOrderSigner = ECDSA.recover(sellOrderDigest, sellerSignature);
+        require(sellOrderSigner == sellOrder.trader, "invalid signature");
+
+        cancelledOrFilled[sellOrderHash] = true;
+
+        _executeFundsTransfer(msg.sender, sellOrder.trader, sellOrder.paymentToken, sellOrder.price);
+
+        _executeTokenTransfer(sellOrder.collection, sellOrder.trader, msg.sender, sellOrder.tokenId);
+
+        emit Buy(msg.sender, sellOrder, sellOrderHash);
+    }
+
+    /**
      * @notice Internal function to set a new protocol fee in basis points
      * @param _protocolFeeBps The new protocol fee in basis points
      */
@@ -291,9 +286,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @notice Internal function to set a new protocol fee recipient address
      * @param _protocolFeeRecipient The address of the new protocol fee recipient
      */
-    function _setProtocolFeeRecipient(
-        address _protocolFeeRecipient
-    ) internal {
+    function _setProtocolFeeRecipient(address _protocolFeeRecipient) internal {
         require(_protocolFeeRecipient != address(0), "protocol fee recipient can't be address 0");
         protocolFeeRecipient = _protocolFeeRecipient;
 
@@ -318,14 +311,9 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param paymentToken payment token
      * @param price price
      */
-    function _executeFundsTransfer(
-        address from,
-        address to,
-        address paymentToken,
-        uint256 price
-    ) internal {
+    function _executeFundsTransfer(address from, address to, address paymentToken, uint256 price) internal {
         if (paymentToken == address(0)) {
-            require(msg.value == price, "Incorrect ETH amount");
+            require(msg.value >= price, "Incorrect ETH amount");
         }
 
         /* Take fee. */
@@ -341,18 +329,11 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param from address to charge fees
      * @param price price of token
      */
-    function _transferFees(
-        address paymentToken,
-        address from,
-        uint256 price
-    ) internal returns (uint256) {
+    function _transferFees(address paymentToken, address from, uint256 price) internal returns (uint256) {
         uint256 protocolFee = (price * protocolFeeBps) / INVERSE_BASIS_POINT;
         _transferTo(paymentToken, from, protocolFeeRecipient, protocolFee);
 
-        require(
-            protocolFee <= price,
-            "Total amount of fees are more than the price"
-        );
+        require(protocolFee <= price, "Total amount of fees are more than the price");
 
         /* Amount that will be received by seller. */
         uint256 receiveAmount = price - protocolFee;
@@ -366,12 +347,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param to token recipient
      * @param amount amount to transfer
      */
-    function _transferTo(
-        address paymentToken,
-        address from,
-        address to,
-        uint256 amount
-    ) internal {
+    function _transferTo(address paymentToken, address from, address to, uint256 amount) internal {
         if (amount == 0) {
             return;
         }
@@ -394,17 +370,9 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param to to
      * @param tokenId tokenId
      */
-    function _executeTokenTransfer(
-        address collection,
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal {
+    function _executeTokenTransfer(address collection, address from, address to, uint256 tokenId) internal {
         /* Assert collection is whitelisted */
-        require(
-            whitelistedCollections[collection],
-            "Collection is not withelisted"
-        );
+        require(whitelistedCollections[collection], "Collection is not withelisted");
 
         /* Call execution delegate. */
         executionDelegate.transferERC721(collection, from, to, tokenId);

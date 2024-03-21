@@ -18,32 +18,13 @@ interface IExecutionDelegate {
 
     function mintFantasyCard(address collection, address to) external;
 
-    function transferERC721Unsafe(
-        address collection,
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function burnFantasyCard(address collection, uint256 tokenId) external;
 
-    function transferERC721(
-        address collection,
-        address from,
-        address to,
-        uint256 tokenId
-    ) external;
+    function transferERC721Unsafe(address collection, address from, address to, uint256 tokenId) external;
 
-    function transferERC1155(
-        address collection,
-        address from,
-        address to,
-        uint256 tokenId,
-        uint256 amount
-    ) external;
+    function transferERC721(address collection, address from, address to, uint256 tokenId) external;
 
-    function transferERC20(
-        address token,
-        address from,
-        address to,
-        uint256 amount
-    ) external;
+    function transferERC1155(address collection, address from, address to, uint256 tokenId, uint256 amount) external;
+
+    function transferERC20(address token, address from, address to, uint256 amount) external;
 }

@@ -7,7 +7,7 @@ import "../src/FantasyCards.sol";
 import "../src/Exchange.sol";
 import "../src/ExecutionDelegate.sol";
 import "../src/Minter.sol";
-import "../test/tokens/WrappedETH.sol";
+import "../test/tokens/WrappedETH_ownable.sol";
 
 contract Deploy is Script {
     FantasyCards fantasyCards;
@@ -16,19 +16,17 @@ contract Deploy is Script {
     Minter minter;
     WrappedETH weth;
 
-    uint256 deployerPrivateKey = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
-    uint256 treasuryPrivateKey = 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d;
-    uint256 user1PrivateKey = 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a;
-    uint256 user2PrivateKey = 0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6;
-
-    address deployer = vm.addr(deployerPrivateKey);
-    address treasury = vm.addr(treasuryPrivateKey);
-    address user1 = vm.addr(user1PrivateKey);
-    address user2 = vm.addr(user2PrivateKey);
-
     uint256 protocolFeeBps = 300;
 
     function run() external {
+        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PK");
+
+        address treasury = vm.envAddress("TREASURY_ADDRESS");
+        address deployer = vm.addr(deployerPrivateKey);
+
+        console.log("Deployer: ", address(deployer));
+        console.log("Treasury: ", address(treasury));
+
         vm.startBroadcast(deployerPrivateKey);
 
         fantasyCards = new FantasyCards();
@@ -44,6 +42,36 @@ contract Deploy is Script {
         executionDelegate.approveContract(address(exchange));
 
         fantasyCards.grantRole(fantasyCards.EXECUTION_DELEGATE_ROLE(), address(executionDelegate));
+
+        uint256 cardsPerPack = 5;
+        uint256 maxPacks = 10000;
+        address paymentToken = address(weth);
+        uint256 fixedPrice = 0; // we will be using VRGDA
+        uint256 maxPacksPerAddress = 3;
+        bool requiresWhitelist = false;
+        bytes32 merkleRoot = bytes32(0);
+        uint256 startTimestamp = block.timestamp; // Sale starts immediately on deployment
+        uint256 expirationTimestamp = 0; // No expiration
+
+        minter.newMintConfig(
+            address(fantasyCards),
+            cardsPerPack,
+            maxPacks,
+            paymentToken,
+            fixedPrice,
+            maxPacksPerAddress,
+            requiresWhitelist,
+            merkleRoot,
+            startTimestamp,
+            expirationTimestamp
+        );
+
+        uint256 mintConfigId = 0;
+        int256 targetPrice = 0.1 ether;
+        int256 priceDecayPercent = 1e17; // 10 percent
+        int256 perTimeUnit = 143e18; // 1000 packs in 7 days ~ 143 pack per day
+
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
 
         vm.stopBroadcast();
 

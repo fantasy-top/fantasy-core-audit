@@ -34,19 +34,9 @@ contract Buy_fuzz is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         // Give WETH allowance
         cheats.startPrank(user2);
@@ -62,13 +52,9 @@ contract Buy_fuzz is BaseTest {
         // Check balances
         assertEq(
             weth.balanceOf(treasury),
-            (sellOrder.price * exchange.protocolFeeBps()) /
-                exchange.INVERSE_BASIS_POINT()
+            (sellOrder.price * exchange.protocolFeeBps()) / exchange.INVERSE_BASIS_POINT()
         );
-        assertEq(
-            weth.balanceOf(user1),
-            sellOrder.price - weth.balanceOf(treasury)
-        );
+        assertEq(weth.balanceOf(user1), sellOrder.price - weth.balanceOf(treasury));
         assertEq(weth.balanceOf(user2), 0);
         assertEq(fantasyCards.balanceOf(user1), 0);
         assertEq(fantasyCards.balanceOf(user2), 1);
@@ -91,19 +77,9 @@ contract Buy_fuzz is BaseTest {
         );
 
         // Sign order
-        bytes32 orderHash = HashLib.getTypedDataHash(
-            sellOrder,
-            exchange.domainSeparator()
-        );
-        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(
-            user1PrivateKey,
-            orderHash
-        );
-        bytes memory sellerSignature = abi.encodePacked(
-            rSeller,
-            sSeller,
-            vSeller
-        );
+        bytes32 orderHash = HashLib.getTypedDataHash(sellOrder, exchange.domainSeparator());
+        (uint8 vSeller, bytes32 rSeller, bytes32 sSeller) = vm.sign(user1PrivateKey, orderHash);
+        bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         cheats.deal(user2, sellOrder.price);
 
@@ -113,11 +89,7 @@ contract Buy_fuzz is BaseTest {
         cheats.stopPrank();
 
         // Check balances
-        assertEq(
-            treasury.balance,
-            (sellOrder.price * exchange.protocolFeeBps()) /
-                exchange.INVERSE_BASIS_POINT()
-        );
+        assertEq(treasury.balance, (sellOrder.price * exchange.protocolFeeBps()) / exchange.INVERSE_BASIS_POINT());
         assertEq(user1.balance, sellOrder.price - treasury.balance);
         assertEq(user2.balance, 0);
         assertEq(fantasyCards.balanceOf(user1), 0);

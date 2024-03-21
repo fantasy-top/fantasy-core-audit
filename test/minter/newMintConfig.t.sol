@@ -18,6 +18,7 @@ contract NewMintConfig is BaseTest {
             12,
             true,
             0x3000000000000000000000000000000000000000000000000000000000000000,
+            0,
             300
         );
 
@@ -31,6 +32,7 @@ contract NewMintConfig is BaseTest {
             uint256 actualMaxPacksPerAddress,
             bool actualRequiresWhitelist,
             bytes32 actualMerkleRoot,
+            uint256 actualStartTimestamp,
             uint256 actualExpirationTimestamp,
             uint256 actualTotalMintedPacks,
             bool actualCancelled
@@ -43,10 +45,8 @@ contract NewMintConfig is BaseTest {
         assertEq(actualPrice, 100);
         assertEq(actualMaxPacksPerAddress, 12);
         assertEq(actualRequiresWhitelist, true);
-        assertEq(
-            actualMerkleRoot,
-            0x3000000000000000000000000000000000000000000000000000000000000000
-        );
+        assertEq(actualMerkleRoot, 0x3000000000000000000000000000000000000000000000000000000000000000);
+        assertEq(actualStartTimestamp, 0);
         assertEq(actualExpirationTimestamp, 300);
         assertEq(actualTotalMintedPacks, 0);
         assertEq(actualCancelled, false);
@@ -58,10 +58,11 @@ contract NewMintConfig is BaseTest {
         uint256 cardsPerPack = 10;
         uint256 maxPacks = 100;
         address paymentToken = address(0x2);
-        uint256 price = 100;
+        uint256 fixedPrice = 100;
         uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
+        uint256 startTimestamp = 0;
         uint256 expirationTimestamp = 300;
 
         // Act
@@ -70,10 +71,11 @@ contract NewMintConfig is BaseTest {
             cardsPerPack,
             maxPacks,
             paymentToken,
-            price,
+            fixedPrice,
             maxPacksPerAddress,
             requiresWhitelist,
             merkleRoot,
+            startTimestamp,
             expirationTimestamp
         );
 
@@ -87,10 +89,11 @@ contract NewMintConfig is BaseTest {
         uint256 cardsPerPack = 10;
         uint256 maxPacks = 100;
         address paymentToken = address(0x2);
-        uint256 price = 100;
+        uint256 fixedPrice = 100;
         uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
+        uint256 startTimestamp = 0;
         uint256 expirationTimestamp = 300;
 
         cheats.startPrank(user1);
@@ -100,10 +103,11 @@ contract NewMintConfig is BaseTest {
             cardsPerPack,
             maxPacks,
             paymentToken,
-            price,
+            fixedPrice,
             maxPacksPerAddress,
             requiresWhitelist,
             merkleRoot,
+            startTimestamp,
             expirationTimestamp
         );
         cheats.stopPrank();

@@ -32,23 +32,16 @@ contract Deploy is Script {
         fantasyCards = new FantasyCards();
         weth = new WrappedETH();
         executionDelegate = new ExecutionDelegate();
-        minter = new Minter(treasury, address(executionDelegate));
+        minter = new Minter(treasury, address(executionDelegate), 5);
 
-        exchange = new Exchange(
-            treasury,
-            protocolFeeBps,
-            address(executionDelegate)
-        );
+        exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
         exchange.whiteListCollection(address(fantasyCards));
         exchange.whiteListPaymentToken(address(weth));
 
         executionDelegate.approveContract(address(minter));
         executionDelegate.approveContract(address(exchange));
 
-        fantasyCards.grantRole(
-            fantasyCards.EXECUTION_DELEGATE_ROLE(),
-            address(executionDelegate)
-        );
+        fantasyCards.grantRole(fantasyCards.EXECUTION_DELEGATE_ROLE(), address(executionDelegate));
 
         vm.stopBroadcast();
 

@@ -14,9 +14,7 @@ contract UnWhiteListPaymentToken is BaseTest {
         assertEq(exchange.whitelistedPaymentTokens(address(weth)), false);
     }
 
-    function test_unsuccessful_unWhiteListPaymentToken_caller_not_owner()
-        public
-    {
+    function test_unsuccessful_unWhiteListPaymentToken_caller_not_owner() public {
         cheats.startPrank(user1);
         cheats.expectRevert(); // REVIEW: proper error message
         exchange.unWhiteListPaymentToken(address(weth));
