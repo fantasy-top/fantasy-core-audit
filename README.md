@@ -8,9 +8,11 @@
 
 # Fantasy Gameplay 
 - Fantasy is a Trading Card Game in which players collect cards featuring crypto influencers to compete and earn ETH, BLAST, more cards, and FAN Points.
-- Players acquire cards on the Fantasy marketplace, using them to assemble a deck and compete in the weekly Fantasy competition.
+- Players acquire cards on the Fantasy marketplace, using them to assemble a deck and compete in the Fantasy Tournaments.
 - Players are ranked based on their influencers' performance on Twitter. At the end of a competition, rewards are distributed according to the players' rankings.
 - Newly distributed cards are minted, completing the initial distribution of cards, which was initiated through an airdrop and a sale.
+- A VRGDA allows players to buy cards from the Fantasy Shop.
+- Details can be found here https://aaa-angel.notion.site/fantasy-top-1b35a92e51934478bb542a5115469302?pvs=4
 
 
 # Fantasy Contracts
