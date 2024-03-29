@@ -51,6 +51,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     IExecutionDelegate public executionDelegate;
     uint256 public mintConfigIdCounter;
     uint256 public cardsRequiredForLevelUp;
+    uint256 public cardsRequiredForBurnToDraw;
+    uint256 public cardsDrawnPerBurn;
 
     /**
      * @dev Initializes the contract with treasury and execution delegate addresses.
@@ -60,7 +62,9 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     constructor(
         address _treasury,
         address _executionDelegate,
-        uint256 _cardsRequiredForLevelUp
+        uint256 _cardsRequiredForLevelUp,
+        uint256 _cardsRequiredForBurnToDraw,
+        uint256 _cardsDrawnPerBurn
     ) AccessControlDefaultAdminRules(0, msg.sender) {
         // REVIEW: When this contract is live
         // IBlast(0x4300000000000000000000000000000000000002)
@@ -71,6 +75,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         _setTreasury(_treasury);
         _setExecutionDelegate(_executionDelegate);
         _setcardsRequiredForLevelUp(_cardsRequiredForLevelUp);
+        _setcardsRequiredForBurnToDraw(_cardsRequiredForBurnToDraw);
+        _setcardsDrawnPerBurn(_cardsDrawnPerBurn);
     }
 
     /**
@@ -226,6 +232,34 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         executionDelegate.mintFantasyCard(address(collection), msg.sender);
 
         emit LevelUp(tokenIds, mintedTokenId, collection, msg.sender);
+    }
+
+    /**
+     * @notice Allows a user to burn their hero cards to draw new random cards
+     * @dev Burns the specified amount of cards (tokens) to draw (a) new card(s). The burnToDraw happens at the metadata level. Using this method directly might result in loss of cards if the cards do not meet the game rules.
+     * @param tokenIds An array of token IDs representing the cards to be burned
+     * @param collection The address of the NFT collection from which the cards will be burned and the new card(s) will be minted.
+     */
+    function burnToDraw(uint256[] calldata tokenIds, address collection) public {
+        require(tokenIds.length == cardsRequiredForBurnToDraw, "wrong amount of cards to draw new cards");
+
+        for (uint i = 0; i < cardsRequiredForBurnToDraw; i++) {
+            require(
+                IFantasyCards(collection).ownerOf(tokenIds[i]) == msg.sender,
+                "caller does not own one of the tokens"
+            );
+            executionDelegate.burnFantasyCard(address(collection), tokenIds[i]);
+        }
+
+        uint256[] memory drawnCardIds = new uint256[](cardsDrawnPerBurn);
+
+        for (uint i = 0; i < cardsDrawnPerBurn; i++) {
+            uint256 mintedTokenId = IFantasyCards(collection).tokenCounter();
+            executionDelegate.mintFantasyCard(address(collection), msg.sender);
+            drawnCardIds[i] = mintedTokenId;
+        }
+
+        emit BurnToDraw(tokenIds, drawnCardIds, collection, msg.sender);
     }
 
     /**
@@ -438,6 +472,24 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
+     * @notice Updates the number of cards required for the burn to draw operation.
+     * @dev Only callable by the contract owner. Adjusts how many cards must be burned to mint during the burn to draw process
+     * @param _cardsRequiredForBurnToDraw The new number of cards required to perform a burn to draw.
+     */
+    function setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setcardsRequiredForLevelUp(_cardsRequiredForBurnToDraw);
+    }
+
+    /**
+     * @notice Updates the number of cards that will be minted during the burn to draw operation.
+     * @dev Only callable by the contract owner. Adjusts how many cards will be minted during the burn to draw process
+     * @param _cardsDrawnPerBurn The new number of cards minted during the burn to draw process
+     */
+    function setcardsDrawnPerBurn(uint256 _cardsDrawnPerBurn) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _setcardsDrawnPerBurn(_cardsDrawnPerBurn);
+    }
+
+    /**
      * @notice Sets a new treasury address for collecting payments from minting operations.
      * @param _treasury The address of the new treasury. Must be a non-zero address.
      */
@@ -542,6 +594,24 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) internal {
         require(_cardsRequiredForLevelUp > 0, "cardsRequiredForLevelUp must be greater than 0");
         cardsRequiredForLevelUp = _cardsRequiredForLevelUp;
+    }
+
+    /**
+     * @notice Internal function that sets the number of cards required for a burn to draw
+     * @param _cardsRequiredForBurnToDraw The number of cards required for a burn to draw
+     */
+    function _setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) internal {
+        require(_cardsRequiredForBurnToDraw > 0, "cardsRequiredToBurnToDraw must be greater than 0");
+        cardsRequiredForBurnToDraw = _cardsRequiredForBurnToDraw;
+    }
+
+    /**
+     * @notice Internal function that sets the number of cards that will be minted per burn
+     * @param _cardsDrawnPerBurn The number of cards minted during a burn to draw operation
+     */
+    function _setcardsDrawnPerBurn(uint256 _cardsDrawnPerBurn) internal {
+        require(_cardsDrawnPerBurn > 0, "cardsDrawnPerBurn must be greater than 0");
+        cardsDrawnPerBurn = _cardsDrawnPerBurn;
     }
 
     /**

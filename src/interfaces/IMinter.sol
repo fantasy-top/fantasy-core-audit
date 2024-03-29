@@ -30,6 +30,7 @@ interface IMinter {
         uint256 lastTokenId
     );
     event LevelUp(uint256[] burntTokenIds, uint256 mintedTokenId, address collection, address caller);
+    event BurnToDraw(uint256[] burntTokenIds, uint256[] mintedTokenIds, address collection, address caller);
     event NewTreasury(address treasury);
     event CollectionUpdatedForMintConfig(uint256 mintConfigId, address newCollection);
     event CardsPerPackUpdatedForMintConfig(uint256 mintConfigId, uint256 newCardsPerPack);

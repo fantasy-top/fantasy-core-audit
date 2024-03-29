@@ -57,7 +57,7 @@ abstract contract BaseTest is Test {
     }
 
     function setUpMinter(address _treasury, address _executionDelegate) internal {
-        minter = new Minter(_treasury, address(_executionDelegate), 5);
+        minter = new Minter(_treasury, address(_executionDelegate), 5, 15, 1);
         minter.grantRole(minter.CANCELER_ROLE(), pauserAndCanceler);
     }
 
