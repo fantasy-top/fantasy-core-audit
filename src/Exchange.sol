@@ -49,12 +49,8 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         uint256 _protocolFeeBps,
         address _executionDelegate
     ) EIP712("Exchange", "1") Ownable(msg.sender) {
-        // REVIEW: When this contract is live
-        // IBlast(0x4300000000000000000000000000000000000002)
-        //     .configureClaimableGas();
-        // IBlast(0x4300000000000000000000000000000000000002).configureGovernor(
-        //     msg.sender
-        // );
+        IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
+        IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
         _setProtocolFeeRecipient(_protocolFeeRecipient);
         _setProtocolFeeBps(_protocolFeeBps);
         _setExecutionDelegate(_executionDelegate);

@@ -66,12 +66,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         uint256 _cardsRequiredForBurnToDraw,
         uint256 _cardsDrawnPerBurn
     ) AccessControlDefaultAdminRules(0, msg.sender) {
-        // REVIEW: When this contract is live
-        // IBlast(0x4300000000000000000000000000000000000002)
-        //     .configureClaimableGas();
-        // IBlast(0x4300000000000000000000000000000000000002).configureGovernor(
-        //     msg.sender
-        // );
+        IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
+        IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
         _setTreasury(_treasury);
         _setExecutionDelegate(_executionDelegate);
         _setcardsRequiredForLevelUp(_cardsRequiredForLevelUp);
