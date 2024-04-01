@@ -9,6 +9,7 @@ import {Exchange} from "../../src/Exchange.sol";
 import {ExecutionDelegate} from "../../src/ExecutionDelegate.sol";
 import {Minter} from "../../src/Minter.sol";
 import {WrappedETH} from "../tokens/WrappedETH.sol";
+import {BlastMock} from "../helpers/BlastMock.sol";
 
 abstract contract BaseTest is Test {
     CheatCodes constant cheats = CheatCodes(HEVM_ADDRESS);
@@ -73,14 +74,19 @@ abstract contract BaseTest is Test {
         fantasyCards.grantRole(fantasyCards.EXECUTION_DELEGATE_ROLE(), _executionDelegate);
     }
 
+    function deployBlastMock() internal {
+        BlastMock blastMock = new BlastMock();
+        vm.etch(0x4300000000000000000000000000000000000002, address(blastMock).code);
+    }
+
     function setUp() public virtual {
+        deployBlastMock();
         deployFantasyCards();
         deployExecutionDelegate();
         deployWETH();
         setUpMinter(treasury, address(executionDelegate));
         setUpExchange(treasury, protocolFeeBps, address(executionDelegate), address(weth), address(fantasyCards));
         setUpExecutionDelegate(address(minter), address(exchange));
-        // setUpExecutionDelegate(address(minterVRGDA), address(exchange));
         setUpFantasyCards(address(executionDelegate));
     }
 }

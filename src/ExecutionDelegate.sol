@@ -39,12 +39,8 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
     }
 
     constructor() AccessControlDefaultAdminRules(0, msg.sender) {
-        // REVIEW: When this contract is live
-        // IBlast(0x4300000000000000000000000000000000000002)
-        //     .configureClaimableGas();
-        // IBlast(0x4300000000000000000000000000000000000002).configureGovernor(
-        //     msg.sender
-        // );
+        IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
+        IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
     }
 
     /**

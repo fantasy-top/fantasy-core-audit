@@ -47,12 +47,8 @@ contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules 
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
     constructor() AccessControlDefaultAdminRules(0, msg.sender) {
-        // REVIEW: When this contract is live
-        // IBlast(0x4300000000000000000000000000000000000002)
-        //     .configureClaimableGas();
-        // IBlast(0x4300000000000000000000000000000000000002).configureGovernor(
-        //     msg.sender
-        // );
+        IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
+        IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
         _name = "Fantasy";
         _symbol = "FANTASY";
     }
