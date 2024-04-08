@@ -473,7 +473,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param _cardsRequiredForBurnToDraw The new number of cards required to perform a burn to draw.
      */
     function setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setcardsRequiredForLevelUp(_cardsRequiredForBurnToDraw);
+        _setcardsRequiredForBurnToDraw(_cardsRequiredForBurnToDraw);
     }
 
     /**
