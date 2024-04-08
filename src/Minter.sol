@@ -14,6 +14,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./VRGDA/LinearVRGDA.sol";
 import "./interfaces/IBlast.sol";
 import "./interfaces/IExecutionDelegate.sol";
@@ -186,6 +187,10 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      */
     function getPackPrice(uint256 configId) public view returns (uint256) {
         MintConfig storage mintConfig = mintConfigs[configId];
+        uint8 paymentTokenDecimals = 18;
+        if (mintConfig.paymentToken != address(0)) {
+            paymentTokenDecimals = ERC20(mintConfig.paymentToken).decimals();
+        }
 
         // If no VRGDA configuration is set, return the fixed price
         if (mintConfig.vrgdaConfig.targetPrice == 0) {
@@ -203,7 +208,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
                     vrgdaConfig.targetPrice,
                     vrgdaConfig.priceDecayPercent,
                     vrgdaConfig.perTimeUnit
-                );
+                ) / (10 ** (18 - paymentTokenDecimals));
         }
     }
 
