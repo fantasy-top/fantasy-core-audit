@@ -51,7 +51,7 @@ contract Mint is BaseTest {
         weth.approve(address(executionDelegate), mintConfig.fixedPrice);
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint(0, new bytes32[](0));
         cheats.stopPrank();
 
@@ -88,7 +88,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
 
@@ -133,7 +133,7 @@ contract Mint is BaseTest {
         weth.approve(address(executionDelegate), mintConfig.fixedPrice);
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint(0, merkleProof);
         cheats.stopPrank();
 
@@ -174,7 +174,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config cancelled");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
@@ -212,7 +212,7 @@ contract Mint is BaseTest {
             mintConfig.expirationTimestamp
         );
 
-        cheats.startPrank(user2);
+        cheats.startPrank(user2, user2);
         weth.getFaucet(1 ether);
         weth.approve(address(executionDelegate), 1 ether);
         cheats.expectRevert("User not whitelisted");
@@ -249,7 +249,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.expectRevert("User reached max mint limit");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
@@ -285,11 +285,11 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("No packs left");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
@@ -324,7 +324,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config expired");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
