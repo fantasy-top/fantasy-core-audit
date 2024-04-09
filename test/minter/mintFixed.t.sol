@@ -1,6 +1,7 @@
 pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
+import "../helpers/TraderContract.sol";
 
 contract Mint is BaseTest {
     struct MintConfig {
@@ -328,5 +329,13 @@ contract Mint is BaseTest {
         cheats.expectRevert("Mint config expired");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
+    }
+
+    function test_unsuccessful_mint_not_EOA() public {
+        // DEPLOY TRADER CONTRACT
+        TraderContract traderContract = new TraderContract(address(exchange), address(minter));
+
+        cheats.expectRevert("Function can only be called by an EOA");
+        traderContract.mintOnMinter(0, new bytes32[](0));
     }
 }
