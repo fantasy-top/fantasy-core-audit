@@ -1,4 +1,4 @@
-pragma solidity 0.8.20;
+pragma solidity ^0.8.20;
 
 library OrderLib {
     bytes32 public constant ORDER_TYPEHASH =
