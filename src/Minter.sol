@@ -614,6 +614,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsDrawnPerBurn(uint256 _cardsDrawnPerBurn) internal {
         require(_cardsDrawnPerBurn > 0, "cardsDrawnPerBurn must be greater than 0");
         cardsDrawnPerBurn = _cardsDrawnPerBurn;
+
+        emit NewNumberOfCardsDrawnPerBurn(_cardsDrawnPerBurn);
     }
 
     /**

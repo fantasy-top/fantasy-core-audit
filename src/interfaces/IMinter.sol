@@ -50,6 +50,7 @@ interface IMinter {
     event MintConfigCancelled(uint256 mintConfigId);
     event NewNumberOfCardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp);
     event NewNumberOfCardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw);
+    event NewNumberOfCardsDrawnPerBurn(uint256 _cardsDrawnPerBurn);
     event ExpirationTimestampUpdatedForMintConfig(uint256 mintConfigId, uint256 newExpirationTimestamp);
 
     // Functions
