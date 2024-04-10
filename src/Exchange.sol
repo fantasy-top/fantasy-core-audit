@@ -322,7 +322,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Charge a fee in ETH or WETH
+     * @dev fee is paid in the payment token specified in the order
      * @param paymentToken address of token to pay in
      * @param from address to charge fees
      * @param price price of token
