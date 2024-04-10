@@ -465,6 +465,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      */
     function setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _setcardsRequiredForLevelUp(_cardsRequiredForLevelUp);
+
+        emit NewNumberOfCardsRequiredForLevelUp(_cardsRequiredForLevelUp);
     }
 
     /**

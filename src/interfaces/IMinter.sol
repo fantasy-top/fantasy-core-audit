@@ -48,6 +48,7 @@ interface IMinter {
     event WhitelistRequirementUpdatedForMintConfig(uint256 mintConfigId, bool newRequiresWhitelist);
     event MerkleRootUpdatedForMintConfig(uint256 mintConfigId, bytes32 newMerkleRoot);
     event MintConfigCancelled(uint256 mintConfigId);
+    event NewNumberOfCardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp);
     event ExpirationTimestampUpdatedForMintConfig(uint256 mintConfigId, uint256 newExpirationTimestamp);
 
     // Functions
