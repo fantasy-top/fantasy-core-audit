@@ -199,10 +199,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      */
     function getPackPrice(uint256 configId) public view returns (uint256) {
         MintConfig storage mintConfig = mintConfigs[configId];
-        uint8 paymentTokenDecimals = 18;
-        if (mintConfig.paymentToken != address(0)) {
-            paymentTokenDecimals = ERC20(mintConfig.paymentToken).decimals();
-        }
 
         // If no VRGDA configuration is set, return the fixed price
         if (mintConfig.vrgdaConfig.targetPrice == 0) {
@@ -210,7 +206,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         }
 
         VRGDAConfig memory vrgdaConfig = mintConfig.vrgdaConfig;
-        require(vrgdaConfig.targetPrice > 0, "Invalid VRGDA configuration");
         require((block.timestamp - mintConfig.startTimestamp) > 0, "INVALID_TIMESTAMP");
         unchecked {
             return
