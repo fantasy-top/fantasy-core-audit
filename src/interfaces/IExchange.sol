@@ -5,8 +5,9 @@ import "../libraries/OrderLib.sol";
 
 interface IExchange {
     /* Events */
-    event Buy(address buyer, OrderLib.Order sell, bytes32 sellOrderHash);
-    event Sell(address seller, OrderLib.Order buyOrder, uint256 tokenId, bytes32 buyOrderHash);
+    event Buy(address indexed buyer, OrderLib.Order sell, bytes32 sellOrderHash);
+    event Sell(address indexed seller, OrderLib.Order buyOrder, uint256 tokenId, bytes32 buyOrderHash);
+    event CancelOrder(bytes32 orderHash);
     event NewWhitelistedPaymentToken(address paymentToken);
     event UnWhitelistedPaymentToken(address paymentToken);
     event NewWhitelistedCollection(address collection);

@@ -584,6 +584,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setExecutionDelegate(address _executionDelegate) internal {
         require(_executionDelegate != address(0), "Execution delegate address cannot be 0x0");
         executionDelegate = IExecutionDelegate(_executionDelegate);
+
+        emit NewExecutionDelegate(_executionDelegate);
     }
 
     /**
@@ -593,6 +595,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) internal {
         require(_cardsRequiredForLevelUp > 0, "cardsRequiredForLevelUp must be greater than 0");
         cardsRequiredForLevelUp = _cardsRequiredForLevelUp;
+
+        emit NewNumberOfCardsRequiredForLevelUp(_cardsRequiredForLevelUp);
     }
 
     /**
@@ -602,6 +606,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) internal {
         require(_cardsRequiredForBurnToDraw > 0, "cardsRequiredToBurnToDraw must be greater than 0");
         cardsRequiredForBurnToDraw = _cardsRequiredForBurnToDraw;
+
+        emit NewNumberOfCardsRequiredForBurnToDraw(_cardsRequiredForBurnToDraw);
     }
 
     /**
@@ -611,6 +617,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsDrawnPerBurn(uint256 _cardsDrawnPerBurn) internal {
         require(_cardsDrawnPerBurn > 0, "cardsDrawnPerBurn must be greater than 0");
         cardsDrawnPerBurn = _cardsDrawnPerBurn;
+
+        emit NewNumberOfCardsDrawnPerBurn(_cardsDrawnPerBurn);
     }
 
     /**

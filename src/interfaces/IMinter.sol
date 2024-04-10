@@ -33,6 +33,7 @@ interface IMinter {
     event LevelUp(uint256[] burntTokenIds, uint256 mintedTokenId, address collection, address caller);
     event BurnToDraw(uint256[] burntTokenIds, uint256[] mintedTokenIds, address collection, address caller);
     event NewTreasury(address treasury);
+    event NewExecutionDelegate(address _executionDelegate);
     event CollectionUpdatedForMintConfig(uint256 mintConfigId, address newCollection);
     event CardsPerPackUpdatedForMintConfig(uint256 mintConfigId, uint256 newCardsPerPack);
     event MaxPacksUpdatedForMintConfig(uint256 mintConfigId, uint256 newMaxPacks);
@@ -48,6 +49,9 @@ interface IMinter {
     event WhitelistRequirementUpdatedForMintConfig(uint256 mintConfigId, bool newRequiresWhitelist);
     event MerkleRootUpdatedForMintConfig(uint256 mintConfigId, bytes32 newMerkleRoot);
     event MintConfigCancelled(uint256 mintConfigId);
+    event NewNumberOfCardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp);
+    event NewNumberOfCardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw);
+    event NewNumberOfCardsDrawnPerBurn(uint256 _cardsDrawnPerBurn);
     event ExpirationTimestampUpdatedForMintConfig(uint256 mintConfigId, uint256 newExpirationTimestamp);
 
     // Functions
