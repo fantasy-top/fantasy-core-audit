@@ -150,6 +150,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(collection != address(0), "Collection address cannot be 0x0");
         require(cardsPerPack > 0, "Cards per pack must be greater than 0");
         require(maxPacks > 0, "Max packs must be greater than 0");
+        require(startTimestamp != 0, "startTimestamp cannot be 0");
+        require(expirationTimestamp == 0 || expirationTimestamp > startTimestamp, "invalid expirationTimestamp");
+        if (requiresWhitelist) {
+            require(merkleRoot != 0, "missing merkleRoot");
+        }
 
         MintConfig storage config = mintConfigs[mintConfigIdCounter];
         config.collection = collection;
