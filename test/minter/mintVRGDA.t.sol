@@ -113,4 +113,93 @@ contract Mint is BaseTest {
         assert(price5 > expectedPrice);
         cheats.stopPrank();
     }
+
+    function test_mint_USDC() public {
+        MintConfig memory mintConfig = MintConfig({
+            collection: address(fantasyCards),
+            cardsPerPack: 50,
+            maxPacks: 100,
+            paymentToken: address(usdc),
+            fixedPrice: 9999999999999999999,
+            maxPacksPerAddress: 10,
+            requiresWhitelist: false,
+            merkleRoot: bytes32(0),
+            startTimestamp: block.timestamp - 1,
+            expirationTimestamp: block.timestamp + 10 days,
+            totalMintedPacks: 0,
+            cancelled: false
+        });
+
+        minter.newMintConfig(
+            mintConfig.collection,
+            mintConfig.cardsPerPack,
+            mintConfig.maxPacks,
+            mintConfig.paymentToken,
+            mintConfig.fixedPrice,
+            mintConfig.maxPacksPerAddress,
+            mintConfig.requiresWhitelist,
+            mintConfig.merkleRoot,
+            mintConfig.startTimestamp,
+            mintConfig.expirationTimestamp
+        );
+
+        uint256 mintConfigId = 0;
+        // the target price
+        int256 targetPrice = 100 * 1000000; // 100 USDC
+        // price drops by 30% every day without sales
+        int256 priceDecayPercent = 3e17;
+        // we want to sell 2 packs per day
+        int256 perTimeUnit = 2e18;
+
+        cheats.deal(user1, 100 ether);
+
+        // TEST: fixed price works
+        cheats.startPrank(user1);
+        usdc.getFaucet(1000000 * 1000); // 250 USDC
+        uint256 price = minter.getPackPrice(mintConfigId);
+        assertEq(price, mintConfig.fixedPrice);
+        cheats.stopPrank();
+
+        // TEST: check that fixed price is set to 0 after setting VRGDA
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        (, , , , uint256 fixedPrice, , , , , , , ) = minter.getMintConfig(mintConfigId);
+        assertEq(fixedPrice, 0);
+
+        cheats.startPrank(user1, user1);
+
+        // TEST: when VRGDA starts the price is higher than the target price
+        uint256 price1 = minter.getPackPrice(mintConfigId);
+        console.log("price1", price1);
+        assertGt(price1, uint256(targetPrice));
+
+        // TEST: after a mint event the price increases
+        usdc.approve(address(executionDelegate), 1000000 * 1000000);
+        minter.mint(mintConfigId, new bytes32[](0));
+        uint256 price2 = minter.getPackPrice(mintConfigId);
+        console.log("price2", price2);
+        assert(price2 > price1);
+
+        // TEST: if sales on time the price stays the same
+        minter.mint{value: price2}(mintConfigId, new bytes32[](0));
+        vm.warp(block.timestamp + 1 days);
+        uint256 price3 = minter.getPackPrice(mintConfigId);
+        assertEq(price1, price3);
+
+        // TEST: the price stays consistent with values from yesterday
+        minter.mint{value: price1}(mintConfigId, new bytes32[](0));
+        uint256 price4 = minter.getPackPrice(mintConfigId);
+        assertEq(price2, price4);
+
+        minter.mint{value: price2}(mintConfigId, new bytes32[](0));
+
+        // TEST: after a day without sales the price drops by priceDecayPercent
+        vm.warp(block.timestamp + 2 days);
+        uint256 price5 = minter.getPackPrice(mintConfigId);
+        uint256 expectedPrice = (price1 * (1e18 - uint256(priceDecayPercent))) / 1e18;
+        // max difference of 1 wei
+        assertApproxEqAbs(expectedPrice, price5, 1);
+        // rounds up
+        assert(price5 > expectedPrice);
+        cheats.stopPrank();
+    }
 }

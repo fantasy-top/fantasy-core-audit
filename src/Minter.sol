@@ -20,6 +20,8 @@ import "./interfaces/IBlast.sol";
 import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IFantasyCards.sol";
 import "./interfaces/IMinter.sol";
+// add console
+import "../lib/forge-std/src/console.sol";
 import {wadLn, toDaysWadUnsafe} from "solmate/utils/SignedWadMath.sol";
 
 /// @title A contract for minting Fantasy Cards NFTs using VRGDA pricing
@@ -218,7 +220,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
                     vrgdaConfig.targetPrice,
                     vrgdaConfig.priceDecayPercent,
                     vrgdaConfig.perTimeUnit
-                ) / (10 ** (18 - paymentTokenDecimals));
+                );
         }
     }
 
