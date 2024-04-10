@@ -103,9 +103,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         uint256 price = getPackPrice(configId);
 
         mintConfig.totalMintedPacks += 1;
-        if (mintConfig.maxPacksPerAddress != 0) {
-            mintConfig.amountMintedPerAddress[msg.sender] += 1;
-        }
+        mintConfig.amountMintedPerAddress[msg.sender] += 1;
 
         _executeFundsTransfer(mintConfig.paymentToken, msg.sender, treasury, price);
 
