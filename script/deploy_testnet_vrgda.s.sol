@@ -17,6 +17,7 @@ contract Deploy is Script {
     WrappedETH weth;
 
     uint256 protocolFeeBps = 300;
+    uint256 wethMinimumPrice = 0;
 
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PK");
@@ -36,7 +37,7 @@ contract Deploy is Script {
 
         exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
         exchange.whiteListCollection(address(fantasyCards));
-        exchange.whiteListPaymentToken(address(weth));
+        exchange.whiteListPaymentToken(address(weth), wethMinimumPrice);
 
         executionDelegate.approveContract(address(minter));
         executionDelegate.approveContract(address(exchange));

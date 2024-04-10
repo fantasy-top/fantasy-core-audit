@@ -156,8 +156,9 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * that can be used for buying and selling on the exchange. Emits a `NewWhitelistedPaymentToken` event on success.
      * @param _paymentToken The address of the ERC-20 payment token to whitelist
      */
-    function whiteListPaymentToken(address _paymentToken) public onlyOwner {
+    function whiteListPaymentToken(address _paymentToken, uint256 _minimumPrice) public onlyOwner {
         whitelistedPaymentTokens[_paymentToken] = true;
+        _setMinimumPricePerPaymentToken(_paymentToken, _minimumPrice);
 
         emit NewWhitelistedPaymentToken(_paymentToken);
     }
@@ -228,9 +229,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param minimuPrice The new minimum price
      */
     function setMinimumPricePerPaymentToken(address paymentToken, uint256 minimuPrice) public onlyOwner {
-        minimumPricePerPaymentToken[paymentToken] = minimuPrice;
-
-        emit NewMinimumPricePerPaymentToken(paymentToken, minimuPrice);
+        _setMinimumPricePerPaymentToken(paymentToken, minimuPrice);
     }
 
     /**
@@ -300,6 +299,17 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         executionDelegate = IExecutionDelegate(_executionDelegate);
 
         emit NewExecutionDelegate(_executionDelegate);
+    }
+
+    /**
+     * @notice Internal function to set a new minimum price for a certain payment token
+     * @param paymentToken The address of the payment token
+     * @param minimuPrice The new minimum price
+     */
+    function _setMinimumPricePerPaymentToken(address paymentToken, uint256 minimuPrice) internal {
+        minimumPricePerPaymentToken[paymentToken] = minimuPrice;
+
+        emit NewMinimumPricePerPaymentToken(paymentToken, minimuPrice);
     }
 
     /**

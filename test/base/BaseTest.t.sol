@@ -34,6 +34,7 @@ abstract contract BaseTest is Test {
 
     uint256 protocolFeeBps = 300;
     uint256 cardsRequiredForLevelUp = 5;
+    uint256 wethMinimumPrice = 0;
 
     function setUpExchange(
         address _treasury,
@@ -44,7 +45,7 @@ abstract contract BaseTest is Test {
     ) internal {
         exchange = new Exchange(_treasury, _protocolFeeBps, address(_executionDelegate));
         exchange.whiteListCollection(_fantasyCards);
-        exchange.whiteListPaymentToken(_weth);
+        exchange.whiteListPaymentToken(_weth, wethMinimumPrice);
     }
 
     function deployExecutionDelegate() internal {
