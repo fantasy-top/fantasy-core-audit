@@ -315,23 +315,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
-     * @notice Updates the payment token for a specific mint configuration
-     * @dev Only callable by the contract owner.
-     * @param mintConfigId The ID of the mint configuration to update
-     * @param paymentToken The new payment token address
-     */
-    function setPaymentTokenForMintConfig(
-        uint256 mintConfigId,
-        address paymentToken
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
-        MintConfig storage config = mintConfigs[mintConfigId];
-        config.paymentToken = paymentToken;
-
-        emit PaymentTokenUpdatedForMintConfig(mintConfigId, paymentToken);
-    }
-
-    /**
      * @notice Will set a fixed price for a specific mint configuration. If no fixed price was set before, it will also disable the VRGDA mechanism
      * @dev Only callable by the contract owner.
      * @param mintConfigId The ID of the mint configuration to update

@@ -78,8 +78,6 @@ interface IMinter {
 
     function setMaxPacksForMintConfig(uint256 mintConfigId, uint256 maxPacks) external;
 
-    function setPaymentTokenForMintConfig(uint256 mintConfigId, address paymentToken) external;
-
     function setFixedPriceForMintConfig(uint256 mintConfigId, uint256 fixedPrice) external;
 
     function setVRGDAForMintConfig(
