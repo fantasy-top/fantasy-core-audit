@@ -338,7 +338,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @notice Updates the VRGDA config for a specific mint configuration
      * @dev Only callable by the admin
      * @param mintConfigId The ID of the mint configuration to update
-     * @param targetPrice The target price for a pack if sold on pace, scaled by 1e18, e.g 1e18 for one eth
+     * @param targetPrice The target price for a pack if sold on pace, scaled by the token decimals, e.g 1e18 for 1 ether, 1e6 for 1 usdc
      * @param priceDecayPercent The percent price decays per unit of time with no sales, scaled by 1e18, e.g 3e17 for 30%
      * @param perTimeUnit The targeted number of packs to sell in 1 full unit of time, scaled by 1e18, e.g 1e18 for 1 pack
      */
