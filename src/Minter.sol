@@ -119,7 +119,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
             msg.sender,
             mintConfig.totalMintedPacks,
             firstTokenId,
-            firstTokenId + mintConfig.cardsPerPack - 1
+            firstTokenId + mintConfig.cardsPerPack - 1,
+            price
         );
     }
 

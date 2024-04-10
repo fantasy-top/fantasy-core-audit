@@ -27,7 +27,8 @@ interface IMinter {
         address buyer,
         uint256 totalMintedPacks,
         uint256 firstTokenId,
-        uint256 lastTokenId
+        uint256 lastTokenId,
+        uint256 price
     );
     event LevelUp(uint256[] burntTokenIds, uint256 mintedTokenId, address collection, address caller);
     event BurnToDraw(uint256[] burntTokenIds, uint256[] mintedTokenIds, address collection, address caller);
