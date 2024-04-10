@@ -28,7 +28,7 @@ interface IExchange {
 
     function cancelOrder(OrderLib.Order calldata order) external;
 
-    function whiteListPaymentToken(address _paymentToken) external;
+    function whiteListPaymentToken(address _paymentToken, uint256 _minimumPrice) external;
 
     function unWhiteListPaymentToken(address _paymentToken) external;
 
