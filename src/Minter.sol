@@ -581,6 +581,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setExecutionDelegate(address _executionDelegate) internal {
         require(_executionDelegate != address(0), "Execution delegate address cannot be 0x0");
         executionDelegate = IExecutionDelegate(_executionDelegate);
+
+        emit NewExecutionDelegate(_executionDelegate);
     }
 
     /**
