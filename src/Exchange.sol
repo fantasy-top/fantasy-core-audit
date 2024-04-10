@@ -10,6 +10,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -238,6 +239,20 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      */
     function domainSeparator() external view returns (bytes32) {
         return _domainSeparatorV4();
+    }
+
+    /**
+     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @param paymentToken ERC20 token address, or zero for Ether.
+     * @param to Recipient's address.
+     * @param amount Transfer amount.
+     */
+    function saveFunds(address paymentToken, address to, uint256 amount) public onlyOwner {
+        if (paymentToken == address(0)) {
+            payable(to).transfer(amount);
+        } else {
+            IERC20(paymentToken).transfer(to, amount);
+        }
     }
 
     /**
