@@ -21,6 +21,7 @@ import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IFantasyCards.sol";
 import "./interfaces/IMinter.sol";
 import {wadLn, toDaysWadUnsafe} from "solmate/utils/SignedWadMath.sol";
+import {toMinutesWadUnsafe} from "./VRGDA/wadMath.sol";
 
 /// @title A contract for minting Fantasy Cards NFTs using VRGDA pricing
 contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, LinearVRGDA {
@@ -208,7 +209,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         unchecked {
             return
                 getVRGDAPrice(
-                    toDaysWadUnsafe(block.timestamp - mintConfig.startTimestamp),
+                    toMinutesWadUnsafe(block.timestamp - mintConfig.startTimestamp),
                     mintConfig.totalMintedPacks,
                     vrgdaConfig.targetPrice,
                     vrgdaConfig.priceDecayPercent,
