@@ -21,16 +21,22 @@ contract Mint is BaseTest {
     }
 
     function test_mint_saveWETH() public {
-        MintConfig memory mintConfig;
-        mintConfig.fixedPrice = 1 ether;
+        uint256 amount = 1 ether;
 
         cheats.startPrank(user1);
-        weth.getFaucet(mintConfig.fixedPrice);
-        weth.transfer(address(minter), mintConfig.fixedPrice);
-        assertEq(weth.balanceOf(address(minter)), mintConfig.fixedPrice);
+        weth.getFaucet(amount);
+        weth.transfer(address(minter), amount);
+        assertEq(weth.balanceOf(address(minter)), amount);
         cheats.stopPrank();
 
-        minter.saveFunds(address(weth), user1, mintConfig.fixedPrice);
+        minter.saveFunds(address(weth), user1, amount);
         assertEq(weth.balanceOf(address(minter)), 0);
+    }
+
+    function test_mint_saveETH() public {
+        cheats.deal(address(minter), 1 ether);
+        assertEq((address(minter)).balance, 1 ether);
+        minter.saveFunds(address(0), user1, 1 ether);
+        assertEq((address(minter)).balance, 0);
     }
 }
