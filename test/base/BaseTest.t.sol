@@ -9,6 +9,7 @@ import {Exchange} from "../../src/Exchange.sol";
 import {ExecutionDelegate} from "../../src/ExecutionDelegate.sol";
 import {Minter} from "../../src/Minter.sol";
 import {WrappedETH} from "../tokens/WrappedETH.sol";
+import {USDC} from "../tokens/USDC.sol";
 import {BlastMock} from "../helpers/BlastMock.sol";
 
 abstract contract BaseTest is Test {
@@ -19,6 +20,7 @@ abstract contract BaseTest is Test {
     ExecutionDelegate executionDelegate;
     Minter minter;
     WrappedETH weth;
+    USDC usdc;
 
     uint256 deployerPrivateKey = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
     uint256 treasuryPrivateKey = 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d;
@@ -67,6 +69,10 @@ abstract contract BaseTest is Test {
         weth = new WrappedETH();
     }
 
+    function deployUSDC() internal {
+        usdc = new USDC();
+    }
+
     function deployFantasyCards() internal {
         fantasyCards = new FantasyCards();
     }
@@ -87,6 +93,7 @@ abstract contract BaseTest is Test {
         deployFantasyCards();
         deployExecutionDelegate();
         deployWETH();
+        deployUSDC();
         setUpMinter(treasury, address(executionDelegate));
         setUpExchange(treasury, protocolFeeBps, address(executionDelegate), address(weth), address(fantasyCards));
         setUpExecutionDelegate(address(minter), address(exchange));
