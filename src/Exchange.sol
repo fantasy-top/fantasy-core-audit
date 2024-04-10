@@ -146,8 +146,6 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
 
         bytes32 orderHash = OrderLib._hashOrder(order);
         cancelledOrFilled[orderHash] = true;
-
-        emit CancelOrder(orderHash);
     }
 
     /**
