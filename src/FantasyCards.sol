@@ -11,13 +11,17 @@
 pragma solidity ^0.8.20;
 
 import {IFantasyCards} from "./interfaces/IFantasyCards.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IERC165, ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {AccessControlDefaultAdminRules} from "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
+import {IAccessControlDefaultAdminRules} from "@openzeppelin/contracts/access/extensions/IAccessControlDefaultAdminRules.sol";
 import "./interfaces/IBlast.sol";
 
-contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules {
+contract FantasyCards is Context, ERC165, IFantasyCards, AccessControlDefaultAdminRules {
     using Strings for uint256;
 
     /// @notice Role hash for the address allowed to exchange tokens
@@ -202,6 +206,16 @@ contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules 
      */
     function burn(uint256 tokenId) public onlyRole(EXECUTION_DELEGATE_ROLE) {
         _burn(tokenId);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC165, IERC165, AccessControlDefaultAdminRules) returns (bool) {
+        return
+            interfaceId == type(IERC721).interfaceId ||
+            interfaceId == type(IERC721Metadata).interfaceId ||
+            interfaceId == type(IAccessControlDefaultAdminRules).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
@@ -396,38 +410,6 @@ contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules 
         } else if (previousOwner != from) {
             revert ERC721IncorrectOwner(from, tokenId, previousOwner);
         }
-    }
-
-    /**
-     * @dev Safely transfers `tokenId` token from `from` to `to`, checking that contract recipients
-     * are aware of the ERC721 standard to prevent tokens from being forever locked.
-     *
-     * `data` is additional data, it has no specified format and it is sent in call to `to`.
-     *
-     * This internal function is like {safeTransferFrom} in the sense that it invokes
-     * {IERC721Receiver-onERC721Received} on the receiver, and can be used to e.g.
-     * implement alternative mechanisms to perform token transfer, such as signature-based.
-     *
-     * Requirements:
-     *
-     * - `tokenId` token must exist and be owned by `from`.
-     * - `to` cannot be the zero address.
-     * - `from` cannot be the zero address.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _safeTransfer(address from, address to, uint256 tokenId) internal {
-        _safeTransfer(from, to, tokenId, "");
-    }
-
-    /**
-     * @dev Same as {xref-ERC721-_safeTransfer-address-address-uint256-}[`_safeTransfer`], with an additional `data` parameter which is
-     * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-     */
-    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal {
-        _transfer(from, to, tokenId);
-        _checkOnERC721Received(from, to, tokenId, data);
     }
 
     /**

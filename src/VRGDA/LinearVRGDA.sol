@@ -17,6 +17,7 @@ abstract contract LinearVRGDA is VRGDA {
 
     /// @dev Given a number of tokens sold, return the target time that number of tokens should be sold by.
     /// @param sold A number of tokens sold, scaled by 1e18, to get the corresponding target sale time for.
+    /// @param perTimeUnit The targeted number of sells in 1 full unit of time, scaled by 1e18, e.g 1e18 for 1 sell. If the unit of time is a day, this means the target is to sell 1 token every day.
     /// @return The target time the tokens should be sold by, scaled by 1e18, where the time is
     /// relative, such that 0 means the tokens should be sold immediately when the VRGDA begins.
     function getTargetSaleTime(int256 sold, int256 perTimeUnit) public view virtual override returns (int256) {

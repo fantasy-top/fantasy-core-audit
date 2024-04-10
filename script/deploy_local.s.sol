@@ -27,6 +27,7 @@ contract Deploy is Script {
     address user2 = vm.addr(user2PrivateKey);
 
     uint256 protocolFeeBps = 300;
+    uint256 wethMinimumPrice = 0;
 
     function run() external {
         vm.startBroadcast(deployerPrivateKey);
@@ -38,7 +39,7 @@ contract Deploy is Script {
 
         exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
         exchange.whiteListCollection(address(fantasyCards));
-        exchange.whiteListPaymentToken(address(weth));
+        exchange.whiteListPaymentToken(address(weth), wethMinimumPrice);
 
         executionDelegate.approveContract(address(minter));
         executionDelegate.approveContract(address(exchange));

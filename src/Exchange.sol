@@ -146,6 +146,8 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
 
         bytes32 orderHash = OrderLib._hashOrder(order);
         cancelledOrFilled[orderHash] = true;
+
+        emit CancelOrder(orderHash);
     }
 
     /**
@@ -154,8 +156,9 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * that can be used for buying and selling on the exchange. Emits a `NewWhitelistedPaymentToken` event on success.
      * @param _paymentToken The address of the ERC-20 payment token to whitelist
      */
-    function whiteListPaymentToken(address _paymentToken) public onlyOwner {
+    function whiteListPaymentToken(address _paymentToken, uint256 _minimumPrice) public onlyOwner {
         whitelistedPaymentTokens[_paymentToken] = true;
+        _setMinimumPricePerPaymentToken(_paymentToken, _minimumPrice);
 
         emit NewWhitelistedPaymentToken(_paymentToken);
     }
@@ -226,9 +229,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
      * @param minimuPrice The new minimum price
      */
     function setMinimumPricePerPaymentToken(address paymentToken, uint256 minimuPrice) public onlyOwner {
-        minimumPricePerPaymentToken[paymentToken] = minimuPrice;
-
-        emit NewMinimumPricePerPaymentToken(paymentToken, minimuPrice);
+        _setMinimumPricePerPaymentToken(paymentToken, minimuPrice);
     }
 
     /**
@@ -301,6 +302,17 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
     }
 
     /**
+     * @notice Internal function to set a new minimum price for a certain payment token
+     * @param paymentToken The address of the payment token
+     * @param minimuPrice The new minimum price
+     */
+    function _setMinimumPricePerPaymentToken(address paymentToken, uint256 minimuPrice) internal {
+        minimumPricePerPaymentToken[paymentToken] = minimuPrice;
+
+        emit NewMinimumPricePerPaymentToken(paymentToken, minimuPrice);
+    }
+
+    /**
      * @dev Execute all ERC20 token / ETH transfers associated with an order match (fees and buyer => seller transfer)
      * @param from from
      * @param to to
@@ -320,7 +332,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
     }
 
     /**
-     * @dev Charge a fee in ETH or WETH
+     * @dev fee is paid in the payment token specified in the order
      * @param paymentToken address of token to pay in
      * @param from address to charge fees
      * @param price price of token
@@ -371,7 +383,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         require(whitelistedCollections[collection], "Collection is not withelisted");
 
         /* Call execution delegate. */
-        executionDelegate.transferERC721(collection, from, to, tokenId);
+        executionDelegate.transferERC721Unsafe(collection, from, to, tokenId);
     }
 
     /**

@@ -15,7 +15,10 @@ abstract contract VRGDA {
 
     /// @notice Calculate the price of a token according to the VRGDA formula.
     /// @param timeSinceStart Time passed since the VRGDA began, scaled by 1e18.
-    /// @param sold The total number of tokens that have been sold so far.
+    /// @param sold The total number of sells that have been performed so far.
+    /// @param targetPrice The target price for a sell if done on pace, scaled by 1e18, e.g 1e18 for one eth
+    /// @param priceDecayPercent The percent price decays per unit of time with no sales, scaled by 1e18, e.g 3e17 for 30%. If the unit of time is a day, this means the price decays by 30% every day.
+    /// @param perTimeUnit The targeted number of sells to perform in 1 full unit of time, scaled by 1e18, e.g 1e18 for 1 pack. If the unit of time is a day, this means the target is to sell 1 pack every day.
     /// @return The price of a token according to VRGDA, scaled by 1e18.
     function getVRGDAPrice(
         int256 timeSinceStart,

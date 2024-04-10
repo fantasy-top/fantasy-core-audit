@@ -39,7 +39,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -87,7 +87,7 @@ contract Mint is BaseTest {
             maxPacksPerAddress: 1,
             requiresWhitelist: false,
             merkleRoot: bytes32(0),
-            startTimestamp: 0,
+            startTimestamp: block.timestamp - 1,
             expirationTimestamp: 0,
             totalMintedPacks: 0,
             cancelled: false
@@ -140,7 +140,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -188,7 +188,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -240,7 +240,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -281,7 +281,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 1;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -325,7 +325,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -373,7 +373,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = block.timestamp;
 
         minter.newMintConfig(

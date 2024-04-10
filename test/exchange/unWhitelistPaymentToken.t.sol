@@ -8,7 +8,7 @@ contract UnWhiteListPaymentToken is BaseTest {
     }
 
     function test_successful_unWhiteListPaymentToken() public {
-        exchange.whiteListPaymentToken(address(weth));
+        exchange.whiteListPaymentToken(address(weth), 0);
 
         exchange.unWhiteListPaymentToken(address(weth));
         assertEq(exchange.whitelistedPaymentTokens(address(weth)), false);

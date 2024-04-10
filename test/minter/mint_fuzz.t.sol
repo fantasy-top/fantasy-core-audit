@@ -41,7 +41,8 @@ contract Mint_fuzz is BaseTest {
         mintConfig.maxPacksPerAddress = _maxPacksPerAddress;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -92,7 +93,8 @@ contract Mint_fuzz is BaseTest {
         mintConfig.maxPacksPerAddress = _maxPacksPerAddress;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(

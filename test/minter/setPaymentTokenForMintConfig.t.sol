@@ -2,7 +2,7 @@ pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
 
-contract SetExpirationTimestampForMintConfig is BaseTest {
+contract SetPaymentTokenForMintConfig is BaseTest {
     struct MintConfig {
         address collection; // The collection address of the NFT
         uint256 cardsPerPack; // Number of cards per pack
@@ -45,16 +45,21 @@ contract SetExpirationTimestampForMintConfig is BaseTest {
         );
     }
 
-    function test_successful_setExpirationTimestampForMintConfig() public {
-        minter.setExpirationTimestampForMintConfig(0, 123);
-        (, , , , , , , , , uint256 actualExpirationTimestamp, , ) = minter.getMintConfig(0);
-        assertEq(actualExpirationTimestamp, 123);
+    function test_successful_setPaymentTokenForMintConfig() public {
+        minter.setPaymentTokenForMintConfig(0, address(0));
+        (, , , address actualPaymentToken, , , , , , , , ) = minter.getMintConfig(0);
+        assertEq(actualPaymentToken, address(0));
     }
 
-    function test_unsuccessful_setExpirationTimestampForMintConfig_notOwner() public {
+    function test_unsuccessful_setPaymentTokenForMintConfig_notOwner() public {
         cheats.startPrank(user1);
         cheats.expectRevert(); // REVIEW: real error message
-        minter.setExpirationTimestampForMintConfig(0, 123);
+        minter.setPaymentTokenForMintConfig(0, address(0));
         cheats.stopPrank();
+    }
+
+    function test_unsuccessful_setPaymentTokenForMintConfig_invalid_mintConfigId() public {
+        cheats.expectRevert("Invalid mintConfigId");
+        minter.setPaymentTokenForMintConfig(1, address(0));
     }
 }
