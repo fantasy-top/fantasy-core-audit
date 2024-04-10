@@ -328,7 +328,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @notice Will set a fixed price for a specific mint configuration. If no fixed price was set before, it will also disable the VRGDA mechanism
      * @dev Only callable by the contract owner.
      * @param mintConfigId The ID of the mint configuration to update
-     * @param fixedPrice A non zero positive value will disable the VRGDA mechanism and set a fixed price for the packs
+     * @param fixedPrice A non zero positive value will disable the VRGDA mechanism and set a fixed price for the pack. This price input should have the token decimals coresponding to the payment token used in the mintconfig
      */
     function setFixedPriceForMintConfig(uint256 mintConfigId, uint256 fixedPrice) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
