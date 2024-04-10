@@ -42,6 +42,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -54,13 +55,16 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
 
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.startPrank(user1);
@@ -93,6 +97,7 @@ contract Mint is BaseTest {
             cancelled: false
         });
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -105,13 +110,16 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
 
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price);
@@ -143,6 +151,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -155,13 +164,16 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
 
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.startPrank(user1);
@@ -191,6 +203,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -203,16 +216,19 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
 
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         uint256 price = minter.getPackPrice(mintConfigId);
 
-        cheats.startPrank(pauserAndCanceler);
+        cheats.startPrank(mintConfigMaster);
         minter.cancelMintConfig(0);
         cheats.stopPrank();
 
@@ -243,6 +259,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -255,12 +272,16 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
 
         cheats.startPrank(user2, user2);
         weth.getFaucet(1 ether);
@@ -284,6 +305,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -296,13 +318,16 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
 
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price * 100);
@@ -328,6 +353,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -340,13 +366,16 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
 
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price * 100);
@@ -376,6 +405,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = block.timestamp;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -388,13 +418,16 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
 
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price);

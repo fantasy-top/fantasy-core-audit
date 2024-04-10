@@ -8,7 +8,9 @@ contract SetcardsRequiredForBurnToDraw is BaseTest {
     }
 
     function test_successful_setcardsRequiredForBurnToDraw() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setcardsRequiredForBurnToDraw(123);
+        cheats.stopPrank();
 
         assertEq(minter.cardsRequiredForBurnToDraw(), 123);
     }

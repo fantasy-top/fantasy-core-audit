@@ -31,6 +31,7 @@ contract CancelMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,10 +44,11 @@ contract CancelMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_cancelMintConfig() public {
-        cheats.startPrank(pauserAndCanceler);
+        cheats.startPrank(mintConfigMaster);
         minter.cancelMintConfig(0);
         cheats.stopPrank();
 
@@ -60,7 +62,7 @@ contract CancelMintConfig is BaseTest {
     }
 
     function test_unsuccessful_cancelMintConfig_invalid_mintConfigId() public {
-        cheats.startPrank(pauserAndCanceler);
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.cancelMintConfig(1);
         cheats.stopPrank();

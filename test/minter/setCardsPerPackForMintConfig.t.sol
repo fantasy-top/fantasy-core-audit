@@ -31,6 +31,7 @@ contract SetCardsPerPackForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,10 +44,13 @@ contract SetCardsPerPackForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_setCardsPerPackForMintConfig() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setCardsPerPackForMintConfig(0, 100);
+        cheats.stopPrank();
 
         // Assert
         (, uint256 actualCardsPerPack, , , , , , , , , , ) = minter.getMintConfig(0);
@@ -62,12 +66,16 @@ contract SetCardsPerPackForMintConfig is BaseTest {
     }
 
     function test_unsuccessful_setCardsPerPackForMintConfig_zero() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Cards per pack must be greater than 0"); // REVIEW: real error message
         minter.setCardsPerPackForMintConfig(0, 0);
+        cheats.stopPrank();
     }
 
     function test_unsuccessful_setCardsPerPackForMintConfig_invalid_mintConfigId() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.setCardsPerPackForMintConfig(1, 100);
+        cheats.stopPrank();
     }
 }

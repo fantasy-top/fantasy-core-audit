@@ -31,6 +31,7 @@ contract SetMaxPacksForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,10 +44,14 @@ contract SetMaxPacksForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_setMaxPacksForMintConfig() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setMaxPacksForMintConfig(0, 2);
+        cheats.stopPrank();
+
         (, , uint256 actualMaxPacks, , , , , , , , , ) = minter.getMintConfig(0);
         assertEq(actualMaxPacks, 2);
     }
@@ -59,7 +64,9 @@ contract SetMaxPacksForMintConfig is BaseTest {
     }
 
     function test_unsuccessful_setMaxPacksForMintConfig_invalid_mintConfigId() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.setMaxPacksForMintConfig(1, 2);
+        cheats.stopPrank();
     }
 }
