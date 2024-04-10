@@ -465,8 +465,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      */
     function setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _setcardsRequiredForLevelUp(_cardsRequiredForLevelUp);
-
-        emit NewNumberOfCardsRequiredForLevelUp(_cardsRequiredForLevelUp);
     }
 
     /**
@@ -594,6 +592,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) internal {
         require(_cardsRequiredForLevelUp > 0, "cardsRequiredForLevelUp must be greater than 0");
         cardsRequiredForLevelUp = _cardsRequiredForLevelUp;
+
+        emit NewNumberOfCardsRequiredForLevelUp(_cardsRequiredForLevelUp);
     }
 
     /**
