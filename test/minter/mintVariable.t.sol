@@ -39,7 +39,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -68,7 +68,7 @@ contract Mint is BaseTest {
         weth.approve(address(executionDelegate), price);
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint(0, new bytes32[](0));
         cheats.stopPrank();
 
@@ -87,7 +87,7 @@ contract Mint is BaseTest {
             maxPacksPerAddress: 1,
             requiresWhitelist: false,
             merkleRoot: bytes32(0),
-            startTimestamp: 0,
+            startTimestamp: block.timestamp - 1,
             expirationTimestamp: 0,
             totalMintedPacks: 0,
             cancelled: false
@@ -116,7 +116,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, price);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: price}(0, new bytes32[](0));
         cheats.stopPrank();
 
@@ -140,7 +140,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -169,7 +169,7 @@ contract Mint is BaseTest {
         weth.approve(address(executionDelegate), price);
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint(0, merkleProof);
         cheats.stopPrank();
 
@@ -188,7 +188,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -218,7 +218,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, price);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config cancelled");
         minter.mint{value: price}(0, new bytes32[](0));
         cheats.stopPrank();
@@ -240,7 +240,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -262,7 +262,7 @@ contract Mint is BaseTest {
         int256 perTimeUnit = 2e18;
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
 
-        cheats.startPrank(user2);
+        cheats.startPrank(user2, user2);
         weth.getFaucet(1 ether);
         weth.approve(address(executionDelegate), 1 ether);
         cheats.expectRevert("User not whitelisted");
@@ -281,7 +281,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 1;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -307,7 +307,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, price * 100);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: price}(0, new bytes32[](0));
         cheats.expectRevert("User reached max mint limit");
         minter.mint{value: price}(0, new bytes32[](0));
@@ -325,7 +325,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -351,12 +351,12 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, price * 100);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: price}(0, new bytes32[](0));
         cheats.stopPrank();
 
         uint256 newPrice = minter.getPackPrice(mintConfigId);
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("No packs left");
         minter.mint{value: newPrice}(0, new bytes32[](0));
         cheats.stopPrank();
@@ -373,7 +373,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp - 1;
         mintConfig.expirationTimestamp = block.timestamp;
 
         minter.newMintConfig(
@@ -399,7 +399,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, price);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config expired");
         minter.mint{value: price}(0, new bytes32[](0));
         cheats.stopPrank();

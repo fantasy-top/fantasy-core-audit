@@ -20,7 +20,6 @@ import "./interfaces/IBlast.sol";
 import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IFantasyCards.sol";
 import "./interfaces/IMinter.sol";
-import "../lib/forge-std/src/console.sol";
 import {wadLn, toDaysWadUnsafe} from "solmate/utils/SignedWadMath.sol";
 
 /// @title A contract for minting Fantasy Cards NFTs using VRGDA pricing
@@ -55,6 +54,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     uint256 public cardsRequiredForBurnToDraw;
     uint256 public cardsDrawnPerBurn;
 
+    modifier onlyEOA() {
+        require(msg.sender == tx.origin, "Function can only be called by an EOA");
+        _;
+    }
+
     /**
      * @dev Initializes the contract with treasury and execution delegate addresses.
      * @param _treasury Treasury address.
@@ -82,7 +86,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param configId ID of the mint configuration to use
      * @param merkleProof Proof for whitelist verification, if required
      */
-    function mint(uint256 configId, bytes32[] calldata merkleProof) public payable nonReentrant {
+    function mint(uint256 configId, bytes32[] calldata merkleProof) public payable nonReentrant onlyEOA {
         MintConfig storage mintConfig = mintConfigs[configId];
         require(mintConfig.startTimestamp <= block.timestamp, "Mint config not started");
         require(
@@ -105,9 +109,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         uint256 price = getPackPrice(configId);
 
         mintConfig.totalMintedPacks += 1;
-        if (mintConfig.maxPacksPerAddress != 0) {
-            mintConfig.amountMintedPerAddress[msg.sender] += 1;
-        }
+        mintConfig.amountMintedPerAddress[msg.sender] += 1;
 
         _executeFundsTransfer(mintConfig.paymentToken, msg.sender, treasury, price);
 
@@ -120,7 +122,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
             msg.sender,
             mintConfig.totalMintedPacks,
             firstTokenId,
-            firstTokenId + mintConfig.cardsPerPack - 1
+            firstTokenId + mintConfig.cardsPerPack - 1,
+            price
         );
     }
 
@@ -131,9 +134,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param cardsPerPack Number of cards in each pack
      * @param maxPacks Maximum number of packs available for this configuration
      * @param paymentToken Token used for payments (address(0) for ETH)
+     * @param fixedPrice The amount of paymentToken payed by the user to mint
      * @param maxPacksPerAddress Maximum number of packs that can be minted by a single address
      * @param requiresWhitelist Require users to be whitelisted if true
      * @param merkleRoot Root of Merkle tree for whitelist verification
+     * @param startTimestamp Timestamp before which the mintConfig is not usable, also used to determine pricing for VRGDA mintConfigs
      * @param expirationTimestamp Expiration timestamp for the mint config
      */
     function newMintConfig(
@@ -151,6 +156,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(collection != address(0), "Collection address cannot be 0x0");
         require(cardsPerPack > 0, "Cards per pack must be greater than 0");
         require(maxPacks > 0, "Max packs must be greater than 0");
+        require(startTimestamp >= block.timestamp - 24 * 60 * 60, "startTimestamp must be less than a day old");
+        require(expirationTimestamp == 0 || expirationTimestamp > startTimestamp, "invalid expirationTimestamp");
+        if (requiresWhitelist) {
+            require(merkleRoot != 0, "missing merkleRoot");
+        }
 
         MintConfig storage config = mintConfigs[mintConfigIdCounter];
         config.collection = collection;
@@ -313,27 +323,10 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
-     * @notice Updates the payment token for a specific mint configuration
-     * @dev Only callable by the contract owner.
-     * @param mintConfigId The ID of the mint configuration to update
-     * @param paymentToken The new payment token address
-     */
-    function setPaymentTokenForMintConfig(
-        uint256 mintConfigId,
-        address paymentToken
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
-        MintConfig storage config = mintConfigs[mintConfigId];
-        config.paymentToken = paymentToken;
-
-        emit PaymentTokenUpdatedForMintConfig(mintConfigId, paymentToken);
-    }
-
-    /**
      * @notice Will set a fixed price for a specific mint configuration. If no fixed price was set before, it will also disable the VRGDA mechanism
      * @dev Only callable by the contract owner.
      * @param mintConfigId The ID of the mint configuration to update
-     * @param fixedPrice A non zero positive value will disable the VRGDA mechanism and set a fixed price for the packs
+     * @param fixedPrice A non zero positive value will disable the VRGDA mechanism and set a fixed price for the pack. This price input should be inputed with the correct token decimals coresponding to the payment token used in the mintconfig
      */
     function setFixedPriceForMintConfig(uint256 mintConfigId, uint256 fixedPrice) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
@@ -478,7 +471,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param _cardsRequiredForBurnToDraw The new number of cards required to perform a burn to draw.
      */
     function setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _setcardsRequiredForLevelUp(_cardsRequiredForBurnToDraw);
+        _setcardsRequiredForBurnToDraw(_cardsRequiredForBurnToDraw);
     }
 
     /**
@@ -586,6 +579,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setExecutionDelegate(address _executionDelegate) internal {
         require(_executionDelegate != address(0), "Execution delegate address cannot be 0x0");
         executionDelegate = IExecutionDelegate(_executionDelegate);
+
+        emit NewExecutionDelegate(_executionDelegate);
     }
 
     /**
@@ -595,6 +590,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) internal {
         require(_cardsRequiredForLevelUp > 0, "cardsRequiredForLevelUp must be greater than 0");
         cardsRequiredForLevelUp = _cardsRequiredForLevelUp;
+
+        emit NewNumberOfCardsRequiredForLevelUp(_cardsRequiredForLevelUp);
     }
 
     /**
@@ -604,6 +601,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) internal {
         require(_cardsRequiredForBurnToDraw > 0, "cardsRequiredToBurnToDraw must be greater than 0");
         cardsRequiredForBurnToDraw = _cardsRequiredForBurnToDraw;
+
+        emit NewNumberOfCardsRequiredForBurnToDraw(_cardsRequiredForBurnToDraw);
     }
 
     /**
@@ -613,6 +612,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsDrawnPerBurn(uint256 _cardsDrawnPerBurn) internal {
         require(_cardsDrawnPerBurn > 0, "cardsDrawnPerBurn must be greater than 0");
         cardsDrawnPerBurn = _cardsDrawnPerBurn;
+
+        emit NewNumberOfCardsDrawnPerBurn(_cardsDrawnPerBurn);
     }
 
     /**
@@ -684,6 +685,10 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param amount Transfer amount.
      */
     function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        _transferTo(paymentToken, address(this), to, amount);
+        if (paymentToken == address(0)) {
+            payable(to).transfer(amount);
+        } else {
+            ERC20(paymentToken).transfer(to, amount);
+        }
     }
 }

@@ -335,7 +335,7 @@ contract Buy is BaseTest {
         bytes memory sellerSignature = abi.encodePacked(rSeller, sSeller, vSeller);
 
         // DEPLOY TRADER CONTRACT
-        TraderContract traderContract = new TraderContract(address(exchange));
+        TraderContract traderContract = new TraderContract(address(exchange), address(minter));
 
         cheats.deal(user2, 1 ether);
 

@@ -1,6 +1,7 @@
 pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
+import "../helpers/TraderContract.sol";
 
 contract Mint is BaseTest {
     struct MintConfig {
@@ -30,7 +31,7 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -51,7 +52,7 @@ contract Mint is BaseTest {
         weth.approve(address(executionDelegate), mintConfig.fixedPrice);
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint(0, new bytes32[](0));
         cheats.stopPrank();
 
@@ -70,7 +71,8 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -88,7 +90,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
 
@@ -112,7 +114,8 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -133,7 +136,7 @@ contract Mint is BaseTest {
         weth.approve(address(executionDelegate), mintConfig.fixedPrice);
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint(0, merkleProof);
         cheats.stopPrank();
 
@@ -152,7 +155,8 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -174,7 +178,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config cancelled");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
@@ -196,7 +200,8 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = true;
         mintConfig.merkleRoot = merkleRoot;
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -212,7 +217,7 @@ contract Mint is BaseTest {
             mintConfig.expirationTimestamp
         );
 
-        cheats.startPrank(user2);
+        cheats.startPrank(user2, user2);
         weth.getFaucet(1 ether);
         weth.approve(address(executionDelegate), 1 ether);
         cheats.expectRevert("User not whitelisted");
@@ -231,7 +236,8 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 1;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -249,7 +255,7 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.expectRevert("User reached max mint limit");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
@@ -267,7 +273,8 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
+        mintConfig.startTimestamp = block.timestamp;
+
         mintConfig.expirationTimestamp = 0;
 
         minter.newMintConfig(
@@ -285,11 +292,11 @@ contract Mint is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("No packs left");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
@@ -306,8 +313,8 @@ contract Mint is BaseTest {
         mintConfig.maxPacksPerAddress = 0;
         mintConfig.requiresWhitelist = false;
         mintConfig.merkleRoot = bytes32(0);
-        mintConfig.startTimestamp = 0;
-        mintConfig.expirationTimestamp = block.timestamp;
+        mintConfig.startTimestamp = block.timestamp;
+        mintConfig.expirationTimestamp = block.timestamp + 100;
 
         minter.newMintConfig(
             mintConfig.collection,
@@ -322,11 +329,21 @@ contract Mint is BaseTest {
             mintConfig.expirationTimestamp
         );
 
+        vm.warp(mintConfig.expirationTimestamp + 101);
+
         cheats.deal(user1, mintConfig.fixedPrice);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config expired");
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
+    }
+
+    function test_unsuccessful_mint_not_EOA() public {
+        // DEPLOY TRADER CONTRACT
+        TraderContract traderContract = new TraderContract(address(exchange), address(minter));
+
+        cheats.expectRevert("Function can only be called by an EOA");
+        traderContract.mintOnMinter(0, new bytes32[](0));
     }
 }

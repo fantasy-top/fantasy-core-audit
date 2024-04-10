@@ -39,8 +39,8 @@ contract Mint is BaseTest {
             maxPacksPerAddress: 10,
             requiresWhitelist: false,
             merkleRoot: bytes32(0),
-            startTimestamp: 0,
-            expirationTimestamp: 0,
+            startTimestamp: block.timestamp - 100,
+            expirationTimestamp: block.timestamp + 10 days,
             totalMintedPacks: 0,
             cancelled: false
         });
@@ -79,7 +79,7 @@ contract Mint is BaseTest {
         (, , , , uint256 fixedPrice, , , , , , , ) = minter.getMintConfig(mintConfigId);
         assertEq(fixedPrice, 0);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
 
         // TEST: when VRGDA starts the price is higher than the target price
         uint256 price1 = minter.getPackPrice(mintConfigId);
