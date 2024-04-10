@@ -373,7 +373,7 @@ contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
         require(whitelistedCollections[collection], "Collection is not withelisted");
 
         /* Call execution delegate. */
-        executionDelegate.transferERC721(collection, from, to, tokenId);
+        executionDelegate.transferERC721Unsafe(collection, from, to, tokenId);
     }
 
     /**
