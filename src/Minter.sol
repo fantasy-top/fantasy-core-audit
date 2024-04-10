@@ -603,6 +603,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) internal {
         require(_cardsRequiredForBurnToDraw > 0, "cardsRequiredToBurnToDraw must be greater than 0");
         cardsRequiredForBurnToDraw = _cardsRequiredForBurnToDraw;
+
+        emit NewNumberOfCardsRequiredForBurnToDraw(_cardsRequiredForBurnToDraw);
     }
 
     /**
