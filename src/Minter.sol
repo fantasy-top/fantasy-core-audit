@@ -14,7 +14,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./VRGDA/LinearVRGDA.sol";
 import "./interfaces/IBlast.sol";
 import "./interfaces/IExecutionDelegate.sol";
@@ -683,7 +683,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         if (paymentToken == address(0)) {
             payable(to).transfer(amount);
         } else {
-            IERC20(paymentToken).transfer(to, amount);
+            ERC20(paymentToken).transfer(to, amount);
         }
     }
 }
