@@ -130,9 +130,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param cardsPerPack Number of cards in each pack
      * @param maxPacks Maximum number of packs available for this configuration
      * @param paymentToken Token used for payments (address(0) for ETH)
+     * @param fixedPrice The amount of paymentToken payed by the user to mint
      * @param maxPacksPerAddress Maximum number of packs that can be minted by a single address
      * @param requiresWhitelist Require users to be whitelisted if true
      * @param merkleRoot Root of Merkle tree for whitelist verification
+     * @param startTimestamp Timestamp before which the mintConfig is not usable, also used to determine pricing for VRGDA mintConfigs
      * @param expirationTimestamp Expiration timestamp for the mint config
      */
     function newMintConfig(
