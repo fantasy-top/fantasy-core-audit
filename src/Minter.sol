@@ -130,9 +130,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param cardsPerPack Number of cards in each pack
      * @param maxPacks Maximum number of packs available for this configuration
      * @param paymentToken Token used for payments (address(0) for ETH)
+     * @param fixedPrice The amount of paymentToken payed by the user to mint
      * @param maxPacksPerAddress Maximum number of packs that can be minted by a single address
      * @param requiresWhitelist Require users to be whitelisted if true
      * @param merkleRoot Root of Merkle tree for whitelist verification
+     * @param startTimestamp Timestamp before which the mintConfig is not usable, also used to determine pricing for VRGDA mintConfigs
      * @param expirationTimestamp Expiration timestamp for the mint config
      */
     function newMintConfig(
@@ -328,7 +330,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @notice Will set a fixed price for a specific mint configuration. If no fixed price was set before, it will also disable the VRGDA mechanism
      * @dev Only callable by the contract owner.
      * @param mintConfigId The ID of the mint configuration to update
-     * @param fixedPrice A non zero positive value will disable the VRGDA mechanism and set a fixed price for the packs
+     * @param fixedPrice A non zero positive value will disable the VRGDA mechanism and set a fixed price for the pack. This price input should be inputed with the correct token decimals coresponding to the payment token used in the mintconfig
      */
     function setFixedPriceForMintConfig(uint256 mintConfigId, uint256 fixedPrice) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
