@@ -2,11 +2,11 @@
 pragma solidity 0.8.20;
 
 interface IExecutionDelegate {
-    event ApproveContract(address indexed _contract);
-    event DenyContract(address indexed _contract);
+    event ApproveContract(address _contract);
+    event DenyContract(address _contract);
 
-    event RevokeApproval(address indexed user);
-    event GrantApproval(address indexed user);
+    event RevokeApproval(address user);
+    event GrantApproval(address user);
 
     function approveContract(address _contract) external;
 
