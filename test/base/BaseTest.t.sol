@@ -80,6 +80,8 @@ abstract contract BaseTest is Test {
     }
 
     function setUp() public virtual {
+        // useful since VRGDA requires a start time of at least 1 day
+        vm.warp(24 * 60 * 60 * 7);
         deployBlastMock();
         deployFantasyCards();
         deployExecutionDelegate();

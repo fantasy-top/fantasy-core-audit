@@ -18,8 +18,8 @@ contract NewMintConfig is BaseTest {
             12,
             true,
             0x3000000000000000000000000000000000000000000000000000000000000000,
-            0,
-            300
+            block.timestamp - 1,
+            block.timestamp + 7 days
         );
 
         // Assert
@@ -46,8 +46,8 @@ contract NewMintConfig is BaseTest {
         assertEq(actualMaxPacksPerAddress, 12);
         assertEq(actualRequiresWhitelist, true);
         assertEq(actualMerkleRoot, 0x3000000000000000000000000000000000000000000000000000000000000000);
-        assertEq(actualStartTimestamp, 0);
-        assertEq(actualExpirationTimestamp, 300);
+        assertEq(actualStartTimestamp, block.timestamp - 1);
+        assertEq(actualExpirationTimestamp, block.timestamp + 7 days);
         assertEq(actualTotalMintedPacks, 0);
         assertEq(actualCancelled, false);
     }
@@ -62,8 +62,8 @@ contract NewMintConfig is BaseTest {
         uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
-        uint256 startTimestamp = 0;
-        uint256 expirationTimestamp = 300;
+        uint256 startTimestamp = block.timestamp - 1;
+        uint256 expirationTimestamp = block.timestamp + 7 days;
 
         // Act
         minter.newMintConfig(
@@ -93,8 +93,8 @@ contract NewMintConfig is BaseTest {
         uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
-        uint256 startTimestamp = 0;
-        uint256 expirationTimestamp = 300;
+        uint256 startTimestamp = block.timestamp - 1;
+        uint256 expirationTimestamp = block.timestamp + 7 days;
 
         cheats.startPrank(user1);
         cheats.expectRevert(); // REVIEW: proper error message?
