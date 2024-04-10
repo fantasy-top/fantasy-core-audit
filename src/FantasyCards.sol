@@ -11,13 +11,17 @@
 pragma solidity ^0.8.20;
 
 import {IFantasyCards} from "./interfaces/IFantasyCards.sol";
+import {IERC721} from "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import {IERC721Metadata} from "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import {IERC721Receiver} from "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import {Context} from "@openzeppelin/contracts/utils/Context.sol";
 import {Strings} from "@openzeppelin/contracts/utils/Strings.sol";
+import {IERC165, ERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import {AccessControlDefaultAdminRules} from "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
+import {IAccessControlDefaultAdminRules} from "@openzeppelin/contracts/access/extensions/IAccessControlDefaultAdminRules.sol";
 import "./interfaces/IBlast.sol";
 
-contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules {
+contract FantasyCards is Context, ERC165, IFantasyCards, AccessControlDefaultAdminRules {
     using Strings for uint256;
 
     /// @notice Role hash for the address allowed to exchange tokens
@@ -202,6 +206,16 @@ contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules 
      */
     function burn(uint256 tokenId) public onlyRole(EXECUTION_DELEGATE_ROLE) {
         _burn(tokenId);
+    }
+
+    function supportsInterface(
+        bytes4 interfaceId
+    ) public view virtual override(ERC165, IERC165, AccessControlDefaultAdminRules) returns (bool) {
+        return
+            interfaceId == type(IERC721).interfaceId ||
+            interfaceId == type(IERC721Metadata).interfaceId ||
+            interfaceId == type(IAccessControlDefaultAdminRules).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
