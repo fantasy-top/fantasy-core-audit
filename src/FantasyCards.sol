@@ -399,38 +399,6 @@ contract FantasyCards is Context, IFantasyCards, AccessControlDefaultAdminRules 
     }
 
     /**
-     * @dev Safely transfers `tokenId` token from `from` to `to`, checking that contract recipients
-     * are aware of the ERC721 standard to prevent tokens from being forever locked.
-     *
-     * `data` is additional data, it has no specified format and it is sent in call to `to`.
-     *
-     * This internal function is like {safeTransferFrom} in the sense that it invokes
-     * {IERC721Receiver-onERC721Received} on the receiver, and can be used to e.g.
-     * implement alternative mechanisms to perform token transfer, such as signature-based.
-     *
-     * Requirements:
-     *
-     * - `tokenId` token must exist and be owned by `from`.
-     * - `to` cannot be the zero address.
-     * - `from` cannot be the zero address.
-     * - If `to` refers to a smart contract, it must implement {IERC721Receiver-onERC721Received}, which is called upon a safe transfer.
-     *
-     * Emits a {Transfer} event.
-     */
-    function _safeTransfer(address from, address to, uint256 tokenId) internal {
-        _safeTransfer(from, to, tokenId, "");
-    }
-
-    /**
-     * @dev Same as {xref-ERC721-_safeTransfer-address-address-uint256-}[`_safeTransfer`], with an additional `data` parameter which is
-     * forwarded in {IERC721Receiver-onERC721Received} to contract recipients.
-     */
-    function _safeTransfer(address from, address to, uint256 tokenId, bytes memory data) internal {
-        _transfer(from, to, tokenId);
-        _checkOnERC721Received(from, to, tokenId, data);
-    }
-
-    /**
      * @dev Approve `to` to operate on `tokenId`
      *
      * The `auth` argument is optional. If the value passed is non 0, then this function will check that `auth` is
