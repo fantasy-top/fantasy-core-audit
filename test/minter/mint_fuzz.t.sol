@@ -63,7 +63,7 @@ contract Mint_fuzz is BaseTest {
         weth.approve(address(executionDelegate), mintConfig.fixedPrice);
         cheats.stopPrank();
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint(0, new bytes32[](0));
         cheats.stopPrank();
 
@@ -112,7 +112,7 @@ contract Mint_fuzz is BaseTest {
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
-        cheats.startPrank(user1);
+        cheats.startPrank(user1, user1);
         minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
         cheats.stopPrank();
 

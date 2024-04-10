@@ -53,6 +53,11 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     uint256 public cardsRequiredForBurnToDraw;
     uint256 public cardsDrawnPerBurn;
 
+    modifier onlyEOA() {
+        require(msg.sender == tx.origin, "Function can only be called by an EOA");
+        _;
+    }
+
     /**
      * @dev Initializes the contract with treasury and execution delegate addresses.
      * @param _treasury Treasury address.
@@ -80,7 +85,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param configId ID of the mint configuration to use
      * @param merkleProof Proof for whitelist verification, if required
      */
-    function mint(uint256 configId, bytes32[] calldata merkleProof) public payable nonReentrant {
+    function mint(uint256 configId, bytes32[] calldata merkleProof) public payable nonReentrant onlyEOA {
         MintConfig storage mintConfig = mintConfigs[configId];
         require(mintConfig.startTimestamp <= block.timestamp, "Mint config not started");
         require(

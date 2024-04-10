@@ -5,6 +5,7 @@ pragma solidity ^0.8.20;
 
 import "../../src/Exchange.sol"; // Import the Exchange contract interface
 import "../../src/ExecutionDelegate.sol"; // Import the ExecutionDelegate contract interface
+import "../../src/Minter.sol";
 import "../../src/libraries/OrderLib.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol"; // For NFT transfers
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; // For ERC20 token operations
@@ -13,13 +14,14 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol"; // For ERC20 token oper
 // Building this contract for testing is overkill.
 contract TraderContract {
     Exchange public exchange;
+    Minter public minter;
 
-    constructor(address _exchangeAddress) {
-        require(
-            _exchangeAddress != address(0),
-            "Exchange address cannot be zero."
-        );
+    constructor(address _exchangeAddress, address _minterAddress) {
+        require(_exchangeAddress != address(0), "Exchange address cannot be zero.");
+        require(_minterAddress != address(0), "Minter address cannot be zero.");
+
         exchange = Exchange(_exchangeAddress);
+        minter = Minter(_minterAddress);
     }
 
     // Function to initiate a buy on the Exchange contract
@@ -48,5 +50,9 @@ contract TraderContract {
 
         // Call the sell function of the Exchange contract
         exchange.sell(buyOrder, buyerSignature, tokenId, merkleProof);
+    }
+
+    function mintOnMinter(uint256 configId, bytes32[] calldata merkleProof) public {
+        minter.mint(configId, merkleProof);
     }
 }
