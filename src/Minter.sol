@@ -339,7 +339,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
-     * @notice Updates the VRGDA config for a specific mint configuration
+     * @notice Updates the VRGDA config for a specific mint configuration, will require the mint config to not have an eth payment token (0 address)
      * @dev Only callable by the admin
      * @param mintConfigId The ID of the mint configuration to update
      * @param targetPrice The target price for a pack if sold on pace, scaled by the token decimals, e.g 1e18 for 1 ether, 1e6 for 1 usdc
@@ -360,6 +360,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(decayConstant < 0, "NON_NEGATIVE_DECAY_CONSTANT");
 
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(config.paymentToken != address(0), "Payment token cannot be ETH");
 
         VRGDAConfig memory newVrgdaConfig = VRGDAConfig({
             targetPrice: targetPrice,

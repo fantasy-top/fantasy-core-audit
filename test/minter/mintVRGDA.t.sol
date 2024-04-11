@@ -29,12 +29,12 @@ contract Mint is BaseTest {
         super.setUp();
     }
 
-    function test_mint_ETH() public {
+    function test_mint_WETH() public {
         MintConfig memory mintConfig = MintConfig({
             collection: address(fantasyCards),
             cardsPerPack: 50,
             maxPacks: 100,
-            paymentToken: address(0),
+            paymentToken: address(weth),
             fixedPrice: 1,
             maxPacksPerAddress: 10,
             requiresWhitelist: false,
@@ -68,10 +68,12 @@ contract Mint is BaseTest {
         // we want to sell 2 packs per day
         int256 perTimeUnit = 2e18;
 
-        cheats.deal(user1, 100 ether);
+        // cheats.deal(user1, 100 ether);
 
         // TEST: fixed price works
         cheats.startPrank(user1);
+        weth.getFaucet(100 ether);
+        weth.approve(address(executionDelegate), 100 ether);
         uint256 price = minter.getPackPrice(mintConfigId);
         assertEq(price, mintConfig.fixedPrice);
         cheats.stopPrank();
@@ -90,22 +92,22 @@ contract Mint is BaseTest {
         assertGt(price1, uint256(targetPrice));
 
         // TEST: after a mint event the price increases
-        minter.mint{value: price1}(mintConfigId, new bytes32[](0), price1 * 2);
+        minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price2 = minter.getPackPrice(mintConfigId);
         assert(price2 > price1);
 
         // TEST: if sales on time the price stays the same
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0), price2 * 2);
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
         vm.warp(block.timestamp + 1 days);
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
         // TEST: the price stays consistent with values from yesterday
-        minter.mint{value: price1}(mintConfigId, new bytes32[](0), price1 * 2);
+        minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);
 
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0), price2 * 2);
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
 
         // TEST: after a day without sales the price drops by priceDecayPercent
         vm.warp(block.timestamp + 2 days);
@@ -187,17 +189,17 @@ contract Mint is BaseTest {
         assert(price2 > price1);
 
         // TEST: if sales on time the price stays the same
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0), price2 * 2);
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
         vm.warp(block.timestamp + 1 days);
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
         // TEST: the price stays consistent with values from yesterday
-        minter.mint{value: price1}(mintConfigId, new bytes32[](0), price1 * 2);
+        minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);
 
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0), price2 * 2);
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
 
         // TEST: after a day without sales the price drops by priceDecayPercent
         vm.warp(block.timestamp + 2 days);
