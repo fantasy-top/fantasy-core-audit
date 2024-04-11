@@ -44,4 +44,6 @@ interface IExchange {
     function setExecutionDelegate(address _executionDelegate) external;
 
     function domainSeparator() external view returns (bytes32);
+
+    function saveFunds(address paymentToken, address to, uint256 amount) external;
 }

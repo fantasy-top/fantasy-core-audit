@@ -557,6 +557,20 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
+     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @param paymentToken ERC20 token address, or zero for Ether.
+     * @param to Recipient's address.
+     * @param amount Transfer amount.
+     */
+    function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (paymentToken == address(0)) {
+            payable(to).transfer(amount);
+        } else {
+            ERC20(paymentToken).transfer(to, amount);
+        }
+    }
+
+    /**
      * @notice Internal function that sets a new treasury address for collecting payments from minting operations.
      * @param _treasury The address of the new treasury. Must be a non-zero address.
      */
@@ -670,20 +684,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _executeBatchMint(address collection, uint256 cardsPerPack, address buyer) internal {
         for (uint256 i = 0; i < cardsPerPack; i++) {
             executionDelegate.mintFantasyCard(collection, buyer);
-        }
-    }
-
-    /**
-     * @dev Function to retrieve funds mistakenly sent to the mint contract.
-     * @param paymentToken ERC20 token address, or zero for Ether.
-     * @param to Recipient's address.
-     * @param amount Transfer amount.
-     */
-    function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (paymentToken == address(0)) {
-            payable(to).transfer(amount);
-        } else {
-            ERC20(paymentToken).transfer(to, amount);
         }
     }
 }
