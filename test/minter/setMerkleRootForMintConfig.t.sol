@@ -31,6 +31,7 @@ contract SetMerkleRootForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,12 +44,15 @@ contract SetMerkleRootForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     bytes32 merkleRoot = 0x537f750e9bc761acf4c8ee26659c634f7038eb65788aeb6b0d9f03513dfd69cb;
 
     function test_successful_setMerkleRootForMintConfig() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setMerkleRootForMintConfig(0, merkleRoot);
+        cheats.stopPrank();
         (, , , , , , , bytes32 actualMerkleRoot, , , , ) = minter.getMintConfig(0);
         assertEq(actualMerkleRoot, merkleRoot);
     }
@@ -61,12 +65,16 @@ contract SetMerkleRootForMintConfig is BaseTest {
     }
 
     function test_unsuccessful_setMerkleRootForMintConfig_zero() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid merkleRoot");
         minter.setMerkleRootForMintConfig(0, bytes32(0));
+        cheats.stopPrank();
     }
 
     function test_unsuccessful_setMerkleRootForMintConfig_invalid_mintConfigId() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.setMerkleRootForMintConfig(1, merkleRoot);
+        cheats.stopPrank();
     }
 }

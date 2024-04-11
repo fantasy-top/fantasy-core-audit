@@ -45,6 +45,7 @@ contract Mint_fuzz is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -57,6 +58,7 @@ contract Mint_fuzz is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.startPrank(user1);
         weth.getFaucet(mintConfig.fixedPrice);
@@ -97,6 +99,7 @@ contract Mint_fuzz is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -109,6 +112,7 @@ contract Mint_fuzz is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.deal(user1, mintConfig.fixedPrice);
 

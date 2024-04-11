@@ -31,6 +31,7 @@ contract SetPriceForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,10 +44,13 @@ contract SetPriceForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_setPriceForMintConfig() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setFixedPriceForMintConfig(0, 2 ether);
+        cheats.stopPrank();
         (, , , , uint256 actualPrice, , , , , , , ) = minter.getMintConfig(0);
         assertEq(actualPrice, 2 ether);
     }
@@ -59,7 +63,9 @@ contract SetPriceForMintConfig is BaseTest {
     }
 
     function test_unsuccessful_setPriceForMintConfig_invalid_mintConfigId() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.setFixedPriceForMintConfig(1, 2 ether);
+        cheats.stopPrank();
     }
 }

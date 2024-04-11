@@ -31,6 +31,7 @@ contract SetCollectionForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,10 +44,14 @@ contract SetCollectionForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_setCollectionForMintConfig() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setCollectionForMintConfig(0, address(0x123));
+        cheats.stopPrank();
+
         (address actualCollection, , , , , , , , , , , ) = minter.getMintConfig(0);
         assertEq(actualCollection, address(0x123));
     }
@@ -59,12 +64,16 @@ contract SetCollectionForMintConfig is BaseTest {
     }
 
     function test_unsuccessful_setCollectionForMintConfig_zero() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Collection address cannot the zero address");
         minter.setCollectionForMintConfig(0, address(0));
+        cheats.stopPrank();
     }
 
     function test_unsuccessful_setCollectionForMintConfig_invalid_mintConfigId() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.setCollectionForMintConfig(1, address(0x123));
+        cheats.stopPrank();
     }
 }

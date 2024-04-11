@@ -45,6 +45,7 @@ contract Mint is BaseTest {
             cancelled: false
         });
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -57,6 +58,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         // the target price
@@ -75,7 +77,9 @@ contract Mint is BaseTest {
         cheats.stopPrank();
 
         // TEST: check that fixed price is set to 0 after setting VRGDA
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        cheats.stopPrank();
         (, , , , uint256 fixedPrice, , , , , , , ) = minter.getMintConfig(mintConfigId);
         assertEq(fixedPrice, 0);
 

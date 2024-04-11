@@ -34,6 +34,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -46,6 +47,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.startPrank(user1);
         weth.getFaucet(mintConfig.fixedPrice);
@@ -75,6 +77,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -87,6 +90,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
@@ -118,6 +122,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -130,6 +135,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.startPrank(user1);
         weth.getFaucet(mintConfig.fixedPrice);
@@ -159,6 +165,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -171,8 +178,9 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
-        cheats.startPrank(pauserAndCanceler);
+        cheats.startPrank(mintConfigMaster);
         minter.cancelMintConfig(0);
         cheats.stopPrank();
 
@@ -204,6 +212,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -216,6 +225,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.startPrank(user2, user2);
         weth.getFaucet(1 ether);
@@ -240,6 +250,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -252,6 +263,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
@@ -277,6 +289,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -289,6 +302,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
@@ -316,6 +330,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = block.timestamp + 100;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -328,6 +343,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         vm.warp(mintConfig.expirationTimestamp + 101);
 

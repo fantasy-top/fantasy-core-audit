@@ -31,6 +31,7 @@ contract SetExpirationTimestampForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,10 +44,14 @@ contract SetExpirationTimestampForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_setExpirationTimestampForMintConfig() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setExpirationTimestampForMintConfig(0, 123);
+        cheats.stopPrank();
+
         (, , , , , , , , , uint256 actualExpirationTimestamp, , ) = minter.getMintConfig(0);
         assertEq(actualExpirationTimestamp, 123);
     }

@@ -8,7 +8,9 @@ contract SetcardsRequiredForLevelUp is BaseTest {
     }
 
     function test_successful_setcardsRequiredForLevelUp() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setcardsRequiredForLevelUp(123);
+        cheats.stopPrank();
 
         assertEq(minter.cardsRequiredForLevelUp(), 123);
     }

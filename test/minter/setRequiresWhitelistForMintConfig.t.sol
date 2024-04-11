@@ -31,6 +31,7 @@ contract SetRequiresWhitelistForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,10 +44,14 @@ contract SetRequiresWhitelistForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_setRequiresWhitelistForMintConfig() public {
+        cheats.startPrank(mintConfigMaster);
         minter.setRequiresWhitelistForMintConfig(0, true);
+        cheats.stopPrank();
+
         (, , , , , , bool actualRequiresWhitelist, , , , , ) = minter.getMintConfig(0);
         assertTrue(actualRequiresWhitelist);
     }
@@ -59,7 +64,9 @@ contract SetRequiresWhitelistForMintConfig is BaseTest {
     }
 
     function test_unsuccessful_setRequiresWhitelistForMintConfig_invalid_mintConfigId() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.setRequiresWhitelistForMintConfig(1, true);
+        cheats.stopPrank();
     }
 }

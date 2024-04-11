@@ -31,6 +31,7 @@ contract SetMaxPacksPerAddressForMintConfig is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -43,11 +44,14 @@ contract SetMaxPacksPerAddressForMintConfig is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
     }
 
     function test_successful_setMaxPacksPerAddressForMintConfig() public {
         uint256 maxPacksPerAddress = 10;
+        cheats.startPrank(mintConfigMaster);
         minter.setMaxPacksPerAddressForMintConfig(0, maxPacksPerAddress);
+        cheats.stopPrank();
         (, , , , , uint256 actualMaxPacksPerAddress, , , , , , ) = minter.getMintConfig(0);
         assertEq(actualMaxPacksPerAddress, maxPacksPerAddress);
     }
@@ -60,7 +64,9 @@ contract SetMaxPacksPerAddressForMintConfig is BaseTest {
     }
 
     function test_unsuccessful_setMaxPacksPerAddressForMintConfig_invalid_mintConfigId() public {
+        cheats.startPrank(mintConfigMaster);
         cheats.expectRevert("Invalid mintConfigId");
         minter.setMaxPacksPerAddressForMintConfig(1, 10);
+        cheats.stopPrank();
     }
 }
