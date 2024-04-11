@@ -25,12 +25,14 @@ abstract contract BaseTest is Test {
     uint256 deployerPrivateKey = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
     uint256 treasuryPrivateKey = 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d;
     uint256 pauserAndCancelerPrivateKey = 0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6;
+    uint256 mintConfigMasterPrivateKey = 0xdbda1821b80551c9d65939329250298aa3472ba22feea921c0cf5d620ea67b97;
     uint256 user1PrivateKey = 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a;
     uint256 user2PrivateKey = 0x7c852118294e51e653712a81e05800f419141751be58f605c371e15141b007a6;
 
     address deployer = vm.addr(deployerPrivateKey);
     address treasury = vm.addr(treasuryPrivateKey);
     address pauserAndCanceler = vm.addr(pauserAndCancelerPrivateKey);
+    address mintConfigMaster = vm.addr(mintConfigMasterPrivateKey);
     address user1 = vm.addr(user1PrivateKey);
     address user2 = vm.addr(user2PrivateKey);
 
@@ -62,7 +64,7 @@ abstract contract BaseTest is Test {
 
     function setUpMinter(address _treasury, address _executionDelegate) internal {
         minter = new Minter(_treasury, address(_executionDelegate), 5, 15, 1);
-        minter.grantRole(minter.CANCELER_ROLE(), pauserAndCanceler);
+        minter.grantRole(minter.MINT_CONFIG_MASTER(), mintConfigMaster);
     }
 
     function deployWETH() internal {

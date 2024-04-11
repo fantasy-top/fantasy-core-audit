@@ -44,7 +44,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /// @notice Role hash for the address allowed to cancel mintConfigs
-    bytes32 public constant CANCELER_ROLE = keccak256("CANCELER_ROLE");
+    bytes32 public constant MINT_CONFIG_MASTER = keccak256("MINT_CONFIG_MASTER");
 
     /* Variables */
     mapping(uint256 mintConfigId => MintConfig) public mintConfigs;
@@ -86,8 +86,13 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @dev Requires the mint configuration not to be cancelled, the user to be whitelisted (if applicable), and not to have minted before (if applicable). Transfers the payment and mints the NFTs.
      * @param configId ID of the mint configuration to use
      * @param merkleProof Proof for whitelist verification, if required
+     * @param maxPrice Maximum price the user is willing to pay
      */
-    function mint(uint256 configId, bytes32[] calldata merkleProof) public payable nonReentrant onlyEOA {
+    function mint(
+        uint256 configId,
+        bytes32[] calldata merkleProof,
+        uint256 maxPrice
+    ) public payable nonReentrant onlyEOA {
         MintConfig storage mintConfig = mintConfigs[configId];
         require(mintConfig.startTimestamp <= block.timestamp, "Mint config not started");
         require(
@@ -108,6 +113,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
 
         // compute the price before incrementing the total packs minted since it will push the price up otherwise
         uint256 price = getPackPrice(configId);
+        require(price <= maxPrice, "Price too high");
 
         mintConfig.totalMintedPacks += 1;
         mintConfig.amountMintedPerAddress[msg.sender] += 1;
@@ -153,7 +159,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         bytes32 merkleRoot,
         uint256 startTimestamp,
         uint256 expirationTimestamp
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(MINT_CONFIG_MASTER) {
         require(collection != address(0), "Collection address cannot be 0x0");
         require(cardsPerPack > 0, "Cards per pack must be greater than 0");
         require(maxPacks > 0, "Max packs must be greater than 0");
@@ -275,7 +281,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param mintConfigId The ID of the mint configuration to update
      * @param collection The new collection address
      */
-    function setCollectionForMintConfig(uint256 mintConfigId, address collection) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setCollectionForMintConfig(uint256 mintConfigId, address collection) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(collection != address(0), "Collection address cannot the zero address");
 
@@ -294,7 +300,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function setCardsPerPackForMintConfig(
         uint256 mintConfigId,
         uint256 cardsPerPack
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(cardsPerPack > 0, "Cards per pack must be greater than 0");
         MintConfig storage config = mintConfigs[mintConfigId];
@@ -309,7 +315,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param mintConfigId The ID of the mint configuration to update
      * @param maxPacks The maximum number of packs available
      */
-    function setMaxPacksForMintConfig(uint256 mintConfigId, uint256 maxPacks) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setMaxPacksForMintConfig(uint256 mintConfigId, uint256 maxPacks) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(maxPacks > 0, "Maximum packs must be greater than 0");
         MintConfig storage config = mintConfigs[mintConfigId];
@@ -324,7 +330,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param mintConfigId The ID of the mint configuration to update
      * @param fixedPrice A non zero positive value will disable the VRGDA mechanism and set a fixed price for the pack. This price input should be inputed with the correct token decimals coresponding to the payment token used in the mintconfig
      */
-    function setFixedPriceForMintConfig(uint256 mintConfigId, uint256 fixedPrice) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setFixedPriceForMintConfig(uint256 mintConfigId, uint256 fixedPrice) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         MintConfig storage config = mintConfigs[mintConfigId];
         config.fixedPrice = fixedPrice;
@@ -334,7 +340,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
-     * @notice Updates the VRGDA config for a specific mint configuration
+     * @notice Updates the VRGDA config for a specific mint configuration, will require the mint config to not have an eth payment token (0 address)
      * @dev Only callable by the admin
      * @param mintConfigId The ID of the mint configuration to update
      * @param targetPrice The target price for a pack if sold on pace, scaled by the token decimals, e.g 1e18 for 1 ether, 1e6 for 1 usdc
@@ -358,6 +364,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(decayConstant < 0, "NON_NEGATIVE_DECAY_CONSTANT");
 
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(config.paymentToken != address(0), "Payment token cannot be ETH");
 
         VRGDAConfig memory newVrgdaConfig = VRGDAConfig({
             targetPrice: targetPrice,
@@ -384,7 +391,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function setMaxPacksPerAddressForMintConfig(
         uint256 mintConfigId,
         uint256 maxPacksPerAddress
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         MintConfig storage config = mintConfigs[mintConfigId];
         config.maxPacksPerAddress = maxPacksPerAddress;
@@ -401,7 +408,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function setRequiresWhitelistForMintConfig(
         uint256 mintConfigId,
         bool requiresWhitelist
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         MintConfig storage config = mintConfigs[mintConfigId];
         config.requiresWhitelist = requiresWhitelist;
@@ -415,7 +422,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param mintConfigId The ID of the mint configuration to update
      * @param merkleRoot The new merkle root for whitelist verification
      */
-    function setMerkleRootForMintConfig(uint256 mintConfigId, bytes32 merkleRoot) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setMerkleRootForMintConfig(uint256 mintConfigId, bytes32 merkleRoot) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(merkleRoot != bytes32(0), "Invalid merkleRoot");
 
@@ -434,7 +441,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function setExpirationTimestampForMintConfig(
         uint256 mintConfigId,
         uint256 expirationTimestamp
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
 
         MintConfig storage config = mintConfigs[mintConfigId];
@@ -447,7 +454,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @notice Cancels a specific mint configuration, preventing further minting
      * @param mintConfigId The ID of the mint configuration to cancel
      */
-    function cancelMintConfig(uint256 mintConfigId) public onlyRole(CANCELER_ROLE) {
+    function cancelMintConfig(uint256 mintConfigId) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
 
         MintConfig storage config = mintConfigs[mintConfigId];
@@ -461,7 +468,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @dev Only callable by the contract owner. Adjusts how many cards must be burned to mint a new one in the level-up process.
      * @param _cardsRequiredForLevelUp The new number of cards required to perform a level-up.
      */
-    function setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setcardsRequiredForLevelUp(uint256 _cardsRequiredForLevelUp) public onlyRole(MINT_CONFIG_MASTER) {
         _setcardsRequiredForLevelUp(_cardsRequiredForLevelUp);
     }
 
@@ -470,7 +477,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @dev Only callable by the contract owner. Adjusts how many cards must be burned to mint during the burn to draw process
      * @param _cardsRequiredForBurnToDraw The new number of cards required to perform a burn to draw.
      */
-    function setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setcardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw) public onlyRole(MINT_CONFIG_MASTER) {
         _setcardsRequiredForBurnToDraw(_cardsRequiredForBurnToDraw);
     }
 
@@ -479,7 +486,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @dev Only callable by the contract owner. Adjusts how many cards will be minted during the burn to draw process
      * @param _cardsDrawnPerBurn The new number of cards minted during the burn to draw process
      */
-    function setcardsDrawnPerBurn(uint256 _cardsDrawnPerBurn) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setcardsDrawnPerBurn(uint256 _cardsDrawnPerBurn) public onlyRole(MINT_CONFIG_MASTER) {
         _setcardsDrawnPerBurn(_cardsDrawnPerBurn);
     }
 
@@ -559,6 +566,20 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         MintConfig storage config = mintConfigs[mintConfigId];
         require(config.fixedPrice == 0, "VRGDA not enabled");
         return config.vrgdaConfig;
+    }
+
+    /**
+     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @param paymentToken ERC20 token address, or zero for Ether.
+     * @param to Recipient's address.
+     * @param amount Transfer amount.
+     */
+    function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (paymentToken == address(0)) {
+            payable(to).transfer(amount);
+        } else {
+            ERC20(paymentToken).transfer(to, amount);
+        }
     }
 
     /**
@@ -675,20 +696,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function _executeBatchMint(address collection, uint256 cardsPerPack, address buyer) internal {
         for (uint256 i = 0; i < cardsPerPack; i++) {
             executionDelegate.mintFantasyCard(collection, buyer);
-        }
-    }
-
-    /**
-     * @dev Function to retrieve funds mistakenly sent to the mint contract.
-     * @param paymentToken ERC20 token address, or zero for Ether.
-     * @param to Recipient's address.
-     * @param amount Transfer amount.
-     */
-    function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (paymentToken == address(0)) {
-            payable(to).transfer(amount);
-        } else {
-            ERC20(paymentToken).transfer(to, amount);
         }
     }
 }

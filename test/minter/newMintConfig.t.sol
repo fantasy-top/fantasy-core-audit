@@ -9,6 +9,7 @@ contract NewMintConfig is BaseTest {
 
     function test_successful_newMintConfig() public {
         // Act
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             address(0x1),
             10,
@@ -21,6 +22,7 @@ contract NewMintConfig is BaseTest {
             block.timestamp - 1,
             block.timestamp + 7 days
         );
+        cheats.stopPrank();
 
         // Assert
         (
@@ -66,6 +68,7 @@ contract NewMintConfig is BaseTest {
         uint256 expirationTimestamp = block.timestamp + 7 days;
 
         // Act
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             collection,
             cardsPerPack,
@@ -78,6 +81,7 @@ contract NewMintConfig is BaseTest {
             startTimestamp,
             expirationTimestamp
         );
+        cheats.stopPrank();
 
         // Assert
         assertEq(minter.mintConfigIdCounter(), 1);

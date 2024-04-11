@@ -56,7 +56,7 @@ interface IMinter {
     event ExpirationTimestampUpdatedForMintConfig(uint256 mintConfigId, uint256 newExpirationTimestamp);
 
     // Functions
-    function mint(uint256 configId, bytes32[] calldata merkleProof) external payable;
+    function mint(uint256 configId, bytes32[] calldata merkleProof, uint256 maxPrice) external payable;
 
     function newMintConfig(
         address collection,

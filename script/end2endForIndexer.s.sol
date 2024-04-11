@@ -67,14 +67,14 @@ contract End2endForIndexer is Script {
         vm.startBroadcast(user1PrivateKey);
         weth.getFaucet(1 ether);
         weth.approve(address(executionDelegate), 1 ether);
-        minter.mint(0, new bytes32[](0));
+        minter.mint(0, new bytes32[](0), 1 ether);
         vm.stopBroadcast();
 
         // User2 buys a pack
         vm.startBroadcast(user2PrivateKey);
         weth.getFaucet(1 ether);
         weth.approve(address(executionDelegate), 1 ether);
-        minter.mint(0, new bytes32[](0));
+        minter.mint(0, new bytes32[](0), 1 ether);
         vm.stopBroadcast();
 
         //User1 lists a card for sale

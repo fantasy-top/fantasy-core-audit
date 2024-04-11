@@ -34,6 +34,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -46,6 +47,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.startPrank(user1);
         weth.getFaucet(mintConfig.fixedPrice);
@@ -53,7 +55,7 @@ contract Mint is BaseTest {
         cheats.stopPrank();
 
         cheats.startPrank(user1, user1);
-        minter.mint(0, new bytes32[](0));
+        minter.mint(0, new bytes32[](0), 1 ether);
         cheats.stopPrank();
 
         assertEq(fantasyCards.balanceOf(user1), mintConfig.cardsPerPack);
@@ -75,6 +77,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -87,11 +90,12 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.deal(user1, mintConfig.fixedPrice);
 
         cheats.startPrank(user1, user1);
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 1 ether);
         cheats.stopPrank();
 
         assertEq(fantasyCards.balanceOf(user1), mintConfig.cardsPerPack);
@@ -118,6 +122,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -130,6 +135,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.startPrank(user1);
         weth.getFaucet(mintConfig.fixedPrice);
@@ -137,7 +143,7 @@ contract Mint is BaseTest {
         cheats.stopPrank();
 
         cheats.startPrank(user1, user1);
-        minter.mint(0, merkleProof);
+        minter.mint(0, merkleProof, 1 ether);
         cheats.stopPrank();
 
         assertEq(fantasyCards.balanceOf(user1), mintConfig.cardsPerPack);
@@ -159,6 +165,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -171,8 +178,9 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
-        cheats.startPrank(pauserAndCanceler);
+        cheats.startPrank(mintConfigMaster);
         minter.cancelMintConfig(0);
         cheats.stopPrank();
 
@@ -180,7 +188,7 @@ contract Mint is BaseTest {
 
         cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config cancelled");
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 1 ether);
         cheats.stopPrank();
     }
 
@@ -204,6 +212,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -216,12 +225,13 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.startPrank(user2, user2);
         weth.getFaucet(1 ether);
         weth.approve(address(executionDelegate), 1 ether);
         cheats.expectRevert("User not whitelisted");
-        minter.mint(0, merkleProof);
+        minter.mint(0, merkleProof, 1 ether);
         cheats.stopPrank();
     }
 
@@ -240,6 +250,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -252,13 +263,14 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
         cheats.startPrank(user1, user1);
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 1 ether);
         cheats.expectRevert("User reached max mint limit");
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 1 ether);
         cheats.stopPrank();
     }
 
@@ -277,6 +289,7 @@ contract Mint is BaseTest {
 
         mintConfig.expirationTimestamp = 0;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -289,16 +302,17 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         cheats.deal(user1, mintConfig.fixedPrice * 100);
 
         cheats.startPrank(user1, user1);
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 1 ether);
         cheats.stopPrank();
 
         cheats.startPrank(user1, user1);
         cheats.expectRevert("No packs left");
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 1 ether);
         cheats.stopPrank();
     }
 
@@ -316,6 +330,7 @@ contract Mint is BaseTest {
         mintConfig.startTimestamp = block.timestamp;
         mintConfig.expirationTimestamp = block.timestamp + 100;
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -328,6 +343,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         vm.warp(mintConfig.expirationTimestamp + 101);
 
@@ -335,7 +351,44 @@ contract Mint is BaseTest {
 
         cheats.startPrank(user1, user1);
         cheats.expectRevert("Mint config expired");
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 1 ether);
+        cheats.stopPrank();
+    }
+
+    function test_unsuccessful_mint_when_max_price_is_below_fixed() public {
+        // Test minting when mintConfig is expired
+        MintConfig memory mintConfig;
+        mintConfig.collection = address(fantasyCards);
+        mintConfig.cardsPerPack = 3;
+        mintConfig.maxPacks = 1;
+        mintConfig.paymentToken = address(0);
+        mintConfig.fixedPrice = 1 ether;
+        mintConfig.maxPacksPerAddress = 0;
+        mintConfig.requiresWhitelist = false;
+        mintConfig.merkleRoot = bytes32(0);
+        mintConfig.startTimestamp = block.timestamp;
+        mintConfig.expirationTimestamp = block.timestamp + 100;
+
+        cheats.startPrank(mintConfigMaster);
+        minter.newMintConfig(
+            mintConfig.collection,
+            mintConfig.cardsPerPack,
+            mintConfig.maxPacks,
+            mintConfig.paymentToken,
+            mintConfig.fixedPrice,
+            mintConfig.maxPacksPerAddress,
+            mintConfig.requiresWhitelist,
+            mintConfig.merkleRoot,
+            mintConfig.startTimestamp,
+            mintConfig.expirationTimestamp
+        );
+        cheats.stopPrank();
+
+        cheats.deal(user1, mintConfig.fixedPrice);
+
+        cheats.startPrank(user1, user1);
+        cheats.expectRevert("Price too high");
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 0.1 ether);
         cheats.stopPrank();
     }
 
@@ -344,6 +397,6 @@ contract Mint is BaseTest {
         TraderContract traderContract = new TraderContract(address(exchange), address(minter));
 
         cheats.expectRevert("Function can only be called by an EOA");
-        traderContract.mintOnMinter(0, new bytes32[](0));
+        traderContract.mintOnMinter(0, new bytes32[](0), 1 ether);
     }
 }

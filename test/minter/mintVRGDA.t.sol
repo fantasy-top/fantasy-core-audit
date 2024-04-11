@@ -30,12 +30,12 @@ contract Mint is BaseTest {
         super.setUp();
     }
 
-    function test_mint_ETH() public {
+    function test_mint_WETH() public {
         MintConfig memory mintConfig = MintConfig({
             collection: address(fantasyCards),
             cardsPerPack: 50,
             maxPacks: 100,
-            paymentToken: address(0),
+            paymentToken: address(weth),
             fixedPrice: 1,
             maxPacksPerAddress: 10,
             requiresWhitelist: false,
@@ -46,6 +46,7 @@ contract Mint is BaseTest {
             cancelled: false
         });
 
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -58,6 +59,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         // the target price
@@ -69,16 +71,20 @@ contract Mint is BaseTest {
         // the number of seconds in the time unit, 1 minute so 60
         int256 secondsPerTimeUnit = 60;
 
-        cheats.deal(user1, 100 ether);
+        // cheats.deal(user1, 100 ether);
 
         // TEST: fixed price works
         cheats.startPrank(user1);
+        weth.getFaucet(100 ether);
+        weth.approve(address(executionDelegate), 100 ether);
         uint256 price = minter.getPackPrice(mintConfigId);
         assertEq(price, mintConfig.fixedPrice);
         cheats.stopPrank();
 
         // TEST: check that fixed price is set to 0 after setting VRGDA
+        cheats.startPrank(mintConfigMaster);
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
+        cheats.stopPrank();
         (, , , , uint256 fixedPrice, , , , , , , ) = minter.getMintConfig(mintConfigId);
         assertEq(fixedPrice, 0);
 
@@ -87,22 +93,22 @@ contract Mint is BaseTest {
         uint256 price1 = minter.getPackPrice(mintConfigId);
 
         // TEST: after a mint event the price increases
-        minter.mint{value: price1}(mintConfigId, new bytes32[](0));
+        minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price2 = minter.getPackPrice(mintConfigId);
         assert(price2 > price1);
 
         // TEST: if sales on time the price stays the same
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0));
-        vm.warp(block.timestamp + 1 minutes);
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
+        vm.warp(block.timestamp + 1 days);
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
-        // TEST: the price stays consistent with values from a minute ago
-        minter.mint{value: price1}(mintConfigId, new bytes32[](0));
+        // TEST: the price stays consistent with values from yesterday
+        minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);
 
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0));
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
 
         // TEST: after a minute without sales the price drops by priceDecayPercent
         vm.warp(block.timestamp + 2 minutes);
@@ -130,7 +136,7 @@ contract Mint is BaseTest {
             totalMintedPacks: 0,
             cancelled: false
         });
-
+        cheats.startPrank(mintConfigMaster);
         minter.newMintConfig(
             mintConfig.collection,
             mintConfig.cardsPerPack,
@@ -143,6 +149,7 @@ contract Mint is BaseTest {
             mintConfig.startTimestamp,
             mintConfig.expirationTimestamp
         );
+        cheats.stopPrank();
 
         uint256 mintConfigId = 0;
         // the target price
@@ -163,10 +170,12 @@ contract Mint is BaseTest {
         assertEq(price, mintConfig.fixedPrice);
         cheats.stopPrank();
 
+        cheats.startPrank(mintConfigMaster);
         // TEST: check that fixed price is set to 0 after setting VRGDA
         minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         (, , , , uint256 fixedPrice, , , , , , , ) = minter.getMintConfig(mintConfigId);
         assertEq(fixedPrice, 0);
+        cheats.stopPrank();
 
         cheats.startPrank(user1, user1);
 
@@ -174,23 +183,23 @@ contract Mint is BaseTest {
 
         // TEST: after a mint event the price increases
         usdc.approve(address(executionDelegate), 1000000 * 1000000);
-        minter.mint(mintConfigId, new bytes32[](0));
+        minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price2 = minter.getPackPrice(mintConfigId);
         console.log("price2", price2);
         assert(price2 > price1);
 
         // TEST: if sales on time the price stays the same
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0));
-        vm.warp(block.timestamp + 1 minutes);
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
+        vm.warp(block.timestamp + 1 days);
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
-        // TEST: the price stays consistent with values from a minute ago
-        minter.mint{value: price1}(mintConfigId, new bytes32[](0));
+        // TEST: the price stays consistent with values from yesterday
+        minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);
 
-        minter.mint{value: price2}(mintConfigId, new bytes32[](0));
+        minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
 
         // TEST: after a a minute without sales the price drops by priceDecayPercent
         vm.warp(block.timestamp + 2 minutes);
