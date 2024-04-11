@@ -2,7 +2,8 @@ pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
 import "../../src/interfaces/IMinter.sol";
-import "../../lib/forge-std/src/console.sol";
+// import "../../lib/forge-std/src/console.sol"; // leaving it commented out if needed
+import {toTimeUnitWadUnsafe} from "../../src/VRGDA/wadMath.sol";
 
 contract Mint is BaseTest {
     struct MintConfig {
@@ -175,7 +176,6 @@ contract Mint is BaseTest {
         // TEST: after a mint event the price increases
         minter.mint(mintConfigId, new bytes32[](0), price1);
         uint256 price2 = minter.getPackPrice(mintConfigId);
-        console.log("price2", price2);
         assert(price2 > price1);
 
         // TEST: if sales on time the price stays the same
@@ -195,11 +195,7 @@ contract Mint is BaseTest {
         vm.warp(block.timestamp + 2 minutes);
         uint256 price5 = minter.getPackPrice(mintConfigId);
         uint256 expectedPrice = (price1 * (1e18 - uint256(priceDecayPercent))) / 1e18;
-        console.log("price5", price5);
-        console.log("expectedPrice", expectedPrice);
-        // max difference of 1 wei
         assertApproxEqAbs(expectedPrice, price5, 1);
-        // rounds up
         assert(price5 >= expectedPrice);
         cheats.stopPrank();
     }
@@ -234,12 +230,59 @@ contract Mint is BaseTest {
             mintConfig.expirationTimestamp
         );
         cheats.stopPrank();
+        uint256 mintConfigId = 0;
+        int256 targetPrice = 1 ether;
+        int256 priceDecayPercent = 3e17;
+        int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 3600; // 1 hour
+        cheats.startPrank(mintConfigMaster);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
+        cheats.stopPrank();
+        cheats.warp(block.timestamp + uint256(secondsPerTimeUnit) / 2);
+        uint256 price = minter.getPackPrice(mintConfigId);
+        assertEq(price, uint256(targetPrice));
+    }
 
-        // uint256 mintConfigId = 0;
-        // int256 targetPrice = 1 ether;
-        // int256 priceDecayPercent = 3e17;
-        // int256 perTimeUnit = 2e18;
-        // // the number of seconds in the time unit, 1 minute so 60
-        // int256 secondsPerTimeUnit = 3600;
+    function test_mint_WETH_day_time_unit_target_price() public {
+        MintConfig memory mintConfig = MintConfig({
+            collection: address(fantasyCards),
+            cardsPerPack: 50,
+            maxPacks: 100,
+            paymentToken: address(weth),
+            fixedPrice: 1,
+            maxPacksPerAddress: 10,
+            requiresWhitelist: false,
+            merkleRoot: bytes32(0),
+            startTimestamp: block.timestamp,
+            expirationTimestamp: block.timestamp + 10 days,
+            totalMintedPacks: 0,
+            cancelled: false
+        });
+
+        cheats.startPrank(mintConfigMaster);
+        minter.newMintConfig(
+            mintConfig.collection,
+            mintConfig.cardsPerPack,
+            mintConfig.maxPacks,
+            mintConfig.paymentToken,
+            mintConfig.fixedPrice,
+            mintConfig.maxPacksPerAddress,
+            mintConfig.requiresWhitelist,
+            mintConfig.merkleRoot,
+            mintConfig.startTimestamp,
+            mintConfig.expirationTimestamp
+        );
+        cheats.stopPrank();
+        uint256 mintConfigId = 0;
+        int256 targetPrice = 1 ether;
+        int256 priceDecayPercent = 3e17;
+        int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400; // 1 hour
+        cheats.startPrank(mintConfigMaster);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
+        cheats.stopPrank();
+        cheats.warp(block.timestamp + 12 hours);
+        uint256 price = minter.getPackPrice(mintConfigId);
+        assertEq(price, uint256(targetPrice));
     }
 }
