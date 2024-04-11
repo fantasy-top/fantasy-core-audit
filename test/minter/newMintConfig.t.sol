@@ -19,7 +19,7 @@ contract NewMintConfig is BaseTest {
             12,
             true,
             0x3000000000000000000000000000000000000000000000000000000000000000,
-            block.timestamp - 1,
+            block.timestamp,
             block.timestamp + 7 days
         );
         cheats.stopPrank();
@@ -48,7 +48,7 @@ contract NewMintConfig is BaseTest {
         assertEq(actualMaxPacksPerAddress, 12);
         assertEq(actualRequiresWhitelist, true);
         assertEq(actualMerkleRoot, 0x3000000000000000000000000000000000000000000000000000000000000000);
-        assertEq(actualStartTimestamp, block.timestamp - 1);
+        assertEq(actualStartTimestamp, block.timestamp);
         assertEq(actualExpirationTimestamp, block.timestamp + 7 days);
         assertEq(actualTotalMintedPacks, 0);
         assertEq(actualCancelled, false);
@@ -64,7 +64,7 @@ contract NewMintConfig is BaseTest {
         uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
-        uint256 startTimestamp = block.timestamp - 1;
+        uint256 startTimestamp = block.timestamp;
         uint256 expirationTimestamp = block.timestamp + 7 days;
 
         // Act
@@ -97,7 +97,7 @@ contract NewMintConfig is BaseTest {
         uint256 maxPacksPerAddress = 0;
         bool requiresWhitelist = true;
         bytes32 merkleRoot = 0x3000000000000000000000000000000000000000000000000000000000000000;
-        uint256 startTimestamp = block.timestamp - 1;
+        uint256 startTimestamp = block.timestamp;
         uint256 expirationTimestamp = block.timestamp + 7 days;
 
         cheats.startPrank(user1);

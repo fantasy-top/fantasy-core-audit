@@ -40,7 +40,7 @@ contract Mint is BaseTest {
             maxPacksPerAddress: 10,
             requiresWhitelist: false,
             merkleRoot: bytes32(0),
-            startTimestamp: block.timestamp - 100,
+            startTimestamp: block.timestamp,
             expirationTimestamp: block.timestamp + 10 days,
             totalMintedPacks: 0,
             cancelled: false
@@ -130,7 +130,7 @@ contract Mint is BaseTest {
             maxPacksPerAddress: 10,
             requiresWhitelist: false,
             merkleRoot: bytes32(0),
-            startTimestamp: block.timestamp - 1,
+            startTimestamp: block.timestamp,
             expirationTimestamp: block.timestamp + 10 days,
             totalMintedPacks: 0,
             cancelled: false

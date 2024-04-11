@@ -163,7 +163,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(collection != address(0), "Collection address cannot be 0x0");
         require(cardsPerPack > 0, "Cards per pack must be greater than 0");
         require(maxPacks > 0, "Max packs must be greater than 0");
-        require(startTimestamp >= block.timestamp - 24 * 60 * 60, "startTimestamp must be less than a day old");
+        require(startTimestamp >= block.timestamp, "startTimestamp must be less than a day old");
         require(expirationTimestamp == 0 || expirationTimestamp > startTimestamp, "invalid expirationTimestamp");
         if (requiresWhitelist) {
             require(merkleRoot != 0, "missing merkleRoot");
@@ -211,7 +211,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         }
 
         VRGDAConfig memory vrgdaConfig = mintConfig.vrgdaConfig;
-        require((block.timestamp - mintConfig.startTimestamp) > 0, "INVALID_TIMESTAMP");
+        require((block.timestamp - mintConfig.startTimestamp) >= 0, "INVALID_TIMESTAMP");
         unchecked {
             return
                 getVRGDAPrice(
