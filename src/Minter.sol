@@ -346,7 +346,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param targetPrice The target price for a pack if sold on pace, scaled by the token decimals, e.g 1e18 for 1 ether, 1e6 for 1 usdc
      * @param priceDecayPercent The percent price decays per unit of time with no sales, scaled by 1e18, e.g 3e17 for 30%
      * @param perTimeUnit The targeted number of packs to sell in 1 full unit of time, scaled by 1e18, e.g 1e18 for 1 pack
-     * @param secondsPerTimeUnit The total number of seconds in a time unit. 60 for a minute, 2600 for an hour, 86400 for a day.
+     * @param secondsPerTimeUnit The total number of seconds in a time unit. 60 for a minute, 3600 for an hour, 86400 for a day.
      */
     function setVRGDAForMintConfig(
         uint256 mintConfigId,
