@@ -71,8 +71,9 @@ contract Deploy is Script {
         int256 targetPrice = 0.1 ether;
         int256 priceDecayPercent = 1e17; // 10 percent
         int256 perTimeUnit = 143e18; // 1000 packs in 7 days ~ 143 pack per day
+        int256 secondsPerTimeUnit = 86400; // 1 day
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
 
         vm.stopBroadcast();
 

@@ -59,8 +59,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400;
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.startPrank(user1);
@@ -110,8 +111,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400;
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price);
@@ -160,8 +162,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400;
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.startPrank(user1);
@@ -208,8 +211,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400;
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.startPrank(pauserAndCanceler);
@@ -260,7 +264,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        int256 secondsPerTimeUnit = 86400;
+
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
 
         cheats.startPrank(user2, user2);
         weth.getFaucet(1 ether);
@@ -301,8 +307,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400;
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price * 100);
@@ -345,8 +352,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400;
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price * 100);
@@ -393,8 +401,9 @@ contract Mint is BaseTest {
         int256 targetPrice = 1 ether;
         int256 priceDecayPercent = 3e17;
         int256 perTimeUnit = 2e18;
+        int256 secondsPerTimeUnit = 86400;
 
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         uint256 price = minter.getPackPrice(mintConfigId);
 
         cheats.deal(user1, price);

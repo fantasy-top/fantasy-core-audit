@@ -2,8 +2,7 @@ pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
 import "../../src/interfaces/IMinter.sol";
-// import console
-import "../../lib/forge-std/src/console.sol";
+// import "../../lib/forge-std/src/console.sol";
 
 contract Mint is BaseTest {
     struct VRGDAConfig {
@@ -67,6 +66,8 @@ contract Mint is BaseTest {
         int256 priceDecayPercent = 3e17;
         // we want to sell 2 packs per minutes
         int256 perTimeUnit = 2e18;
+        // the number of seconds in the time unit, 1 minute so 60
+        int256 secondsPerTimeUnit = 60;
 
         cheats.deal(user1, 100 ether);
 
@@ -77,11 +78,13 @@ contract Mint is BaseTest {
         cheats.stopPrank();
 
         // TEST: check that fixed price is set to 0 after setting VRGDA
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         (, , , , uint256 fixedPrice, , , , , , , ) = minter.getMintConfig(mintConfigId);
         assertEq(fixedPrice, 0);
 
         cheats.startPrank(user1, user1);
+
+        uint256 price1 = minter.getPackPrice(mintConfigId);
 
         // TEST: after a mint event the price increases
         minter.mint{value: price1}(mintConfigId, new bytes32[](0));
@@ -146,8 +149,10 @@ contract Mint is BaseTest {
         int256 targetPrice = 100 * 1000000; // 100 USDC
         // price drops by 30% every day without sales
         int256 priceDecayPercent = 3e17;
-        // we want to sell 2 packs per day
+        // we want to sell 2 packs per minutes
         int256 perTimeUnit = 2e18;
+        // the number of seconds in the time unit, 1 minute so 60
+        int256 secondsPerTimeUnit = 60;
 
         cheats.deal(user1, 100 ether);
 
@@ -159,7 +164,7 @@ contract Mint is BaseTest {
         cheats.stopPrank();
 
         // TEST: check that fixed price is set to 0 after setting VRGDA
-        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit);
+        minter.setVRGDAForMintConfig(mintConfigId, targetPrice, priceDecayPercent, perTimeUnit, secondsPerTimeUnit);
         (, , , , uint256 fixedPrice, , , , , , , ) = minter.getMintConfig(mintConfigId);
         assertEq(fixedPrice, 0);
 

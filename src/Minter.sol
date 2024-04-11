@@ -20,8 +20,8 @@ import "./interfaces/IBlast.sol";
 import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IFantasyCards.sol";
 import "./interfaces/IMinter.sol";
-import {wadLn, toDaysWadUnsafe} from "solmate/utils/SignedWadMath.sol";
-import {toMinutesWadUnsafe} from "./VRGDA/wadMath.sol";
+import {wadLn} from "solmate/utils/SignedWadMath.sol";
+import {toTimeUnitWadUnsafe} from "./VRGDA/wadMath.sol";
 
 /// @title A contract for minting Fantasy Cards NFTs using VRGDA pricing
 contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, LinearVRGDA {
@@ -209,7 +209,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         unchecked {
             return
                 getVRGDAPrice(
-                    toMinutesWadUnsafe(block.timestamp - mintConfig.startTimestamp),
+                    toTimeUnitWadUnsafe(block.timestamp - mintConfig.startTimestamp, vrgdaConfig.secondsPerTimeUnit),
                     mintConfig.totalMintedPacks,
                     vrgdaConfig.targetPrice,
                     vrgdaConfig.priceDecayPercent,
@@ -340,15 +340,18 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param targetPrice The target price for a pack if sold on pace, scaled by the token decimals, e.g 1e18 for 1 ether, 1e6 for 1 usdc
      * @param priceDecayPercent The percent price decays per unit of time with no sales, scaled by 1e18, e.g 3e17 for 30%
      * @param perTimeUnit The targeted number of packs to sell in 1 full unit of time, scaled by 1e18, e.g 1e18 for 1 pack
+     * @param secondsPerTimeUnit The total number of seconds in a time unit. 60 for a minute, 2600 for an hour, 86400 for a day.
      */
     function setVRGDAForMintConfig(
         uint256 mintConfigId,
         int256 targetPrice,
         int256 priceDecayPercent,
-        int256 perTimeUnit
+        int256 perTimeUnit,
+        int256 secondsPerTimeUnit
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(targetPrice > 0, "Non zero target price");
+        require(secondsPerTimeUnit > 0, "Non zero seconds per time unit");
         int256 decayConstant = wadLn(1e18 - priceDecayPercent);
 
         // The decay constant must be negative for VRGDAs to work.
@@ -359,7 +362,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         VRGDAConfig memory newVrgdaConfig = VRGDAConfig({
             targetPrice: targetPrice,
             priceDecayPercent: priceDecayPercent,
-            perTimeUnit: perTimeUnit
+            perTimeUnit: perTimeUnit,
+            secondsPerTimeUnit: secondsPerTimeUnit
         });
 
         // update the VRGDA config
