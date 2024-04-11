@@ -2,7 +2,7 @@ pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
 import "../../src/interfaces/IMinter.sol";
-// import "../../lib/forge-std/src/console.sol";
+import "../../lib/forge-std/src/console.sol";
 
 contract Mint is BaseTest {
     struct VRGDAConfig {
@@ -71,8 +71,6 @@ contract Mint is BaseTest {
         // the number of seconds in the time unit, 1 minute so 60
         int256 secondsPerTimeUnit = 60;
 
-        // cheats.deal(user1, 100 ether);
-
         // TEST: fixed price works
         cheats.startPrank(user1);
         weth.getFaucet(100 ether);
@@ -99,11 +97,12 @@ contract Mint is BaseTest {
 
         // TEST: if sales on time the price stays the same
         minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
-        vm.warp(block.timestamp + 1 days);
+        vm.warp(block.timestamp + 1 minutes);
+
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
-        // TEST: the price stays consistent with values from yesterday
+        // TEST: the price stays consistent with values from 1 minute ago
         minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);
@@ -161,8 +160,6 @@ contract Mint is BaseTest {
         // the number of seconds in the time unit, 1 minute so 60
         int256 secondsPerTimeUnit = 60;
 
-        cheats.deal(user1, 100 ether);
-
         // TEST: fixed price works
         cheats.startPrank(user1);
         usdc.getFaucet(1000000 * 1000); // 250 USDC
@@ -190,11 +187,11 @@ contract Mint is BaseTest {
 
         // TEST: if sales on time the price stays the same
         minter.mint(mintConfigId, new bytes32[](0), price2 * 2);
-        vm.warp(block.timestamp + 1 days);
+        vm.warp(block.timestamp + 1 minutes);
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
-        // TEST: the price stays consistent with values from yesterday
+        // TEST: the price stays consistent with values from 1 minute ago
         minter.mint(mintConfigId, new bytes32[](0), price1 * 2);
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);

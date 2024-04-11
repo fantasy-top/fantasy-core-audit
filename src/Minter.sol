@@ -354,7 +354,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         int256 priceDecayPercent,
         int256 perTimeUnit,
         int256 secondsPerTimeUnit
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(targetPrice > 0, "Non zero target price");
         require(secondsPerTimeUnit > 0, "Non zero seconds per time unit");
