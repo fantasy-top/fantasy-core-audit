@@ -97,14 +97,14 @@ contract Mint is BaseTest {
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
-        // TEST: the price stays consistent with values from yesterday
+        // TEST: the price stays consistent with values from a minute ago
         minter.mint{value: price1}(mintConfigId, new bytes32[](0));
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);
 
         minter.mint{value: price2}(mintConfigId, new bytes32[](0));
 
-        // TEST: after a day without sales the price drops by priceDecayPercent
+        // TEST: after a minute without sales the price drops by priceDecayPercent
         vm.warp(block.timestamp + 2 minutes);
         uint256 price5 = minter.getPackPrice(mintConfigId);
         uint256 expectedPrice = (price1 * (1e18 - uint256(priceDecayPercent))) / 1e18;
@@ -147,7 +147,7 @@ contract Mint is BaseTest {
         uint256 mintConfigId = 0;
         // the target price
         int256 targetPrice = 100 * 1000000; // 100 USDC
-        // price drops by 30% every day without sales
+        // price drops by 30% every minute without sales
         int256 priceDecayPercent = 3e17;
         // we want to sell 2 packs per minutes
         int256 perTimeUnit = 2e18;
@@ -185,7 +185,7 @@ contract Mint is BaseTest {
         uint256 price3 = minter.getPackPrice(mintConfigId);
         assertEq(price1, price3);
 
-        // TEST: the price stays consistent with values from yesterday
+        // TEST: the price stays consistent with values from a minute ago
         minter.mint{value: price1}(mintConfigId, new bytes32[](0));
         uint256 price4 = minter.getPackPrice(mintConfigId);
         assertEq(price2, price4);
