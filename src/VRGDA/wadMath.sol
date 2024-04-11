@@ -6,7 +6,7 @@ pragma solidity ^0.8.20;
 function toTimeUnitWadUnsafe(uint256 x, int256 secondsPerTimeUnit) pure returns (int256 r) {
     /// @solidity memory-safe-assembly
     assembly {
-        // Multiply x by 1e18 and then divide it by 60.
+        // Multiply x by 1e18 and then divide it by the number of seconds in the time unit.
         r := div(mul(x, 1000000000000000000), secondsPerTimeUnit)
     }
 }
