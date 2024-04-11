@@ -85,8 +85,13 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @dev Requires the mint configuration not to be cancelled, the user to be whitelisted (if applicable), and not to have minted before (if applicable). Transfers the payment and mints the NFTs.
      * @param configId ID of the mint configuration to use
      * @param merkleProof Proof for whitelist verification, if required
+     * @param maxPrice Maximum price the user is willing to pay
      */
-    function mint(uint256 configId, bytes32[] calldata merkleProof) public payable nonReentrant onlyEOA {
+    function mint(
+        uint256 configId,
+        bytes32[] calldata merkleProof,
+        uint256 maxPrice
+    ) public payable nonReentrant onlyEOA {
         MintConfig storage mintConfig = mintConfigs[configId];
         require(mintConfig.startTimestamp <= block.timestamp, "Mint config not started");
         require(
@@ -107,6 +112,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
 
         // compute the price before incrementing the total packs minted since it will push the price up otherwise
         uint256 price = getPackPrice(configId);
+        require(price <= maxPrice, "Price too high");
 
         mintConfig.totalMintedPacks += 1;
         mintConfig.amountMintedPerAddress[msg.sender] += 1;
@@ -333,7 +339,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
-     * @notice Updates the VRGDA config for a specific mint configuration
+     * @notice Updates the VRGDA config for a specific mint configuration, will require the mint config to not have an eth payment token (0 address)
      * @dev Only callable by the admin
      * @param mintConfigId The ID of the mint configuration to update
      * @param targetPrice The target price for a pack if sold on pace, scaled by the token decimals, e.g 1e18 for 1 ether, 1e6 for 1 usdc
@@ -354,6 +360,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(decayConstant < 0, "NON_NEGATIVE_DECAY_CONSTANT");
 
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(config.paymentToken != address(0), "Payment token cannot be ETH");
 
         VRGDAConfig memory newVrgdaConfig = VRGDAConfig({
             targetPrice: targetPrice,

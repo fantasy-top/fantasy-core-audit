@@ -66,7 +66,7 @@ contract Mint_fuzz is BaseTest {
         cheats.stopPrank();
 
         cheats.startPrank(user1, user1);
-        minter.mint(0, new bytes32[](0));
+        minter.mint(0, new bytes32[](0), 120000000 ether);
         cheats.stopPrank();
 
         assertEq(fantasyCards.balanceOf(user1), mintConfig.cardsPerPack);
@@ -117,7 +117,7 @@ contract Mint_fuzz is BaseTest {
         cheats.deal(user1, mintConfig.fixedPrice);
 
         cheats.startPrank(user1, user1);
-        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0));
+        minter.mint{value: mintConfig.fixedPrice}(0, new bytes32[](0), 120000000 ether);
         cheats.stopPrank();
 
         assertEq(fantasyCards.balanceOf(user1), mintConfig.cardsPerPack);
