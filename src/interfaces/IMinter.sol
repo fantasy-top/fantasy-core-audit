@@ -7,6 +7,7 @@ interface IMinter {
         int256 targetPrice; // Target price for a pack, to be scaled according to sales pace.
         int256 priceDecayPercent; // Percent price decays per unit of time with no sales, scaled by 1e18.
         int256 perTimeUnit; // The total number of packs to target selling every full unit of time.
+        int256 secondsPerTimeUnit; // The total number of seconds in a time unit. 60 for a minute, 3600 for an hour, 86400 for a day.
     }
 
     // Events
@@ -84,7 +85,8 @@ interface IMinter {
         uint256 mintConfigId,
         int256 targetPrice,
         int256 priceDecayPercent,
-        int256 perTimeUnit
+        int256 perTimeUnit,
+        int256 secondsPerTimeUnit
     ) external;
 
     function setMaxPacksPerAddressForMintConfig(uint256 mintConfigId, uint256 maxPacksPerAddress) external;
