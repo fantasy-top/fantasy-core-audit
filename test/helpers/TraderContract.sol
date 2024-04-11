@@ -52,7 +52,7 @@ contract TraderContract {
         exchange.sell(buyOrder, buyerSignature, tokenId, merkleProof);
     }
 
-    function mintOnMinter(uint256 configId, bytes32[] calldata merkleProof) public {
-        minter.mint(configId, merkleProof);
+    function mintOnMinter(uint256 configId, bytes32[] calldata merkleProof, uint256 maxPrice) public {
+        minter.mint(configId, merkleProof, maxPrice);
     }
 }
