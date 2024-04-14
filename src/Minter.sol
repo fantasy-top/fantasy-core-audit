@@ -204,6 +204,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      */
     function getPackPrice(uint256 configId) public view returns (uint256) {
         MintConfig storage mintConfig = mintConfigs[configId];
+        require(!mintConfig.cancelled, "Mint config cancelled");
 
         // If no VRGDA configuration is set, return the fixed price
         if (mintConfig.vrgdaConfig.targetPrice == 0) {
@@ -286,6 +287,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(collection != address(0), "Collection address cannot the zero address");
 
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.collection = collection;
 
         emit CollectionUpdatedForMintConfig(mintConfigId, collection);
@@ -304,6 +306,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(cardsPerPack > 0, "Cards per pack must be greater than 0");
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.cardsPerPack = cardsPerPack;
 
         emit CardsPerPackUpdatedForMintConfig(mintConfigId, cardsPerPack);
@@ -319,6 +322,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         require(maxPacks > 0, "Maximum packs must be greater than 0");
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.maxPacks = maxPacks;
 
         emit MaxPacksUpdatedForMintConfig(mintConfigId, maxPacks);
@@ -333,6 +337,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     function setFixedPriceForMintConfig(uint256 mintConfigId, uint256 fixedPrice) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.fixedPrice = fixedPrice;
         // Disable VRGDA mechanism if any
         config.vrgdaConfig.targetPrice = 0;
@@ -364,6 +369,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(decayConstant < 0, "NON_NEGATIVE_DECAY_CONSTANT");
 
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         require(config.paymentToken != address(0), "Payment token cannot be ETH");
 
         VRGDAConfig memory newVrgdaConfig = VRGDAConfig({
@@ -394,6 +400,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     ) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.maxPacksPerAddress = maxPacksPerAddress;
 
         emit MaxPacksPerAddressUpdatedForMintConfig(mintConfigId, maxPacksPerAddress);
@@ -411,6 +418,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     ) public onlyRole(MINT_CONFIG_MASTER) {
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.requiresWhitelist = requiresWhitelist;
 
         emit WhitelistRequirementUpdatedForMintConfig(mintConfigId, requiresWhitelist);
@@ -427,6 +435,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(merkleRoot != bytes32(0), "Invalid merkleRoot");
 
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.merkleRoot = merkleRoot;
 
         emit MerkleRootUpdatedForMintConfig(mintConfigId, merkleRoot);
@@ -445,6 +454,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         require(mintConfigId < mintConfigIdCounter, "Invalid mintConfigId");
 
         MintConfig storage config = mintConfigs[mintConfigId];
+        require(!config.cancelled, "Mint config cancelled");
         config.expirationTimestamp = expirationTimestamp;
 
         emit ExpirationTimestampUpdatedForMintConfig(mintConfigId, expirationTimestamp);

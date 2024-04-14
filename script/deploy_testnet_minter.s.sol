@@ -12,7 +12,6 @@ import "../test/tokens/WrappedETH_Ownable.sol";
 contract DeployMinter is Script {
     FantasyCards fantasyCards;
     Exchange exchange;
-    ExecutionDelegate executionDelegate;
     Minter minter;
     WrappedETH weth;
 
@@ -26,7 +25,6 @@ contract DeployMinter is Script {
         address treasury = 0x6b88C7D530969F747A4dA218CF8Ef26505d45AE6;
         address executionDelegate = 0x1caaa0Cce5d809BCa4f5C23896d94d07a1C0B07A;
         console.log("Treasury Address: ", address(treasury));
-        address deployer = vm.addr(deployerPrivateKey);
 
         vm.startBroadcast(deployerPrivateKey);
 
