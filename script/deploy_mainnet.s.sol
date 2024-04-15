@@ -7,17 +7,17 @@ import "../src/FantasyCards.sol";
 import "../src/Exchange.sol";
 import "../src/ExecutionDelegate.sol";
 import "../src/Minter.sol";
-import "../test/tokens/WrappedETH_Ownable.sol";
 
 contract Deploy is Script {
     FantasyCards fantasyCards;
     Exchange exchange;
     ExecutionDelegate executionDelegate;
     Minter minter;
-    WrappedETH weth;
+
+    address weth = 0x4300000000000000000000000000000000000004;
 
     uint256 protocolFeeBps = 300;
-    uint256 wethMinimumPrice = 0;
+    uint256 wethMinimumPrice = 10000000000000000; // 0.01 eth
     uint256 cardsRequiredForLevelUp = 5;
     uint256 cardsRequiredForBurnToDraw = 15;
     uint256 cardsDrawnPerBurn = 1;
@@ -34,7 +34,6 @@ contract Deploy is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         fantasyCards = new FantasyCards();
-        weth = new WrappedETH();
         executionDelegate = new ExecutionDelegate();
         minter = new Minter(
             treasury,
@@ -46,7 +45,7 @@ contract Deploy is Script {
 
         exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
         exchange.whiteListCollection(address(fantasyCards));
-        exchange.whiteListPaymentToken(address(weth), wethMinimumPrice);
+        exchange.whiteListPaymentToken(weth, wethMinimumPrice);
 
         executionDelegate.approveContract(address(minter));
         executionDelegate.approveContract(address(exchange));
