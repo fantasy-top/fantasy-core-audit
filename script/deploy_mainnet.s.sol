@@ -7,6 +7,7 @@ import "../src/FantasyCards.sol";
 import "../src/Exchange.sol";
 import "../src/ExecutionDelegate.sol";
 import "../src/Minter.sol";
+import {BlastMock} from "../test/helpers/BlastMock.sol";
 
 contract Deploy is Script {
     FantasyCards fantasyCards;
@@ -25,25 +26,30 @@ contract Deploy is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PK");
 
-        address treasury = vm.envAddress("TREASURY_ADDRESS");
         address deployer = vm.addr(deployerPrivateKey);
 
         console.log("Deployer: ", address(deployer));
-        console.log("Treasury: ", address(treasury));
 
         vm.startBroadcast(deployerPrivateKey);
 
         fantasyCards = new FantasyCards();
+        console.log("FantasyCards: ", address(fantasyCards));
+
         executionDelegate = new ExecutionDelegate();
+        console.log("ExecutionDelegate: ", address(executionDelegate));
+
         minter = new Minter(
-            treasury,
+            deployer,
             address(executionDelegate),
             cardsRequiredForLevelUp,
             cardsRequiredForBurnToDraw,
             cardsDrawnPerBurn
         );
+        console.log("Minter: ", address(minter));
 
-        exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
+        exchange = new Exchange(deployer, protocolFeeBps, address(executionDelegate));
+        console.log("Exchange: ", address(exchange));
+
         exchange.whiteListCollection(address(fantasyCards));
         exchange.whiteListPaymentToken(weth, wethMinimumPrice);
 
