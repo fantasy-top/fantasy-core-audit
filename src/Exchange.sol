@@ -13,7 +13,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/cryptography/EIP712.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./interfaces/IBlast.sol";
@@ -21,7 +21,7 @@ import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IExchange.sol";
 import "./libraries/OrderLib.sol";
 
-contract Exchange is IExchange, EIP712, Ownable, ReentrancyGuard {
+contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
     /* Constants */
     uint256 public constant INVERSE_BASIS_POINT = 10000;
 
