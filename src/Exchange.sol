@@ -110,7 +110,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
     ) public payable nonReentrant onlyEOA {
         require(buyOrder.paymentToken != address(0), "payment token can not be ETH for buy order");
         require(buyOrder.side == OrderLib.Side.Buy, "order must be a buy");
-        require(buyOrder.expirationTime >= block.timestamp, "order expired");
+        require(buyOrder.expirationTime > block.timestamp, "order expired");
         require(buyOrder.trader != address(0), "order trader is 0");
         require(buyOrder.price >= minimumPricePerPaymentToken[buyOrder.paymentToken], "price bellow minimumPrice");
 
@@ -263,7 +263,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
      */
     function _buy(OrderLib.Order calldata sellOrder, bytes calldata sellerSignature) internal {
         require(sellOrder.side == OrderLib.Side.Sell, "order must be a sell");
-        require(sellOrder.expirationTime >= block.timestamp, "order expired");
+        require(sellOrder.expirationTime > block.timestamp, "order expired");
         require(sellOrder.trader != address(0), "order trader is 0");
         require(sellOrder.price >= minimumPricePerPaymentToken[sellOrder.paymentToken], "price bellow minimumPrice");
 
