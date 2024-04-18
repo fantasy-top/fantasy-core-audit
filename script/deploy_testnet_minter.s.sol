@@ -24,11 +24,13 @@ contract DeployMinter is Script {
 
         address treasury = 0x6b88C7D530969F747A4dA218CF8Ef26505d45AE6;
         address executionDelegate = 0x1caaa0Cce5d809BCa4f5C23896d94d07a1C0B07A;
+        address fantasyCards; // TODO: add address here
         console.log("Treasury Address: ", address(treasury));
 
         vm.startBroadcast(deployerPrivateKey);
 
         minter = new Minter(treasury, executionDelegate, 5, 15, 1);
+        minter.whiteListCollection(address(fantasyCards));
 
         vm.stopBroadcast();
 

@@ -54,6 +54,8 @@ interface IMinter {
     event NewNumberOfCardsRequiredForBurnToDraw(uint256 _cardsRequiredForBurnToDraw);
     event NewNumberOfCardsDrawnPerBurn(uint256 _cardsDrawnPerBurn);
     event ExpirationTimestampUpdatedForMintConfig(uint256 mintConfigId, uint256 newExpirationTimestamp);
+    event NewWhitelistedCollection(address collection);
+    event UnWhitelistedCollection(address collection);
 
     // Functions
     function mint(uint256 configId, bytes32[] calldata merkleProof, uint256 maxPrice) external payable;
