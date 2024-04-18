@@ -2,7 +2,7 @@ pragma solidity ^0.8.20;
 
 import "../base/BaseTest.t.sol";
 
-contract LevelUp is BaseTest {
+contract BurnToDraw is BaseTest {
     function setUp() public override {
         super.setUp();
         cheats.startPrank(address(executionDelegate));
@@ -33,7 +33,7 @@ contract LevelUp is BaseTest {
     function test_unsuccessful_burnToDraw_wrongCardNumber() public {
         uint256 cardsRequiredForBurnToDraw = minter.cardsRequiredForBurnToDraw();
         uint256[] memory tokenIds = new uint256[](cardsRequiredForBurnToDraw - 1);
-        for (uint256 i = 0; i < cardsRequiredForLevelUp - 1; i++) {
+        for (uint256 i = 0; i < cardsRequiredForBurnToDraw - 1; i++) {
             tokenIds[i] = i;
         }
         address collection = address(fantasyCards);
@@ -43,16 +43,29 @@ contract LevelUp is BaseTest {
         cheats.stopPrank();
     }
 
-    function test_unsuccessful_levelUp_userNotOwner() public {
+    function test_unsuccessful_burnToDraw_userNotOwner() public {
         uint256 cardsRequiredForBurnToDraw = minter.cardsRequiredForBurnToDraw();
         uint256[] memory tokenIds = new uint256[](cardsRequiredForBurnToDraw);
-        for (uint256 i = 0; i < cardsRequiredForLevelUp; i++) {
+        for (uint256 i = 0; i < cardsRequiredForBurnToDraw; i++) {
             tokenIds[i] = i;
         }
         address collection = address(fantasyCards);
         cheats.startPrank(user2);
         cheats.expectRevert("caller does not own one of the tokens");
         minter.burnToDraw(tokenIds, collection);
+        cheats.stopPrank();
+    }
+
+    function test_unsuccessful_burnToDraw_collection_not_whitelisted() public {
+        uint256 cardsRequiredForBurnToDraw = minter.cardsRequiredForBurnToDraw();
+        uint256[] memory tokenIds = new uint256[](cardsRequiredForBurnToDraw);
+        for (uint256 i = 0; i < cardsRequiredForBurnToDraw; i++) {
+            tokenIds[i] = i;
+        }
+
+        cheats.startPrank(user2);
+        cheats.expectRevert("Collection is not whitelisted");
+        minter.burnToDraw(tokenIds, address(0));
         cheats.stopPrank();
     }
 }

@@ -233,7 +233,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param collection The address of the NFT collection from which the cards will be burned and the new card will be minted.
      */
     function levelUp(uint256[] calldata tokenIds, address collection) public {
-        require(whitelistedCollections[collection], "Collection is not withelisted");
+        require(whitelistedCollections[collection], "Collection is not whitelisted");
         require(tokenIds.length == cardsRequiredForLevelUp, "wrong amount of cards to level up");
 
         for (uint i = 0; i < cardsRequiredForLevelUp; i++) {
@@ -257,7 +257,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param collection The address of the NFT collection from which the cards will be burned and the new card(s) will be minted.
      */
     function burnToDraw(uint256[] calldata tokenIds, address collection) public {
-        require(whitelistedCollections[collection], "Collection is not withelisted");
+        require(whitelistedCollections[collection], "Collection is not whitelisted");
         require(tokenIds.length == cardsRequiredForBurnToDraw, "wrong amount of cards to draw new cards");
 
         for (uint i = 0; i < cardsRequiredForBurnToDraw; i++) {

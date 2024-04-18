@@ -10,10 +10,7 @@ import "../src/Minter.sol";
 import "../test/tokens/WrappedETH_Ownable.sol";
 
 contract DeployMinter is Script {
-    FantasyCards fantasyCards;
-    Exchange exchange;
     Minter minter;
-    WrappedETH weth;
 
     uint256 protocolFeeBps = 300;
     uint256 wethMinimumPrice = 0;

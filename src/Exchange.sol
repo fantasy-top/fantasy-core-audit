@@ -395,7 +395,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
      */
     function _executeTokenTransfer(address collection, address from, address to, uint256 tokenId) internal {
         /* Assert collection is whitelisted */
-        require(whitelistedCollections[collection], "Collection is not withelisted");
+        require(whitelistedCollections[collection], "Collection is not whitelisted");
 
         /* Call execution delegate. */
         executionDelegate.transferERC721Unsafe(collection, from, to, tokenId);
