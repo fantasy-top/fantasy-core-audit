@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./interfaces/IBlast.sol";
+import "./interfaces/IBlastPoints.sol";
 import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IExchange.sol";
 import "./libraries/OrderLib.sol";
@@ -52,6 +53,8 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
     ) EIP712("Exchange", "1") Ownable(msg.sender) {
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
         IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
+        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
+
         _setProtocolFeeRecipient(_protocolFeeRecipient);
         _setProtocolFeeBps(_protocolFeeBps);
         _setExecutionDelegate(_executionDelegate);

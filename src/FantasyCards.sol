@@ -20,6 +20,7 @@ import {IERC165, ERC165} from "@openzeppelin/contracts/utils/introspection/ERC16
 import {AccessControlDefaultAdminRules} from "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
 import {IAccessControlDefaultAdminRules} from "@openzeppelin/contracts/access/extensions/IAccessControlDefaultAdminRules.sol";
 import "./interfaces/IBlast.sol";
+import "./interfaces/IBlastPoints.sol";
 
 contract FantasyCards is Context, ERC165, IFantasyCards, AccessControlDefaultAdminRules {
     using Strings for uint256;
@@ -53,6 +54,8 @@ contract FantasyCards is Context, ERC165, IFantasyCards, AccessControlDefaultAdm
     constructor() AccessControlDefaultAdminRules(0, msg.sender) {
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
         IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
+        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
+
         _name = "Fantasy";
         _symbol = "FANTASY";
     }

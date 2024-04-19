@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules.sol";
 import "./interfaces/IBlast.sol";
+import "./interfaces/IBlastPoints.sol";
 import "./interfaces/IFantasyCards.sol";
 import "./interfaces/IExecutionDelegate.sol";
 
@@ -41,6 +42,7 @@ contract ExecutionDelegate is IExecutionDelegate, AccessControlDefaultAdminRules
     constructor() AccessControlDefaultAdminRules(0, msg.sender) {
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
         IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
+        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
     }
 
     /**
