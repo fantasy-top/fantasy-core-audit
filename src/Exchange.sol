@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/access/Ownable2Step.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "./interfaces/IBlast.sol";
+import "./interfaces/IBlastPoints.sol";
 import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IExchange.sol";
 import "./libraries/OrderLib.sol";
@@ -52,6 +53,8 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
     ) EIP712("Exchange", "1") Ownable(msg.sender) {
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
         IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
+        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
+
         _setProtocolFeeRecipient(_protocolFeeRecipient);
         _setProtocolFeeBps(_protocolFeeBps);
         _setExecutionDelegate(_executionDelegate);
@@ -110,7 +113,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
     ) public payable nonReentrant onlyEOA {
         require(buyOrder.paymentToken != address(0), "payment token can not be ETH for buy order");
         require(buyOrder.side == OrderLib.Side.Buy, "order must be a buy");
-        require(buyOrder.expirationTime >= block.timestamp, "order expired");
+        require(buyOrder.expirationTime > block.timestamp, "order expired");
         require(buyOrder.trader != address(0), "order trader is 0");
         require(buyOrder.price >= minimumPricePerPaymentToken[buyOrder.paymentToken], "price bellow minimumPrice");
 
@@ -263,7 +266,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
      */
     function _buy(OrderLib.Order calldata sellOrder, bytes calldata sellerSignature) internal {
         require(sellOrder.side == OrderLib.Side.Sell, "order must be a sell");
-        require(sellOrder.expirationTime >= block.timestamp, "order expired");
+        require(sellOrder.expirationTime > block.timestamp, "order expired");
         require(sellOrder.trader != address(0), "order trader is 0");
         require(sellOrder.price >= minimumPricePerPaymentToken[sellOrder.paymentToken], "price bellow minimumPrice");
 
@@ -395,7 +398,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
      */
     function _executeTokenTransfer(address collection, address from, address to, uint256 tokenId) internal {
         /* Assert collection is whitelisted */
-        require(whitelistedCollections[collection], "Collection is not withelisted");
+        require(whitelistedCollections[collection], "Collection is not whitelisted");
 
         /* Call execution delegate. */
         executionDelegate.transferERC721Unsafe(collection, from, to, tokenId);

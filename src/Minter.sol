@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./VRGDA/LinearVRGDA.sol";
 import "./interfaces/IBlast.sol";
+import "./interfaces/IBlastPoints.sol";
 import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IFantasyCards.sol";
 import "./interfaces/IMinter.sol";
@@ -48,6 +49,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
 
     /* Variables */
     mapping(uint256 mintConfigId => MintConfig) public mintConfigs;
+    mapping(address collection => bool) public whitelistedCollections;
     address public treasury;
     IExecutionDelegate public executionDelegate;
     uint256 public mintConfigIdCounter;
@@ -74,6 +76,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     ) AccessControlDefaultAdminRules(0, msg.sender) {
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
         IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
+        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
+
         _setTreasury(_treasury);
         _setExecutionDelegate(_executionDelegate);
         _setcardsRequiredForLevelUp(_cardsRequiredForLevelUp);
@@ -232,6 +236,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param collection The address of the NFT collection from which the cards will be burned and the new card will be minted.
      */
     function levelUp(uint256[] calldata tokenIds, address collection) public {
+        require(whitelistedCollections[collection], "Collection is not whitelisted");
         require(tokenIds.length == cardsRequiredForLevelUp, "wrong amount of cards to level up");
 
         for (uint i = 0; i < cardsRequiredForLevelUp; i++) {
@@ -255,6 +260,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
      * @param collection The address of the NFT collection from which the cards will be burned and the new card(s) will be minted.
      */
     function burnToDraw(uint256[] calldata tokenIds, address collection) public {
+        require(whitelistedCollections[collection], "Collection is not whitelisted");
         require(tokenIds.length == cardsRequiredForBurnToDraw, "wrong amount of cards to draw new cards");
 
         for (uint i = 0; i < cardsRequiredForBurnToDraw; i++) {
@@ -517,6 +523,42 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
+     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @param paymentToken ERC20 token address, or zero for Ether.
+     * @param to Recipient's address.
+     * @param amount Transfer amount.
+     */
+    function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (paymentToken == address(0)) {
+            payable(to).transfer(amount);
+        } else {
+            ERC20(paymentToken).transfer(to, amount);
+        }
+    }
+
+    /**
+     * @notice Whitelists a collection for levelUp or burnToDraw
+     * @dev Only callable by the contract Admin.
+     * @param _collection The address of the ERC-721 token collection to whitelist
+     */
+    function whiteListCollection(address _collection) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        whitelistedCollections[_collection] = true;
+
+        emit NewWhitelistedCollection(_collection);
+    }
+
+    /**
+     * @notice Removes a collection from the whitelists for levelUp or burnToDraw
+     * @dev Only callable by the contract Admin.
+     * @param _collection The address of the ERC-721 token collection to remove from the whitelist
+     */
+    function unWhiteListCollection(address _collection) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        whitelistedCollections[_collection] = false;
+
+        emit UnWhitelistedCollection(_collection);
+    }
+
+    /**
      * @notice Retrieves details of a specific mint configuration
      * @param mintConfigId The ID of the mint configuration to retrieve
      * @return collection The NFT collection address
@@ -576,20 +618,6 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
         MintConfig storage config = mintConfigs[mintConfigId];
         require(config.fixedPrice == 0, "VRGDA not enabled");
         return config.vrgdaConfig;
-    }
-
-    /**
-     * @dev Function to retrieve funds mistakenly sent to the mint contract.
-     * @param paymentToken ERC20 token address, or zero for Ether.
-     * @param to Recipient's address.
-     * @param amount Transfer amount.
-     */
-    function saveFunds(address paymentToken, address to, uint256 amount) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (paymentToken == address(0)) {
-            payable(to).transfer(amount);
-        } else {
-            ERC20(paymentToken).transfer(to, amount);
-        }
     }
 
     /**

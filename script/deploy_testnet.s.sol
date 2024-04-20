@@ -43,7 +43,7 @@ contract Deploy is Script {
             cardsRequiredForBurnToDraw,
             cardsDrawnPerBurn
         );
-
+        minter.whiteListCollection(address(fantasyCards));
         exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
         exchange.whiteListCollection(address(fantasyCards));
         exchange.whiteListPaymentToken(address(weth), wethMinimumPrice);
