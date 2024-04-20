@@ -11,6 +11,7 @@ import {Minter} from "../../src/Minter.sol";
 import {WrappedETH} from "../tokens/WrappedETH.sol";
 import {USDC} from "../tokens/USDC.sol";
 import {BlastMock} from "../helpers/BlastMock.sol";
+import {BlastPointsMock} from "../helpers/BlastPointsMock.sol";
 
 abstract contract BaseTest is Test {
     CheatCodes constant cheats = CheatCodes(HEVM_ADDRESS);
@@ -84,15 +85,17 @@ abstract contract BaseTest is Test {
         fantasyCards.grantRole(fantasyCards.EXECUTION_DELEGATE_ROLE(), _executionDelegate);
     }
 
-    function deployBlastMock() internal {
+    function deployBlastMockContracts() internal {
         BlastMock blastMock = new BlastMock();
         vm.etch(0x4300000000000000000000000000000000000002, address(blastMock).code);
+        BlastPointsMock blastPointMock = new BlastPointsMock();
+        vm.etch(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800, address(blastPointMock).code);
     }
 
     function setUp() public virtual {
         // useful since VRGDA requires a start time of at least 1 day
         vm.warp(24 * 60 * 60 * 7);
-        deployBlastMock();
+        deployBlastMockContracts();
         deployFantasyCards();
         deployExecutionDelegate();
         deployWETH();

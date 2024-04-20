@@ -17,6 +17,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./VRGDA/LinearVRGDA.sol";
 import "./interfaces/IBlast.sol";
+import "./interfaces/IBlastPoints.sol";
 import "./interfaces/IExecutionDelegate.sol";
 import "./interfaces/IFantasyCards.sol";
 import "./interfaces/IMinter.sol";
@@ -75,6 +76,8 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     ) AccessControlDefaultAdminRules(0, msg.sender) {
         IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
         IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
+        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
+
         _setTreasury(_treasury);
         _setExecutionDelegate(_executionDelegate);
         _setcardsRequiredForLevelUp(_cardsRequiredForLevelUp);
