@@ -60,4 +60,16 @@ contract LevelUp is BaseTest {
         minter.levelUp(tokenIds, collection);
         cheats.stopPrank();
     }
+
+    function test_unsuccessful_levelUp_collection_not_whitelisted() public {
+        uint256[] memory tokenIds = new uint256[](cardsRequiredForLevelUp);
+        for (uint256 i = 0; i < cardsRequiredForLevelUp; i++) {
+            tokenIds[i] = i;
+        }
+
+        cheats.startPrank(user2);
+        cheats.expectRevert("Collection is not whitelisted");
+        minter.levelUp(tokenIds, address(0));
+        cheats.stopPrank();
+    }
 }

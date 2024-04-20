@@ -62,9 +62,10 @@ abstract contract BaseTest is Test {
         executionDelegate.grantRole(executionDelegate.PAUSER_ROLE(), pauserAndCanceler);
     }
 
-    function setUpMinter(address _treasury, address _executionDelegate) internal {
+    function setUpMinter(address _treasury, address _executionDelegate, address _fantasyCards) internal {
         minter = new Minter(_treasury, address(_executionDelegate), 5, 15, 1);
         minter.grantRole(minter.MINT_CONFIG_MASTER(), mintConfigMaster);
+        minter.whiteListCollection(_fantasyCards);
     }
 
     function deployWETH() internal {
@@ -96,7 +97,7 @@ abstract contract BaseTest is Test {
         deployExecutionDelegate();
         deployWETH();
         deployUSDC();
-        setUpMinter(treasury, address(executionDelegate));
+        setUpMinter(treasury, address(executionDelegate), address(fantasyCards));
         setUpExchange(treasury, protocolFeeBps, address(executionDelegate), address(weth), address(fantasyCards));
         setUpExecutionDelegate(address(minter), address(exchange));
         setUpFantasyCards(address(executionDelegate));

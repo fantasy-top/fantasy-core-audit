@@ -116,7 +116,7 @@ contract Sell is BaseTest {
         cheats.stopPrank();
 
         cheats.startPrank(user1, user1);
-        cheats.expectRevert("Collection is not withelisted");
+        cheats.expectRevert("Collection is not whitelisted");
         exchange.sell(buyOrder, buyerSignature, 0, merkleProof);
         cheats.stopPrank();
     }

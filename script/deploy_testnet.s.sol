@@ -34,6 +34,7 @@ contract Deploy is Script {
         weth = new WrappedETH();
         executionDelegate = new ExecutionDelegate();
         minter = new Minter(treasury, address(executionDelegate), 5, 15, 1);
+        minter.whiteListCollection(address(fantasyCards));
 
         exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
         exchange.whiteListCollection(address(fantasyCards));

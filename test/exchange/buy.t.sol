@@ -142,7 +142,7 @@ contract Buy is BaseTest {
         cheats.deal(user2, 1 ether);
 
         cheats.startPrank(user2, user2);
-        cheats.expectRevert("Collection is not withelisted");
+        cheats.expectRevert("Collection is not whitelisted");
         exchange.buy{value: 1 ether}(sellOrder, sellerSignature);
         cheats.stopPrank();
     }
