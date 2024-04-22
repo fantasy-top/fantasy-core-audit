@@ -101,28 +101,24 @@ ORDERLIB: 0x09B59376ddce9620D385F75fD4bBb6b1B5C3A6F0
 
 ## VERIFY EXECUTION DELEGATE
 ```shell
-forge verify-contract EXECUTION_DELEGATE_ADDRESS src/ExecutionDelegate.sol:ExecutionDelegate --verifier-url https://api.blastscan.io/api --etherscan-api-key D4IBTX1D9YY4P9R7HCAKE67QWBRM9DFRM8  --compiler-version 0.8.20
+forge verify-contract EXECUTION_DELEGATE_ADDRESS src/ExecutionDelegate.sol:ExecutionDelegate --verifier-url https://api.blastscan.io/api --etherscan-api-key ETHERSCAN_API_KEY  --compiler-version 0.8.20
 ```
 
 ## VERIFY MINTER
 ```shell
-forge verify-contract MINTER_ADDRESS  src/Minter.sol:Minter --verifier-url https://api.blastscan.io/api --etherscan-api-key D4IBTX1D9YY4P9R7HCAKE67QWBRM9DFRM8 --compiler-version 0.8.20 --constructor-args $(cast abi-encode "constructor(address _treasury, address _executionDelegate, uint256 _cardsRequiredForLevelUp, uint256 _cardsRequiredForBurnToDraw, uint256 _cardsDrawnPerBurn)" TREASURY_ADDRESS EXECUTION ardsRequiredForLevelUp cardsRequiredForBurnToDraw cardsDrawnPerBurn)
+forge verify-contract MINTER_ADDRESS  src/Minter.sol:Minter --verifier-url https://api.blastscan.io/api --etherscan-api-key ETHERSCAN_API_KEY --compiler-version 0.8.20 --constructor-args $(cast abi-encode "constructor(address _treasury, address _executionDelegate, uint256 _cardsRequiredForLevelUp, uint256 _cardsRequiredForBurnToDraw, uint256 _cardsDrawnPerBurn)" TREASURY_ADDRESS EXECUTION ardsRequiredForLevelUp cardsRequiredForBurnToDraw cardsDrawnPerBurn)
 ```
 
 ## VERIFY FANTASY CARDS
 ```shell
-forge verify-contract FANTASY_COLLECTION_ADDRESS src/FantasyCards.sol:FantasyCards --verifier-url https://api.blastscan.io/api --etherscan-api-key D4IBTX1D9YY4P9R7HCAKE67QWBRM9DFRM8  --compiler-version 0.8.20
+forge verify-contract FANTASY_COLLECTION_ADDRESS src/FantasyCards.sol:FantasyCards --verifier-url https://api.blastscan.io/api --etherscan-api-key ETHERSCAN_API_KEY  --compiler-version 0.8.20
 ```
 
 ## VERIFY EXCHANGE
 
 ```shell
-forge verify-contract EXCHANGE_ADDRESS src/Exchange.sol:Exchange --verifier-url https://api.blastscan.io/api --etherscan-api-key D4IBTX1D9YY4P9R7HCAKE67QWBRM9DFRM8  --compiler-version 0.8.20 --constructor-args $(cast abi-encode "constructor(address _protocolFeeRecipient, uint256 _protocolFeeBps, address _executionDelegate)" TREASURY_ADDRESS 300 EXECUTION_DELEGATE) --libraries "src/libraries/OrderLib.sol:OrderLib:ORDERLIB_ADDRESS" --watch
+forge verify-contract EXCHANGE_ADDRESS src/Exchange.sol:Exchange --verifier-url https://api.blastscan.io/api --etherscan-api-key ETHERSCAN_API_KEY  --compiler-version 0.8.20 --constructor-args $(cast abi-encode "constructor(address _protocolFeeRecipient, uint256 _protocolFeeBps, address _executionDelegate)" TREASURY_ADDRESS 300 EXECUTION_DELEGATE) --libraries "src/libraries/OrderLib.sol:OrderLib:ORDERLIB_ADDRESS" --watch
 ```
-
-
-
-
 
 
 
