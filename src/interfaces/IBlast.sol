@@ -73,4 +73,6 @@ interface IBlast {
     function readGasParams(
         address contractAddress
     ) external view returns (uint256 etherSeconds, uint256 etherBalance, uint256 lastUpdated, GasMode);
+
+    function governorMap(address input) external view returns (address);
 }
