@@ -23,9 +23,8 @@ contract DeploymentSanityCheck is Script {
 
     address treasuryAddress = 0x8Ab15fE88a00b03724aC91EE4eE1f998064F2e31;
     address governanceAddress = 0x87300D35353D21479e0c96B87D9a7997726f4c16;
-    address mintConfigMasterAddress = 0x70aC9FA233435d1b764DF4e6d2F5C94eB0551918; // TODO: update
-    address pauserAddress = 0x70aC9FA233435d1b764DF4e6d2F5C94eB0551918; // TODO: update
-    address deployerAddress = 0x70aC9FA233435d1b764DF4e6d2F5C94eB0551918; // TODO: remove
+    address mintConfigMasterAddress = 0xa65B253C01cBFb156c63371bb732137a3a77bA52;
+    address pauserAddress = 0x70aC9FA233435d1b764DF4e6d2F5C94eB0551918;
 
     uint256 cardsRequiredForBurnToDraw = 15;
     uint256 cardsRequiredForLevelUp = 5;
@@ -41,7 +40,7 @@ contract DeploymentSanityCheck is Script {
     IBlast blastGas = IBlast(blastGasAddress);
     IBlastPoints blastPoints = IBlastPoints(blastPointsAddress);
 
-    function run() external {
+    function run() public view {
         // --------------------------------------------
         /* Fantasy Cards Sanity Check */
         // --------------------------------------------
@@ -57,12 +56,12 @@ contract DeploymentSanityCheck is Script {
         );
         // Check Gas Governor
         require(
-            blastGas.governorMap(fantasyCardsAddress) == deployerAddress,
+            blastGas.governorMap(fantasyCardsAddress) == governanceAddress,
             "FantasyCards has the wrong Gas Governor"
         ); // TODO: update from deployer
         // Check Points Operator
         require(
-            blastPoints.operators(fantasyCardsAddress) == deployerAddress,
+            blastPoints.operators(fantasyCardsAddress) == governanceAddress,
             "FantasyCards has the wrong Points Operator"
         ); // TODO: update from deployer
 
@@ -85,12 +84,12 @@ contract DeploymentSanityCheck is Script {
         require(executionDelegate.contracts(minterAddress), "ExecutionDelegate has not whitelisted the Exchange");
         // Check Gas Governor
         require(
-            blastGas.governorMap(executionDelegateAddress) == deployerAddress,
+            blastGas.governorMap(executionDelegateAddress) == governanceAddress,
             "ExecutionDelegate has the wrong Gas Governor"
         ); // TODO: update from deployer
         // Check Points Operator
         require(
-            blastPoints.operators(executionDelegateAddress) == deployerAddress,
+            blastPoints.operators(executionDelegateAddress) == governanceAddress,
             "ExecutionDelegate has the wrong Points Operator"
         ); // TODO: update from deployer
 
@@ -124,9 +123,9 @@ contract DeploymentSanityCheck is Script {
         // Check Cards Drawn Per Burn
         require(minter.cardsDrawnPerBurn() == cardsDrawnPerBurn, "Minter has the wrong number of Cards drawn per burn");
         // Check Gas Governor
-        require(blastGas.governorMap(minterAddress) == deployerAddress, "Minter has the wrong Gas Governor"); // TODO: update from deployer
+        require(blastGas.governorMap(minterAddress) == governanceAddress, "Minter has the wrong Gas Governor");
         // Check Points Operator
-        require(blastPoints.operators(minterAddress) == deployerAddress, "Minter has the wrong Points Operator"); // TODO: update from deployer
+        require(blastPoints.operators(minterAddress) == governanceAddress, "Minter has the wrong Points Operator");
 
         // --------------------------------------------
         /* Exchange Sanity Check */
@@ -155,8 +154,8 @@ contract DeploymentSanityCheck is Script {
         // Check Fantasy Cards is whitelisted
         require(exchange.whitelistedCollections(fantasyCardsAddress), "Exchange has not whitelisted FantasyCards");
         // Check Gas Governor
-        require(blastGas.governorMap(exchangeAddress) == deployerAddress, "Exchange has the wrong Gas Governor"); // TODO: update from deployer
+        require(blastGas.governorMap(exchangeAddress) == governanceAddress, "Exchange has the wrong Gas Governor");
         // Check Points Operator
-        require(blastPoints.operators(exchangeAddress) == deployerAddress, "Exchange has the wrong Points Operator"); // TODO: update from deployer
+        require(blastPoints.operators(exchangeAddress) == governanceAddress, "Exchange has the wrong Points Operator");
     }
 }
