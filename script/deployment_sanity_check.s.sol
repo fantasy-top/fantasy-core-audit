@@ -16,7 +16,7 @@ contract DeploymentSanityCheck is Script {
     address blastPointsAddress = 0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800;
     address blastGasAddress = 0x4300000000000000000000000000000000000002;
 
-    address fantasyCardsAddress = 0x0908f097497054A753763Fa40e1D2c216F9B3847;
+    address fantasyCardsAddress = 0x49d301A4CFdE9fc6Ea5446a887e147c4317671FD;
     address executionDelegateAddress = 0x3Da2a1D0C88dc1E5567970C305d09249Fc7ae08a;
     address minterAddress = 0x01655f68D8063234e2E8e069608AfCcA90cbbAf1;
     address exchangeAddress = 0xDb922BD2c4B3F44d75Aa91A789296410F0f20b0e;

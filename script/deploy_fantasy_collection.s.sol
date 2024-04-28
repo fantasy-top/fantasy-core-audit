@@ -54,9 +54,15 @@ contract Deploy is Script {
         fantasyCards.grantRole(fantasyCards.EXECUTION_DELEGATE_ROLE(), address(executionDelegate));
 
         fantasyCards.beginDefaultAdminTransfer(governanceAddress);
+        // TODO: accept admin transfer
 
-        blastGas.configureGovernorOnBehalf(address(fantasyCards), governanceAddress);
+        blastGas.configureGovernorOnBehalf(governanceAddress, address(fantasyCards));
         blastPoints.configurePointsOperatorOnBehalf(address(fantasyCards), governanceAddress);
+
+        minter.beginDefaultAdminTransfer(governanceAddress);
+        // TODO: accept admin transfer
+        exchange.transferOwnership(governanceAddress);
+        // TODO: accept ownership transfer
 
         vm.stopBroadcast();
 
