@@ -29,7 +29,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -70,7 +70,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -104,7 +104,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -131,7 +131,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -158,7 +158,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -185,7 +185,7 @@ contract Buy is BaseTest {
             1 ether,
             0,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -212,7 +212,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -240,7 +240,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -271,7 +271,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -299,7 +299,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -326,7 +326,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -356,7 +356,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_001
+            100_001
         );
 
         // Sign order
@@ -374,7 +374,7 @@ contract Buy is BaseTest {
         cheats.stopPrank();
     }
 
-    function test_unsuccessful_buy_salt_bellow_10_000() public {
+    function test_unsuccessful_buy_salt_bellow_100_000() public {
         // Create order
         OrderLib.Order memory sellOrder = OrderLib.Order(
             user1,
@@ -385,7 +385,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            10_000
+            100_000
         );
 
         // Sign order
@@ -396,7 +396,7 @@ contract Buy is BaseTest {
         cheats.deal(user2, 1 ether);
 
         cheats.startPrank(user2, user2);
-        cheats.expectRevert("salt should be above 10_000");
+        cheats.expectRevert("salt should be above 100_000");
         exchange.buy{value: 1 ether}(sellOrder, sellerSignature);
         cheats.stopPrank();
     }

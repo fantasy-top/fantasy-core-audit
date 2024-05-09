@@ -36,7 +36,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -76,7 +76,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -101,7 +101,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -132,7 +132,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -160,7 +160,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -192,7 +192,7 @@ contract Sell is BaseTest {
             1 ether,
             0,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -224,7 +224,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -256,7 +256,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -289,7 +289,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -322,7 +322,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -355,7 +355,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -390,7 +390,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -422,7 +422,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -458,7 +458,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -484,7 +484,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -513,7 +513,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_001
+            100_001
         );
 
         // Sign order
@@ -535,7 +535,7 @@ contract Sell is BaseTest {
         cheats.stopPrank();
     }
 
-    function test_unsuccessful_sell_salt_bellow_10_000() public {
+    function test_unsuccessful_sell_salt_bellow_100_000() public {
         // Create order
         OrderLib.Order memory buyOrder = OrderLib.Order(
             user2,
@@ -546,7 +546,7 @@ contract Sell is BaseTest {
             1 ether,
             999999999999999999999,
             merkleRoot,
-            10_000
+            100_000
         );
 
         // Sign order
@@ -561,7 +561,7 @@ contract Sell is BaseTest {
         cheats.stopPrank();
 
         cheats.startPrank(user1, user1);
-        cheats.expectRevert("salt should be above 10_000");
+        cheats.expectRevert("salt should be above 100_000");
         exchange.sell(buyOrder, buyerSignature, 0, merkleProof);
         cheats.stopPrank();
     }
