@@ -116,6 +116,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
         require(buyOrder.expirationTime > block.timestamp, "order expired");
         require(buyOrder.trader != address(0), "order trader is 0");
         require(buyOrder.price >= minimumPricePerPaymentToken[buyOrder.paymentToken], "price bellow minimumPrice");
+        require(buyOrder.salt > 100_000, "salt should be above 100_000");
 
         bytes32 buyOrderHash = OrderLib._hashOrder(buyOrder);
         require(cancelledOrFilled[buyOrderHash] == false, "buy order cancelled or filled");
@@ -269,6 +270,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
         require(sellOrder.expirationTime > block.timestamp, "order expired");
         require(sellOrder.trader != address(0), "order trader is 0");
         require(sellOrder.price >= minimumPricePerPaymentToken[sellOrder.paymentToken], "price bellow minimumPrice");
+        require(sellOrder.salt > 100_000, "salt should be above 100_000");
 
         bytes32 sellOrderHash = OrderLib._hashOrder(sellOrder);
         require(cancelledOrFilled[sellOrderHash] == false, "sell order cancelled or filled");
