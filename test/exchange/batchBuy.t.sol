@@ -31,7 +31,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -49,7 +49,7 @@ contract Buy is BaseTest {
             2 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -91,7 +91,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -109,7 +109,7 @@ contract Buy is BaseTest {
             2 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -155,7 +155,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -173,7 +173,7 @@ contract Buy is BaseTest {
             2 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -222,7 +222,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -240,7 +240,7 @@ contract Buy is BaseTest {
             2 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -277,7 +277,7 @@ contract Buy is BaseTest {
             1 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -295,7 +295,7 @@ contract Buy is BaseTest {
             2 ether,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order

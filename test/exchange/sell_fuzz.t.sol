@@ -37,7 +37,7 @@ contract Sell is BaseTest {
             _price,
             999999999999999999999,
             merkleRoot,
-            0
+            10_001
         );
 
         // Sign order

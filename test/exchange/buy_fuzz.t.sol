@@ -30,7 +30,7 @@ contract Buy_fuzz is BaseTest {
             _price,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
@@ -73,7 +73,7 @@ contract Buy_fuzz is BaseTest {
             _price,
             999999999999999999999,
             bytes32(0),
-            0
+            10_001
         );
 
         // Sign order
