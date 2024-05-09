@@ -534,4 +534,35 @@ contract Sell is BaseTest {
         exchange.sell(buyOrder, buyerSignature, 0, merkleProof);
         cheats.stopPrank();
     }
+
+    function test_unsuccessful_sell_salt_bellow_10_000() public {
+        // Create order
+        OrderLib.Order memory buyOrder = OrderLib.Order(
+            user2,
+            OrderLib.Side.Buy,
+            address(fantasyCards),
+            0,
+            address(weth),
+            1 ether,
+            999999999999999999999,
+            merkleRoot,
+            10_000
+        );
+
+        // Sign order
+        bytes32 orderHash = HashLib.getTypedDataHash(buyOrder, exchange.domainSeparator());
+        (uint8 vBuyer, bytes32 rBuyer, bytes32 sBuyer) = vm.sign(user2PrivateKey, orderHash);
+        bytes memory buyerSignature = abi.encodePacked(rBuyer, sBuyer, vBuyer);
+
+        // Give WETH allowance
+        cheats.startPrank(user2);
+        weth.getFaucet(1 ether);
+        weth.approve(address(executionDelegate), 1 ether);
+        cheats.stopPrank();
+
+        cheats.startPrank(user1, user1);
+        cheats.expectRevert("salt should be above 10_000");
+        exchange.sell(buyOrder, buyerSignature, 0, merkleProof);
+        cheats.stopPrank();
+    }
 }
