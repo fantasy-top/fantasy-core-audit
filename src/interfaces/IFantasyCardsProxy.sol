@@ -9,8 +9,8 @@ interface IFantasyCardsProxy {
     event ApproveContract(address _contract);
     event DenyContract(address _contract);
 
-    event RevokeApproval(address user);
-    event GrantApproval(address user);
+    event NewExecutionDelegate(address _executionDelegate);
+    event NewFantasyCardsCollection(address _fantasyCards);
 
     // Functions to approve an integration contract to call the functions
 
@@ -18,27 +18,27 @@ interface IFantasyCardsProxy {
 
     function denyContract(address _contract) external;
 
-    function revokeApproval() external;
-
-    function grantApproval() external;
-
     // Functions to interact with the Fantasy Cards contract
 
-    function balanceOf(address owner) external;
+    function balanceOf(address owner) external view returns (uint256);
 
-    function ownerOf(uint256 tokenId) external;
+    function ownerOf(uint256 tokenId) external view returns (address);
 
     function approve(address to, uint256 tokenId) external;
 
-    function getApproved(uint256 tokenId) external;
+    function getApproved(uint256 tokenId) external view returns (address);
 
     function setApprovalForAll(address operator, bool approved) external;
 
-    function isApprovedForAll(address owner, address operator) external;
+    function isApprovedForAll(address owner, address operator) external view returns (bool);
 
     function transferFrom(address from, address to, uint256 tokenId) external;
 
     function safeTransferFrom(address from, address to, uint256 tokenId) external;
 
     function safeTransferFrom(address from, address to, uint256 tokenId, bytes calldata data) external;
+
+    // Admin functions
+    function setExecutionDelegate(address _executionDelegate) external;
+    function setFantasyCardsCollection(address _fantasyCards) external;
 }
