@@ -8,9 +8,7 @@ import "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules
 
 contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules, Pausable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-    mapping(uint256 tokenId => address) private _tokenApprovals;
     mapping(address => bool) public contracts;
-    mapping(address => bool) public revokedApproval;
     IExecutionDelegate public executionDelegate;
     IFantasyCards public fantasyCards;
 
@@ -24,54 +22,100 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
         _setFantasyCardsCollection(_fantasyCards);
     }
 
-    /* 
-    ======================
-        FANTASY CARDS PROXY FUNCTIONS
-    ======================
-    */
+    /**
+     * @dev See {IERC721-balanceOf}.
+     */
+    function balanceOf(address owner) external view returns (uint256) {
+        return fantasyCards.balanceOf(owner);
+    }
 
-    function approve(address to, uint256 tokenId) external override whenNotPaused approvedContract {}
+    /**
+     * @dev See {IERC721-ownerOf}.
+     */
+    function ownerOf(uint256 tokenId) external view returns (address) {
+        return fantasyCards.ownerOf(tokenId);
+    }
 
-    function setApprovalForAll(address operator, bool approved) external override whenNotPaused approvedContract {}
+    /**
+     * @dev See {IERC721Metadata-name}.
+     */
+    function name() public view returns (string memory) {
+        return fantasyCards.name();
+    }
 
+    /**
+     * @dev See {IERC721Metadata-symbol}.
+     */
+    function symbol() public view returns (string memory) {
+        return fantasyCards.symbol();
+    }
+
+    /**
+     * @dev See {IERC721Metadata-tokenURI}.
+     */
+    function tokenURI(uint256 tokenId) public view returns (string memory) {
+        return fantasyCards.tokenURI(tokenId);
+    }
+
+    /**
+     * @dev See {IERC721-approve}.
+     */
+    function approve(address to, uint256 tokenId) external override whenNotPaused approvedContract {
+        return fantasyCards.approve(to, tokenId);
+    }
+
+    /**
+     * @dev See {IERC721-getApproved}.
+     */
+    function getApproved(uint256 tokenId) external view returns (address) {
+        return fantasyCards.getApproved(tokenId);
+    }
+
+    /**
+     * @dev See {IERC721-setApprovalForAll}.
+     */
+    function setApprovalForAll(address operator, bool approved) external override whenNotPaused approvedContract {
+        return fantasyCards.setApprovalForAll(operator, approved);
+    }
+
+    /**
+     * @dev See {IERC721-isApprovedForAll}.
+     */
+    function isApprovedForAll(address owner, address operator) external view returns (bool) {
+        return fantasyCards.isApprovedForAll(owner, operator);
+    }
+
+    /**
+     * @dev Transfer ERC721 token using `transferFrom`
+     * @param from address of the sender
+     * @param to address of the recipient, if to is a contract it will not perform any checks
+     * @param tokenId tokenId
+     */
+    function transferFrom(address from, address to, uint256 tokenId) external whenNotPaused approvedContract {
+        return executionDelegate.transferERC721Unsafe(address(fantasyCards), from, to, tokenId);
+    }
+
+    /**
+     * @dev Transfer ERC721 token using `safeTransferFrom`
+     * @param from address of the sender
+     * @param to address of the recipient
+     * @param tokenId tokenId
+     */
     function safeTransferFrom(
         address from,
         address to,
         uint256 tokenId
-    ) external override whenNotPaused approvedContract {}
+    ) external override whenNotPaused approvedContract {
+        executionDelegate.transferERC721(address(fantasyCards), from, to, tokenId);
+    }
 
+    // Can be removed? Cannot be used without modifying execution delegate
     function safeTransferFrom(
         address from,
         address to,
         uint256 tokenId,
         bytes calldata data
     ) external override whenNotPaused approvedContract {}
-
-    function transferFrom(address from, address to, uint256 tokenId) external override whenNotPaused approvedContract {}
-
-    // View functions
-
-    function balanceOf(address owner) external view override returns (uint256) {
-        return fantasyCards.balanceOf(owner);
-    }
-
-    function ownerOf(uint256 tokenId) external view override returns (address) {
-        return fantasyCards.ownerOf(tokenId);
-    }
-
-    function getApproved(uint256 tokenId) external view override returns (address) {
-        return _tokenApprovals[tokenId];
-    }
-
-    function isApprovedForAll(address owner, address operator) external view override returns (bool) {
-        return fantasyCards.isApprovedForAll(owner, operator);
-    }
-
-    /* 
-    ======================
-        ADMIN FUNCTIONS
-    ======================
-    */
 
     /**
      * @dev Approve contract to use proxy functions
@@ -95,7 +139,7 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
      * @notice Updates the execution delegate address.
      * @param _executionDelegate New delegate address.
      */
-    function setExecutionDelegate(address _executionDelegate) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setExecutionDelegate(address _executionDelegate) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setExecutionDelegate(_executionDelegate);
     }
 
@@ -103,7 +147,7 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
      * @notice Updates the Fantasy Cards contract address.
      * @param _fantasyCards New Fantasy Cards contract address.
      */
-    function setFantasyCardsCollection(address _fantasyCards) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setFantasyCardsCollection(address _fantasyCards) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _setFantasyCardsCollection(_fantasyCards);
     }
 
