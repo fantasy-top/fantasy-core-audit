@@ -5,6 +5,7 @@ import "../../lib/forge-std/src/console.sol";
 import "../cheatCodes/CheatCodes.t.sol";
 
 import {FantasyCards} from "../../src/FantasyCards.sol";
+import {FantasyCardsProxy} from "../../src/FantasyCardsProxy.sol";
 import {Exchange} from "../../src/Exchange.sol";
 import {ExecutionDelegate} from "../../src/ExecutionDelegate.sol";
 import {Minter} from "../../src/Minter.sol";
@@ -17,6 +18,7 @@ abstract contract BaseTest is Test {
     CheatCodes constant cheats = CheatCodes(HEVM_ADDRESS);
 
     FantasyCards fantasyCards;
+    FantasyCardsProxy fantasyCardsProxy;
     Exchange exchange;
     ExecutionDelegate executionDelegate;
     Minter minter;
@@ -69,6 +71,11 @@ abstract contract BaseTest is Test {
         minter.whiteListCollection(_fantasyCards);
     }
 
+    function setUpFantasyCardsProxy() internal {
+        fantasyCardsProxy = new FantasyCardsProxy(address(executionDelegate), address(fantasyCards));
+        executionDelegate.approveContract(address(fantasyCardsProxy));
+    }
+
     function deployWETH() internal {
         weth = new WrappedETH();
     }
@@ -104,5 +111,6 @@ abstract contract BaseTest is Test {
         setUpExchange(treasury, protocolFeeBps, address(executionDelegate), address(weth), address(fantasyCards));
         setUpExecutionDelegate(address(minter), address(exchange));
         setUpFantasyCards(address(executionDelegate));
+        setUpFantasyCardsProxy();
     }
 }
