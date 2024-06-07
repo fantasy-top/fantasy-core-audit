@@ -9,6 +9,8 @@ import "@openzeppelin/contracts/access/extensions/AccessControlDefaultAdminRules
 contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules, Pausable {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     mapping(address => bool) public contracts;
+    mapping(uint256 tokenId => address) private _tokenApprovals;
+    mapping(address owner => mapping(address operator => bool)) private _operatorApprovals;
     IExecutionDelegate public executionDelegate;
     IFantasyCards public fantasyCards;
 
@@ -32,7 +34,7 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
     /**
      * @dev See {IERC721-ownerOf}.
      */
-    function ownerOf(uint256 tokenId) external view returns (address) {
+    function ownerOf(uint256 tokenId) public view returns (address) {
         return fantasyCards.ownerOf(tokenId);
     }
 
@@ -61,28 +63,30 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
      * @dev See {IERC721-approve}.
      */
     function approve(address to, uint256 tokenId) external override whenNotPaused approvedContract {
-        return fantasyCards.approve(to, tokenId);
+        _approve(to, tokenId, tx.origin);
     }
 
     /**
      * @dev See {IERC721-getApproved}.
      */
-    function getApproved(uint256 tokenId) external view returns (address) {
-        return fantasyCards.getApproved(tokenId);
+    function getApproved(uint256 tokenId) public view returns (address) {
+        ownerOf(tokenId);
+
+        return _getApproved(tokenId);
     }
 
     /**
      * @dev See {IERC721-setApprovalForAll}.
      */
-    function setApprovalForAll(address operator, bool approved) external override whenNotPaused approvedContract {
-        return fantasyCards.setApprovalForAll(operator, approved);
+    function setApprovalForAll(address operator, bool approved) public {
+        _setApprovalForAll(_msgSender(), operator, approved);
     }
 
     /**
      * @dev See {IERC721-isApprovedForAll}.
      */
-    function isApprovedForAll(address owner, address operator) external view returns (bool) {
-        return fantasyCards.isApprovedForAll(owner, operator);
+    function isApprovedForAll(address owner, address operator) public view returns (bool) {
+        return _operatorApprovals[owner][operator];
     }
 
     /**
@@ -116,6 +120,55 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
         uint256 tokenId,
         bytes calldata data
     ) external override whenNotPaused approvedContract {}
+
+    /**
+     * @dev Returns the approved address for `tokenId`. Returns 0 if `tokenId` is not minted.
+     */
+    function _getApproved(uint256 tokenId) internal view returns (address) {
+        return _tokenApprovals[tokenId];
+    }
+
+    /**
+     * @dev Approve `to` to operate on `tokenId`
+     *
+     * The `auth` argument is optional. If the value passed is non 0, then this function will check that `auth` is
+     * either the owner of the token, or approved to operate on all tokens held by this owner.
+     *
+     * Emits an {Approval} event.
+     *
+     * Overrides to this logic should be done to the variant with an additional `bool emitEvent` argument.
+     */
+    function _approve(address to, uint256 tokenId, address auth) internal {
+        // Avoid reading the owner unless necessary
+        if (auth != address(0)) {
+            address owner = ownerOf(tokenId);
+
+            // We do not use _isAuthorized because single-token approvals should not be able to call approve
+            if (auth != address(0) && owner != auth && !isApprovedForAll(owner, auth)) {
+                revert("Invalid operator");
+            }
+
+            emit Approval(owner, to, tokenId);
+        }
+
+        _tokenApprovals[tokenId] = to;
+    }
+
+    /**
+     * @dev Approve `operator` to operate on all of `owner` tokens
+     *
+     * Requirements:
+     * - operator can't be the address zero.
+     *
+     * Emits an {ApprovalForAll} event.
+     */
+    function _setApprovalForAll(address owner, address operator, bool approved) internal {
+        if (operator == address(0)) {
+            revert("Invalid operator");
+        }
+        _operatorApprovals[owner][operator] = approved;
+        emit ApprovalForAll(owner, operator, approved);
+    }
 
     /**
      * @dev Approve contract to use proxy functions
