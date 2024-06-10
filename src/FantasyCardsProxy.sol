@@ -63,7 +63,7 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
     /**
      * @dev See {IERC721-approve}.
      */
-    function approve(address to, uint256 tokenId) external override whenNotPaused approvedIntegrator {
+    function approve(address to, uint256 tokenId) external override whenNotPaused {
         _approve(to, tokenId, msg.sender, true);
     }
 
@@ -79,7 +79,7 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
     /**
      * @dev See {IERC721-setApprovalForAll}.
      */
-    function setApprovalForAll(address operator, bool approved) public {
+    function setApprovalForAll(address operator, bool approved) external override whenNotPaused {
         _setApprovalForAll(_msgSender(), operator, approved);
     }
 

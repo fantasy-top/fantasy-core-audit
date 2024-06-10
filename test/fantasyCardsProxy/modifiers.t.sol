@@ -9,13 +9,6 @@ contract proxyModifiers is BaseTest {
         super.setUp();
     }
 
-    function test_nonApprovedOperatorOnApprove() public {
-        cheats.startPrank(address(user1));
-        cheats.expectRevert("Integrator is not approved");
-        fantasyCardsProxy.approve(user2, 0);
-        cheats.stopPrank();
-    }
-
     function test_nonApprovedOperatorOnTransferFrom() public {
         cheats.startPrank(address(user1));
         cheats.expectRevert("Integrator is not approved");
