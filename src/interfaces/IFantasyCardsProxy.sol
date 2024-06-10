@@ -5,9 +5,14 @@ import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
-interface IFantasyCardsProxy {
-    event ApproveContract(address _contract);
-    event DenyContract(address _contract);
+interface IFantasyCardsProxy is IERC721Errors {
+    event ApproveIntegrator(address _contract);
+    event DenyIntegrator(address _contract);
+
+    /**
+     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
+     */
+    event Transfer(address indexed from, address indexed to, uint256 indexed tokenId);
 
     /**
      * @dev Emitted when `owner` enables `approved` to manage the `tokenId` token.
@@ -24,9 +29,9 @@ interface IFantasyCardsProxy {
 
     // Functions to approve an integration contract to call the functions
 
-    function approveContract(address _contract) external;
+    function approveIntegrator(address _contract) external;
 
-    function denyContract(address _contract) external;
+    function denyIntegrator(address _contract) external;
 
     // Functions to interact with the Fantasy Cards contract
 
