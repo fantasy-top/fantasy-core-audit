@@ -252,7 +252,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
     }
 
     /**
-     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @dev Function to retrieve funds mistakenly sent to the Exchange contract.
      * @param paymentToken ERC20 token address, or zero for Ether.
      * @param to Recipient's address.
      * @param amount Transfer amount.
