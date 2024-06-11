@@ -523,7 +523,7 @@ contract Minter is IMinter, AccessControlDefaultAdminRules, ReentrancyGuard, Lin
     }
 
     /**
-     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @dev Function to retrieve funds mistakenly sent to the Minter contract.
      * @param paymentToken ERC20 token address, or zero for Ether.
      * @param to Recipient's address.
      * @param amount Transfer amount.
