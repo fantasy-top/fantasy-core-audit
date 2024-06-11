@@ -87,8 +87,6 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
 
         uint256 totalEthSpending;
         for (uint256 i = 0; i < sellOrders.length; i++) {
-            // REVIEW: not a huge fan of this, let see if we can find a better way.
-            // This also involves changing _executeFundsTransfer require from == to >=
             if (sellOrders[i].paymentToken == address(0)) {
                 totalEthSpending += sellOrders[i].price;
                 require(totalEthSpending <= msg.value, "Insufficient ETH sent");
