@@ -87,8 +87,6 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
 
         uint256 totalEthSpending;
         for (uint256 i = 0; i < sellOrders.length; i++) {
-            // REVIEW: not a huge fan of this, let see if we can find a better way.
-            // This also involves changing _executeFundsTransfer require from == to >=
             if (sellOrders[i].paymentToken == address(0)) {
                 totalEthSpending += sellOrders[i].price;
                 require(totalEthSpending <= msg.value, "Insufficient ETH sent");
@@ -147,12 +145,18 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
      * @param order The order to cancel
      */
     function cancelOrder(OrderLib.Order calldata order) public {
-        require(order.trader == msg.sender, "msg.sender is not the trader");
+        _cancelOrder(order);
+    }
 
-        bytes32 orderHash = OrderLib._hashOrder(order);
-        cancelledOrFilled[orderHash] = true;
-
-        emit CancelOrder(orderHash);
+    /**
+     * @notice Cancels multiple orders in a single transaction
+     * @dev Iterates through the list of orders and calls the internal _cancelOrder function for each order
+     * @param orders The array of orders to be cancelled
+     */
+    function batchCancelOrders(OrderLib.Order[] calldata orders) public {
+        for (uint256 i = 0; i < orders.length; i++) {
+            _cancelOrder(orders[i]);
+        }
     }
 
     /**
@@ -246,7 +250,7 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
     }
 
     /**
-     * @dev Function to retrieve funds mistakenly sent to the mint contract.
+     * @dev Function to retrieve funds mistakenly sent to the Exchange contract.
      * @param paymentToken ERC20 token address, or zero for Ether.
      * @param to Recipient's address.
      * @param amount Transfer amount.
@@ -286,6 +290,20 @@ contract Exchange is IExchange, EIP712, Ownable2Step, ReentrancyGuard {
         _executeTokenTransfer(sellOrder.collection, sellOrder.trader, msg.sender, sellOrder.tokenId);
 
         emit Buy(msg.sender, sellOrder, sellOrderHash);
+    }
+
+    /**
+     * @notice Internal function that cancels an order
+     * @dev Requires that the caller is the trader specified in the order. Marks the order as cancelled or filled and emits a CancelOrder event.
+     * @param order The order to be cancelled
+     */
+    function _cancelOrder(OrderLib.Order calldata order) internal {
+        require(order.trader == msg.sender, "msg.sender is not the trader");
+
+        bytes32 orderHash = OrderLib._hashOrder(order);
+        cancelledOrFilled[orderHash] = true;
+
+        emit CancelOrder(orderHash);
     }
 
     /**
