@@ -173,10 +173,9 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
     function _checkAuthorized(address owner, address spender, uint256 tokenId) internal view virtual {
         if (!_isAuthorized(owner, spender, tokenId)) {
             if (owner == address(0)) {
-                revert("Token does not exist");
+                revert ERC721NonexistentToken(tokenId);
             } else {
-                // revert ERC721InsufficientApproval(spender, tokenId);
-                revert("Invalid operator");
+                revert ERC721InsufficientApproval(spender, tokenId);
             }
         }
     }
