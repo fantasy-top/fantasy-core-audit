@@ -120,7 +120,7 @@ contract FantasyCardsProxy is IFantasyCardsProxy, AccessControlDefaultAdminRules
         address to,
         uint256 tokenId
     ) external override whenNotPaused approvedIntegrator {
-        return transferFrom(from, to, tokenId);
+       safeTransferFrom(from, to, tokenId, "");
     }
 
     /**
