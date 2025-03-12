@@ -52,9 +52,9 @@ contract FantasyCards is Context, ERC165, IFantasyCards, AccessControlDefaultAdm
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
     constructor() AccessControlDefaultAdminRules(0, msg.sender) {
-        IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
-        IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
-        IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
+        // IBlast(0x4300000000000000000000000000000000000002).configureClaimableGas();
+        // IBlast(0x4300000000000000000000000000000000000002).configureGovernor(msg.sender);
+        // IBlastPoints(0x2536FE9ab3F511540F2f9e2eC2A805005C3Dd800).configurePointsOperator(msg.sender);
 
         _name = "Fantasy";
         _symbol = "FANTASY";

@@ -1,36 +1,36 @@
-pragma solidity ^0.8.20;
+// pragma solidity ^0.8.20;
 
-import "../lib/forge-std/src/Script.sol";
-import "../lib/forge-std/src/console.sol";
+// import "../lib/forge-std/src/Script.sol";
+// import "../lib/forge-std/src/console.sol";
 
-import "../src/FantasyCards.sol";
-import "../src/Exchange.sol";
-import "../src/ExecutionDelegate.sol";
-import "../src/Minter.sol";
-import "../test/tokens/WrappedETH_Ownable.sol";
+// import "../src/FantasyCards.sol";
+// import "../src/Exchange.sol";
+// import "../src/ExecutionDelegate.sol";
+// import "../src/Minter.sol";
+// import "../test/tokens/WrappedMON_Ownable.sol";
 
-contract DeployMinter is Script {
-    Minter minter;
+// contract DeployMinter is Script {
+//     Minter minter;
 
-    uint256 protocolFeeBps = 300;
-    uint256 wethMinimumPrice = 0;
+//     uint256 protocolFeeBps = 300;
+//     uint256 wethMinimumPrice = 0;
 
-    function run() external {
-        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PK");
-        console.log("Deployer Private Key: ", deployerPrivateKey);
+//     function run() external {
+//         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PK");
+//         console.log("Deployer Private Key: ", deployerPrivateKey);
 
-        address treasury = 0x6b88C7D530969F747A4dA218CF8Ef26505d45AE6;
-        address executionDelegate = 0x1caaa0Cce5d809BCa4f5C23896d94d07a1C0B07A;
-        address fantasyCards; // TODO: add address here
-        console.log("Treasury Address: ", address(treasury));
+//         address treasury = 0x6b88C7D530969F747A4dA218CF8Ef26505d45AE6;
+//         address executionDelegate = 0x1caaa0Cce5d809BCa4f5C23896d94d07a1C0B07A;
+//         address fantasyCards; // TODO: add address here
+//         console.log("Treasury Address: ", address(treasury));
 
-        vm.startBroadcast(deployerPrivateKey);
+//         vm.startBroadcast(deployerPrivateKey);
 
-        minter = new Minter(treasury, executionDelegate, 5, 15, 1);
-        minter.whiteListCollection(address(fantasyCards));
+//         minter = new Minter(treasury, executionDelegate, 5, 15, 1);
+//         minter.whiteListCollection(address(fantasyCards));
 
-        vm.stopBroadcast();
+//         vm.stopBroadcast();
 
-        console.log("Minter: ", address(minter));
-    }
-}
+//         console.log("Minter: ", address(minter));
+//     }
+// }
