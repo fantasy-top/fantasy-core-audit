@@ -6,8 +6,8 @@ import "../lib/forge-std/src/console.sol";
 
 import "../test/tokens/RestrictedToken.sol";
 
-contract DeployFMON is Script {
-    RestrictedToken fmon;
+contract DeployFWETH is Script {
+    RestrictedToken fweth;
     
     // Amount to mint to the deployer initially
     uint256 amountFaucet = 100000000000000000000000000000000000;
@@ -21,14 +21,14 @@ contract DeployFMON is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         // --------------------------------------------
-        /* FMON TOKEN SETUP */
+        /* fweth TOKEN SETUP */
         // --------------------------------------------
-        // Deploy the fMON token
-        fmon = new RestrictedToken();
-        console.log("FMON TOKEN: ", address(fmon));
+        // Deploy the fweth token
+        fweth = new RestrictedToken();
+        console.log("FWETH TOKEN: ", address(fweth));
         
         // Mint initial tokens to the deployer
-        fmon.getFaucet(amountFaucet);
+        fweth.getFaucet(amountFaucet);
         console.log("Minted initial tokens to deployer");
 
         // --------------------------------------------
@@ -39,11 +39,11 @@ contract DeployFMON is Script {
         // address executionDelegate = address(0); // Replace with actual ExecutionDelegate address
         
         // Example of how to integrate with existing contracts once addresses are provided:
-        // uint256 fmonMinimumPrice = 1000000000000000; // 0.001 eth
-        // exchange.whiteListPaymentToken(address(fmon), fmonMinimumPrice);
-        // fmon.approve(address(executionDelegate), type(uint256).max);
+        // uint256 fwethMinimumPrice = 1000000000000000; // 0.001 eth
+        // exchange.whiteListPaymentToken(address(fweth), fwethMinimumPrice);
+        // fweth.approve(address(executionDelegate), type(uint256).max);
         
-        console.log("FMON DEPLOYMENT COMPLETED");
+        console.log("FWETH DEPLOYMENT COMPLETED");
         console.log("NOTE: You will need to run additional commands to whitelist the token in Exchange and approve it for ExecutionDelegate");
 
         vm.stopBroadcast();
