@@ -13,7 +13,7 @@ contract RestrictedToken is ERC20, Ownable {
     // Mapping of approved senders that can transfer tokens
     mapping(address => bool) public approvedSender;
 
-    constructor() ERC20("Fantasy MON", "fMON") Ownable(msg.sender) {}
+    constructor() ERC20("Fantasy WETH", "FWETH") Ownable(msg.sender) {}
 
     function decimals() public view virtual override returns (uint8) {
         return 18;
