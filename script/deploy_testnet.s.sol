@@ -1,56 +1,55 @@
-// pragma solidity ^0.8.20;
+pragma solidity ^0.8.20;
 
-// import "../lib/forge-std/src/Script.sol";
-// import "../lib/forge-std/src/console.sol";
+import "../lib/forge-std/src/Script.sol";
+import "../lib/forge-std/src/console.sol";
 
-// import "../src/FantasyCards.sol";
-// import "../src/Exchange.sol";
-// import "../src/ExecutionDelegate.sol";
-// import "../src/Minter.sol";
-// import "../test/tokens/WrappedMON_ownable.sol";
+import "../src/FantasyCards.sol";
+import "../src/Exchange.sol";
+import "../src/ExecutionDelegate.sol";
+import "../src/Minter.sol";
 
-// contract Deploy is Script {
-//     FantasyCards fantasyCards;
-//     Exchange exchange;
-//     ExecutionDelegate executionDelegate;
-//     Minter minter;
-//     WrappedETH weth;
+contract Deploy is Script {
+    FantasyCards fantasyCards;
+    Exchange exchange;
+    ExecutionDelegate executionDelegate;
+    Minter minter;
 
-//     uint256 protocolFeeBps = 300;
-//     uint256 wethMinimumPrice = 0;
+    address constant WETH = 0x4200000000000000000000000000000000000006;
 
-//     function run() external {
-//         uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PK");
+    uint256 protocolFeeBps = 300;
+    uint256 wethMinimumPrice = 0;
 
-//         address treasury = vm.envAddress("TREASURY_ADDRESS");
-//         address deployer = vm.addr(deployerPrivateKey);
+    function run() external {
+        uint256 deployerPrivateKey = vm.envUint("DEPLOYER_PK");
 
-//         console.log("Deployer: ", address(deployer));
-//         console.log("Treasury: ", address(treasury));
+        address treasury = vm.envAddress("TREASURY_ADDRESS");
+        address deployer = vm.addr(deployerPrivateKey);
 
-//         vm.startBroadcast(deployerPrivateKey);
+        console.log("Deployer: ", address(deployer));
+        console.log("Treasury: ", address(treasury));
 
-//         fantasyCards = new FantasyCards();
-//         weth = new WrappedETH();
-//         executionDelegate = new ExecutionDelegate();
-//         minter = new Minter(treasury, address(executionDelegate), 5, 15, 1);
-//         minter.whiteListCollection(address(fantasyCards));
+        vm.startBroadcast(deployerPrivateKey);
 
-//         exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
-//         exchange.whiteListCollection(address(fantasyCards));
-//         exchange.whiteListPaymentToken(address(weth), wethMinimumPrice);
+        fantasyCards = new FantasyCards();
+        executionDelegate = new ExecutionDelegate();
+        minter = new Minter(treasury, address(executionDelegate), 5, 15, 1);
+        minter.whiteListCollection(address(fantasyCards));
 
-//         executionDelegate.approveContract(address(minter));
-//         executionDelegate.approveContract(address(exchange));
+        exchange = new Exchange(treasury, protocolFeeBps, address(executionDelegate));
+        exchange.whiteListCollection(address(fantasyCards));
+        exchange.whiteListPaymentToken(WETH, wethMinimumPrice);
 
-//         fantasyCards.grantRole(fantasyCards.EXECUTION_DELEGATE_ROLE(), address(executionDelegate));
+        executionDelegate.approveContract(address(minter));
+        executionDelegate.approveContract(address(exchange));
 
-//         vm.stopBroadcast();
+        fantasyCards.grantRole(fantasyCards.EXECUTION_DELEGATE_ROLE(), address(executionDelegate));
 
-//         console.log("FantasyCards: ", address(fantasyCards));
-//         console.log("Exchange: ", address(exchange));
-//         console.log("ExecutionDelegate: ", address(executionDelegate));
-//         console.log("Minter: ", address(minter));
-//         console.log("WrappedETH: ", address(weth));
-//     }
-// }
+        vm.stopBroadcast();
+
+        console.log("FantasyCards: ", address(fantasyCards));
+        console.log("Exchange: ", address(exchange));
+        console.log("ExecutionDelegate: ", address(executionDelegate));
+        console.log("Minter: ", address(minter));
+        console.log("WrappedETH (existing): ", WETH);
+    }
+}
